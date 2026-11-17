@@ -215,10 +215,10 @@ img, svg { max-width: 100%; }
   border-bottom: 1px solid var(--line);
   font-size: var(--fs-sm);
 }
-.topbar .brand { font-weight: 650; color: var(--ink); letter-spacing: -.01em; }
-.topbar nav { display: flex; gap: var(--s1); }
+.topbar .brand { font-weight: 650; color: var(--ink); letter-spacing: -.01em; white-space: nowrap; }
+.topbar nav { display: flex; gap: var(--s1); min-width: 0; }
 .topbar nav a {
-  color: var(--ink-2); padding: 4px 9px; border-radius: var(--r-sm);
+  color: var(--ink-2); padding: 4px 9px; border-radius: var(--r-sm); white-space: nowrap;
 }
 .topbar nav a:hover { background: var(--accent-bg); color: var(--ink); text-decoration: none; }
 .topbar nav a[aria-current="page"] { color: var(--ink); background: var(--accent-bg); font-weight: 600; }
@@ -244,7 +244,8 @@ img, svg { max-width: 100%; }
 /* 区块标题 */
 .sect { margin-top: var(--s7); }
 .sect:first-of-type { margin-top: var(--s5); }
-.sect-head { display: flex; align-items: baseline; gap: var(--s3); margin-bottom: var(--s3); }
+.sect-head { display: flex; align-items: baseline; gap: var(--s3); margin-bottom: var(--s3); flex-wrap: wrap; }
+.sect-head h2 { white-space: nowrap; }
 .sect-head h2 { font-size: var(--fs-lg); }
 .sect-head .hint { color: var(--muted); font-size: var(--fs-xs); }
 .sect-rule { border-top: 1px solid var(--line); margin-bottom: var(--s4); }
@@ -478,7 +479,12 @@ table.table td.date { white-space: nowrap; font-variant-numeric: tabular-nums; }
   .thesis { grid-template-columns: 1fr; }
   .thesis .th-badges { justify-content: flex-start; }
   .jrow { grid-template-columns: auto 1fr; }
-  .topbar nav { overflow-x: auto; }
+  /* 窄屏放不下站名 + 导航：藏掉站名，导航横滑，单行不折 */
+  .topbar { gap: var(--s2); padding: 0 var(--s3); }
+  .topbar .brand { display: none; }
+  .topbar nav { flex: 1 1 auto; overflow-x: auto; scrollbar-width: none; }
+  .topbar nav::-webkit-scrollbar { display: none; }
+  .topbar .iconbtn { flex: 0 0 auto; }
 }
 
 /* ------------------------------------------------------------- 打印 */

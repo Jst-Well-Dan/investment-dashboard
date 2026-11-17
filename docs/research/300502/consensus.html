@@ -125,6 +125,9 @@
     background: #12161c; color: #c3cedb; border-bottom-color: #232b36;
     box-shadow: 0 1px 3px rgba(0,0,0,.4);
   }
+  #site-topbar > * { white-space: nowrap; }
+  #site-topbar .stb-lab { margin-left: 5px; }
+  #site-topbar .stb-btn { text-align: center; }
   #site-topbar a { color: inherit; text-decoration: none; opacity: .82; }
   #site-topbar a:hover { opacity: 1; text-decoration: underline; text-underline-offset: 3px; }
   #site-topbar .stb-home { font-weight: 700; }
@@ -145,12 +148,18 @@
   /* 页面自带的吸顶表头要让开顶栏 */
   thead th { top: 42px !important; }
   @media (max-width: 720px) {
-    #site-topbar .stb-asof, #site-topbar .stb-group { display: none; }
+    #site-topbar { gap: 6px; padding: 0 10px; }
+    #site-topbar .stb-asof, #site-topbar .stb-group, #site-topbar .stb-sep { display: none; }
+    #site-topbar .stb-btns .stb-lab { display: none; }
+  }
+  @media (max-width: 520px) {
+    #site-topbar .stb-lab { display: none; }
+    #site-topbar .stb-title { max-width: 46vw; }
   }
   @media print { #site-topbar { display: none; } html { padding-top: 0 !important; } }
 </style>
 </head>
-<body><div id="site-topbar" data-tone="light"><a class="stb-home" href="../../index.html">← 研究入口</a><span class="stb-sep">/</span><a class="stb-group" href="../../research/300502/index.html">新易盛</a><span class="stb-sep">/</span><span class="stb-title">新易盛 · 卖方共识演化与估值分位</span><span class="stb-spacer"></span><span class="stb-asof">数据截至 2026-10-26</span><span class="stb-btns" style="display:flex;gap:4px"><a class="stb-btn" href="structure.html">上一页</a><button class="stb-btn" disabled>下一页</button></span></div>
+<body><div id="site-topbar" data-tone="light"><a class="stb-home" href="../../index.html" title="研究入口">←<span class="stb-lab">研究入口</span></a><span class="stb-sep">/</span><a class="stb-group" href="../../research/300502/index.html">新易盛</a><span class="stb-sep">/</span><span class="stb-title">新易盛 · 卖方共识演化与估值分位</span><span class="stb-spacer"></span><span class="stb-asof">数据截至 2026-10-26</span><span class="stb-btns" style="display:flex;gap:4px"><a class="stb-btn" href="structure.html" title="上一页：年报结构">‹<span class="stb-lab">上一页</span></a><button class="stb-btn" disabled>›<span class="stb-lab">下一页</span></button></span></div>
 <div class="wrap">
 
 <header>

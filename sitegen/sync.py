@@ -71,6 +71,9 @@ TOPBAR_STYLE = """
     background: #12161c; color: #c3cedb; border-bottom-color: #232b36;
     box-shadow: 0 1px 3px rgba(0,0,0,.4);
   }
+  #site-topbar > * { white-space: nowrap; }
+  #site-topbar .stb-lab { margin-left: 5px; }
+  #site-topbar .stb-btn { text-align: center; }
   #site-topbar a { color: inherit; text-decoration: none; opacity: .82; }
   #site-topbar a:hover { opacity: 1; text-decoration: underline; text-underline-offset: 3px; }
   #site-topbar .stb-home { font-weight: 700; }
@@ -91,7 +94,13 @@ TOPBAR_STYLE = """
   /* 页面自带的吸顶表头要让开顶栏 */
   thead th { top: 42px !important; }
   @media (max-width: 720px) {
-    #site-topbar .stb-asof, #site-topbar .stb-group { display: none; }
+    #site-topbar { gap: 6px; padding: 0 10px; }
+    #site-topbar .stb-asof, #site-topbar .stb-group, #site-topbar .stb-sep { display: none; }
+    #site-topbar .stb-btns .stb-lab { display: none; }
+  }
+  @media (max-width: 520px) {
+    #site-topbar .stb-lab { display: none; }
+    #site-topbar .stb-title { max-width: 46vw; }
   }
   @media print { #site-topbar { display: none; } html { padding-top: 0 !important; } }
 </style>
@@ -138,7 +147,7 @@ def topbar_html(entry: Entry, group: Group, up: str, prev: Entry | None, next: E
     asof = f'数据截至 {entry.data_asof}' if entry.data_asof else ""
     parts = [
         f'<div id="site-topbar" data-tone="light">',
-        f'<a class="stb-home" href="{up}index.html">← 研究入口</a>',
+        f'<a class="stb-home" href="{up}index.html" title="研究入口">←<span class="stb-lab">研究入口</span></a>',
         f'<span class="stb-sep">/</span>',
         f'<a class="stb-group" href="{up}{group.url}">{_esc(group.name)}</a>',
         f'<span class="stb-sep">/</span>',
@@ -148,10 +157,14 @@ def topbar_html(entry: Entry, group: Group, up: str, prev: Entry | None, next: E
     if asof:
         parts.append(f'<span class="stb-asof">{_esc(asof)}</span>')
     if prev or next:
-        prev_btn = (f'<a class="stb-btn" href="{prev.url.split("/")[-1]}">上一页</a>'
-                    if prev else '<button class="stb-btn" disabled>上一页</button>')
-        next_btn = (f'<a class="stb-btn" href="{next.url.split("/")[-1]}">下一页</a>'
-                    if next else '<button class="stb-btn" disabled>下一页</button>')
+        def btn(e: Entry | None, arrow: str, label: str) -> str:
+            if e is None:
+                return f'<button class="stb-btn" disabled>{arrow}<span class="stb-lab">{label}</span></button>'
+            return (f'<a class="stb-btn" href="{e.url.split("/")[-1]}" title="{label}：{_esc(e.short or e.title)}">'
+                    f'{arrow}<span class="stb-lab">{label}</span></a>')
+
+        prev_btn = btn(prev, "‹", "上一页")
+        next_btn = btn(next, "›", "下一页")
         parts += ['<span class="stb-btns" style="display:flex;gap:4px">', prev_btn, next_btn, '</span>']
     parts.append('</div>')
     return "".join(parts)
