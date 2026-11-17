@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>主题样例 · Dan&#x27;s Investment Dashboard</title>
+<link rel="stylesheet" href="assets/theme.css">
+
+</head>
+<body>
+<div class="topbar">
+  <a class="brand" href="index.html">Dan&#x27;s Investment Dashboard</a>
+  <nav><a href="index.html">今天</a><a href="archive.html">研究档案</a><a href="journal/">日志</a><a href="theme.html" aria-current="page">主题</a></nav>
+  <span class="spacer"></span>
+  <button class="iconbtn" id="theme-btn" type="button" title="切换浅色 / 深色">◐ 主题</button>
+</div>
+<div class="wrap">
+  <header class="pagehead">
+    <div class="kicker">Design tokens</div>
+    <h1>主题样例</h1>
+    <p class="lede">这里展示 <code>theme/theme.css</code> 的全部令牌与组件。所有页面（含托管的研究页）都以这套为准；
+       点右上角「主题」切换深色，验证同一套令牌在两种模式下都成立。</p>
+  </header>
+
+  <section class="sect">
+    <div class="sect-head"><h2>颜色令牌</h2><span class="hint">语义色含义固定，不得挪用</span></div>
+    <div class="sect-rule"></div>
+    <div class="kpi-grid" style="grid-template-columns:repeat(auto-fill,minmax(150px,1fr))"><div class="kpi" style="padding:0;overflow:hidden"><div style="height:44px;background:var(--paper);border-bottom:1px solid var(--line)"></div><div style="padding:8px 10px"><div class="kpi-k">paper</div><code style="font-size:10.5px">--paper</code><div class="card-note" style="margin-top:2px">页面底</div></div></div><div class="kpi" style="padding:0;overflow:hidden"><div style="height:44px;background:var(--paper-2);border-bottom:1px solid var(--line)"></div><div style="padding:8px 10px"><div class="kpi-k">paper-2</div><code style="font-size:10.5px">--paper-2</code><div class="card-note" style="margin-top:2px">次级底</div></div></div><div class="kpi" style="padding:0;overflow:hidden"><div style="height:44px;background:var(--card);border-bottom:1px solid var(--line)"></div><div style="padding:8px 10px"><div class="kpi-k">card</div><code style="font-size:10.5px">--card</code><div class="card-note" style="margin-top:2px">卡片</div></div></div><div class="kpi" style="padding:0;overflow:hidden"><div style="height:44px;background:var(--card-2);border-bottom:1px solid var(--line)"></div><div style="padding:8px 10px"><div class="kpi-k">card-2</div><code style="font-size:10.5px">--card-2</code><div class="card-note" style="margin-top:2px">卡片次级</div></div></div><div class="kpi" style="padding:0;overflow:hidden"><div style="height:44px;background:var(--ink);border-bottom:1px solid var(--line)"></div><div style="padding:8px 10px"><div class="kpi-k">ink</div><code style="font-size:10.5px">--ink</code><div class="card-note" style="margin-top:2px">主文字</div></div></div><div class="kpi" style="padding:0;overflow:hidden"><div style="height:44px;background:var(--ink-2);border-bottom:1px solid var(--line)"></div><div style="padding:8px 10px"><div class="kpi-k">ink-2</div><code style="font-size:10.5px">--ink-2</code><div class="card-note" style="margin-top:2px">次文字</div></div></div><div class="kpi" style="padding:0;overflow:hidden"><div style="height:44px;background:var(--muted);border-bottom:1px solid var(--line)"></div><div style="padding:8px 10px"><div class="kpi-k">muted</div><code style="font-size:10.5px">--muted</code><div class="card-note" style="margin-top:2px">弱文字</div></div></div><div class="kpi" style="padding:0;overflow:hidden"><div style="height:44px;background:var(--dim);border-bottom:1px solid var(--line)"></div><div style="padding:8px 10px"><div class="kpi-k">dim</div><code style="font-size:10.5px">--dim</code><div class="card-note" style="margin-top:2px">更弱</div></div></div><div class="kpi" style="padding:0;overflow:hidden"><div style="height:44px;background:var(--line);border-bottom:1px solid var(--line)"></div><div style="padding:8px 10px"><div class="kpi-k">line</div><code style="font-size:10.5px">--line</code><div class="card-note" style="margin-top:2px">分隔线</div></div></div><div class="kpi" style="padding:0;overflow:hidden"><div style="height:44px;background:var(--line-strong);border-bottom:1px solid var(--line)"></div><div style="padding:8px 10px"><div class="kpi-k">line-strong</div><code style="font-size:10.5px">--line-strong</code><div class="card-note" style="margin-top:2px">强分隔线</div></div></div><div class="kpi" style="padding:0;overflow:hidden"><div style="height:44px;background:var(--accent);border-bottom:1px solid var(--line)"></div><div style="padding:8px 10px"><div class="kpi-k">accent</div><code style="font-size:10.5px">--accent</code><div class="card-note" style="margin-top:2px">强调</div></div></div><div class="kpi" style="padding:0;overflow:hidden"><div style="height:44px;background:var(--accent-bg);border-bottom:1px solid var(--line)"></div><div style="padding:8px 10px"><div class="kpi-k">accent-bg</div><code style="font-size:10.5px">--accent-bg</code><div class="card-note" style="margin-top:2px">强调底</div></div></div><div class="kpi" style="padding:0;overflow:hidden"><div style="height:44px;background:var(--up);border-bottom:1px solid var(--line)"></div><div style="padding:8px 10px"><div class="kpi-k">up</div><code style="font-size:10.5px">--up</code><div class="card-note" style="margin-top:2px">涨（红）</div></div></div><div class="kpi" style="padding:0;overflow:hidden"><div style="height:44px;background:var(--down);border-bottom:1px solid var(--line)"></div><div style="padding:8px 10px"><div class="kpi-k">down</div><code style="font-size:10.5px">--down</code><div class="card-note" style="margin-top:2px">跌（绿）</div></div></div><div class="kpi" style="padding:0;overflow:hidden"><div style="height:44px;background:var(--actual);border-bottom:1px solid var(--line)"></div><div style="padding:8px 10px"><div class="kpi-k">actual</div><code style="font-size:10.5px">--actual</code><div class="card-note" style="margin-top:2px">实际</div></div></div><div class="kpi" style="padding:0;overflow:hidden"><div style="height:44px;background:var(--guide);border-bottom:1px solid var(--line)"></div><div style="padding:8px 10px"><div class="kpi-k">guide</div><code style="font-size:10.5px">--guide</code><div class="card-note" style="margin-top:2px">指引 / 预期</div></div></div><div class="kpi" style="padding:0;overflow:hidden"><div style="height:44px;background:var(--st-track);border-bottom:1px solid var(--line)"></div><div style="padding:8px 10px"><div class="kpi-k">st-track</div><code style="font-size:10.5px">--st-track</code><div class="card-note" style="margin-top:2px">跟踪中</div></div></div><div class="kpi" style="padding:0;overflow:hidden"><div style="height:44px;background:var(--st-hold);border-bottom:1px solid var(--line)"></div><div style="padding:8px 10px"><div class="kpi-k">st-hold</div><code style="font-size:10.5px">--st-hold</code><div class="card-note" style="margin-top:2px">成立</div></div></div><div class="kpi" style="padding:0;overflow:hidden"><div style="height:44px;background:var(--st-doubt);border-bottom:1px solid var(--line)"></div><div style="padding:8px 10px"><div class="kpi-k">st-doubt</div><code style="font-size:10.5px">--st-doubt</code><div class="card-note" style="margin-top:2px">存疑</div></div></div><div class="kpi" style="padding:0;overflow:hidden"><div style="height:44px;background:var(--st-dead);border-bottom:1px solid var(--line)"></div><div style="padding:8px 10px"><div class="kpi-k">st-dead</div><code style="font-size:10.5px">--st-dead</code><div class="card-note" style="margin-top:2px">证伪</div></div></div><div class="kpi" style="padding:0;overflow:hidden"><div style="height:44px;background:var(--warn);border-bottom:1px solid var(--line)"></div><div style="padding:8px 10px"><div class="kpi-k">warn</div><code style="font-size:10.5px">--warn</code><div class="card-note" style="margin-top:2px">警示</div></div></div></div>
+    <div class="callout method" style="margin-top:16px">
+      <div class="co-h">用色规则</div>
+      <p>涨红跌绿只用于价格与收益的变动；<span class="actual">蓝＝实际值</span>、<span class="guide">琥珀＝指引 / 预期</span>，
+      这两组颜色在全站含义不重叠。观点状态（跟踪中 / 成立 / 存疑 / 证伪）用第三组色，避免被读成行情。</p>
+    </div>
+  </section>
+
+  <section class="sect">
+    <div class="sect-head"><h2>字体与数字</h2><span class="hint">数字一律等宽 + tabular-nums</span></div>
+    <div class="sect-rule"></div>
+    <h1>标题 H1 · 27px</h1><h2>标题 H2 · 21px</h2><h3>标题 H3 · 17px</h3>
+    <p>正文 14.5px，行高 1.72。中文回退栈：PingFang SC / Noto Sans SC / Microsoft YaHei。
+       <span class="num">1,234.56</span> 与 <span class="num">-3.28%</span> 用等宽数字，纵向对齐。</p>
+    <p><span class="up num">+2.17pt</span> · <span class="down num">-1.86%</span> ·
+       <span class="actual num">730 bn</span> · <span class="guide num">1,051 bn</span></p>
+  </section>
+
+  <section class="sect">
+    <div class="sect-head"><h2>KPI 卡</h2></div>
+    <div class="sect-rule"></div>
+    <div class="kpi-grid">
+      <div class="kpi"><div class="kpi-k">股东总回报</div>
+        <div class="kpi-v up">+2795<span class="u">%</span></div>
+        <div class="kpi-d">×28.9 市值 233 → 7,003 亿</div>
+        <div class="kpi-asof">2023-01-31 → 2026-10-26</div></div>
+      <div class="kpi"><div class="kpi-k">PE_NTM</div>
+        <div class="kpi-v">11.71<span class="u">x</span></div>
+        <div class="kpi-d">滚动 250 日分位 0.0%</div>
+        <div class="kpi-asof">数据截至 2026-10-26</div></div>
+      <div class="kpi"><div class="kpi-k">2026 四家指引合计</div>
+        <div class="kpi-v actual">730<span class="u">bn</span></div>
+        <div class="kpi-d">同公司组年内上修 <span class="up num">+10.9%</span></div>
+        <div class="kpi-asof">数据截至 2026-10-29</div></div>
+      <div class="kpi"><div class="kpi-k">2027 外推</div>
+        <div class="kpi-v guide">1,051<span class="u">bn</span></div>
+        <div class="kpi-d">不是公司指引</div>
+        <div class="kpi-asof">仅供情景参考</div></div>
+    </div>
+  </section>
+
+  <section class="sect">
+    <div class="sect-head"><h2>表格</h2><span class="hint">表头吸顶 · 数字右对齐</span></div>
+    <div class="sect-rule"></div>
+    <div class="table-wrap"><table class="table">
+      <thead><tr><th>年</th><th class="n">市值（亿）</th><th class="n">E_NTM（亿）</th><th class="n">PE_NTM</th><th class="n">盈利贡献 pp</th><th class="n">估值贡献 pp</th><th class="n">总回报</th></tr></thead>
+      <tbody>
+        <tr><td>2023</td><td class="n">233 → 906</td><td class="n">15.2 → 36.5</td><td class="n">15.3x → 24.8x</td><td class="n up">+87.6</td><td class="n up">+48.2</td><td class="n up">+288.7%</td></tr>
+        <tr><td>2024</td><td class="n">888 → 1,385</td><td class="n">36.6 → 89.4</td><td class="n">24.3x → 15.5x</td><td class="n up">+89.3</td><td class="n down">-44.9</td><td class="n up">+56.7%</td></tr>
+        <tr><td>2025</td><td class="n">1,369 → 6,778</td><td class="n">89.4 → 189.8</td><td class="n">15.3x → 35.7x</td><td class="n up">+75.3</td><td class="n up">+84.7</td><td class="n up">+161.0%</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section class="sect">
+    <div class="sect-head"><h2>提示框</h2></div>
+    <div class="sect-rule"></div>
+    <div class="stack">
+      <div class="callout"><div class="co-h">结论</div><p>默认样式用于普通结论。</p></div>
+      <div class="callout info"><div class="co-h">口径</div><p>蓝框用于说明数据口径与算法假设。</p></div>
+      <div class="callout risk"><div class="co-h">风险</div><p>红框用于风险与失效条件。</p></div>
+      <div class="callout method"><div class="co-h">方法</div><p>琥珀框用于方法说明。</p></div>
+    </div>
+  </section>
+
+  <section class="sect">
+    <div class="sect-head"><h2>标签与状态徽标</h2></div>
+    <div class="sect-rule"></div>
+    <div class="row" style="margin-bottom:12px">
+      <span class="tag">标签</span><span class="tag accent">强调标签</span>
+      <span class="tag-date num">2026-10-26</span>
+    </div>
+    <div class="row">
+      <span class="badge track">跟踪中</span><span class="badge hold">成立</span>
+      <span class="badge doubt">存疑</span><span class="badge dead">证伪</span>
+      <span class="badge overdue">已到期</span>
+    </div>
+  </section>
+
+  <section class="sect">
+    <div class="sect-head"><h2>论点卡</h2><span class="hint">首页「在跟踪的判断」用的就是这个</span></div>
+    <div class="sect-rule"></div>
+    <div class="thesis-list">
+      <div class="thesis st-track"><div class="th-claim">共识线的上涨大部分是日历滚动，不是分析师改模型。</div>
+        <div class="th-badges"><span class="badge track">跟踪中</span></div>
+        <div class="th-foot"><span>中际旭创 · 事后归因</span><span>下次检查 <span class="num">2027-01-31</span></span></div></div>
+      <div class="thesis st-overdue"><div class="th-claim">这条已经过了检查日期，会被标红。</div>
+        <div class="th-badges"><span class="badge overdue">已到期</span><span class="badge doubt">存疑</span></div>
+        <div class="th-foot"><span>示例</span><span>下次检查 <span class="num">2026-01-01</span>（逾期 320 天）</span></div></div>
+    </div>
+  </section>
+
+  <section class="sect">
+    <div class="sect-head"><h2>图表容器</h2><span class="hint">标题 + 副标题 + 正文 + 来源脚注</span></div>
+    <div class="sect-rule"></div>
+    <div class="chart-card">
+      <div class="chart-title">图一 · NTM 共识净利</div>
+      <div class="chart-sub">未来 12 个月净利预测；变化来自预测修订、日历滚动与机构进出。</div>
+      <div class="chart-body"><div class="empty" style="padding:48px">（图表放这里）</div></div>
+      <div class="chart-foot"><span>单位：亿元</span><span class="src">来源：tushare report_rc · 数据截至 2026-10-26</span></div>
+    </div>
+  </section>
+
+  <section class="sect">
+    <div class="sect-head"><h2>日志正文（Markdown 渲染）</h2></div>
+    <div class="sect-rule"></div>
+    <div class="prose">
+      <h2>今日市场一句话</h2>
+      <p>AI 链温度回升到 69，但波动率仍在剧烈档；黄金继续走弱。<code>[[300308-consensus]]</code> 的判断没有变化。</p>
+      <blockquote><p>引用块用于摘录原文或自己的旧判断。</p></blockquote>
+      <ul><li>支持列表</li><li>支持表格、代码块</li></ul>
+    </div>
+  </section>
+<footer class="foot">
+  <span>本站为个人研究记录，所有数字与结论仅供自己复盘使用，不构成投资建议。</span>
+  <span class="spacer"></span>
+  <span>构建于 <span class="num">2026-11-17</span></span>
+  <a href="index.html">回到入口</a>
+</footer>
+<script src="assets/site.js"></script>
+</body>
+</html>

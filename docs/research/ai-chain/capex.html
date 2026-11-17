@@ -1,0 +1,1472 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI 资本开支 · 指引追踪</title>
+<style>
+:root{
+  --bg:#faf9f6; --panel:#fff; --panel2:#f4f2ec; --ink:#191813; --ink2:#4a4842;
+  --muted:#6d6b64; --line:#e4e0d7; --line2:#d3cec1;
+  --actual:#2f6fb3; --actual-bg:rgba(47,111,179,.12);
+  --guide:#b8791a; --guide-bg:rgba(184,121,26,.14);
+  --up:#1c7a4d; --down:#b02a1c; --flat:#6b6a66;
+  --accent:#7a5cc4;
+  --shadow:0 1px 2px rgba(0,0,0,.04),0 8px 24px -12px rgba(0,0,0,.18);
+}
+html[data-theme=dark]{
+  --bg:#121310; --panel:#1a1b17; --panel2:#22231d; --ink:#f0eee6; --ink2:#c3c0b5;
+  --muted:#aaa69b; --line:#2c2d26; --line2:#3a3b32;
+  --actual:#6ba6e8; --actual-bg:rgba(107,166,232,.16);
+  --guide:#e0a94a; --guide-bg:rgba(224,169,74,.18);
+  --up:#4dc78d; --down:#f0796b; --flat:#9a978d;
+  --accent:#a98cf0;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px -12px rgba(0,0,0,.6);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--bg); color:var(--ink);
+  font:15px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1240px;margin:0 auto;padding:0 24px 96px}
+code,.num{font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.88em;
+  background:var(--panel2);padding:.12em .4em;border-radius:4px}
+a{color:var(--actual);text-decoration:none;border-bottom:1px solid transparent}
+a:hover{border-bottom-color:currentColor}
+
+header.top{padding:44px 0 20px;border-bottom:1px solid var(--line)}
+h1{font-size:26px;line-height:1.3;margin:0 0 8px;letter-spacing:-.2px}
+.sub{color:var(--muted);font-size:13.5px;margin:0}
+.sub b{color:var(--ink2);font-weight:600}
+
+nav.sticky{position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--bg) 88%,transparent);
+  backdrop-filter:blur(10px);border-bottom:1px solid var(--line);margin-bottom:28px}
+nav.sticky .inner{max-width:1240px;margin:0 auto;padding:9px 24px;display:flex;gap:6px;
+  align-items:center;overflow-x:auto}
+nav a{font-size:13px;color:var(--ink2);padding:5px 10px;border-radius:999px;white-space:nowrap;
+  border:1px solid transparent}
+nav a:hover{background:var(--panel2);border-bottom-color:transparent}
+.spacer{flex:1}
+.tbtn{font-size:12.5px;color:var(--ink2);background:var(--panel);border:1px solid var(--line2);
+  border-radius:999px;padding:5px 12px;cursor:pointer}
+.tbtn:hover{border-color:var(--muted)}
+
+section{margin:0 0 52px;scroll-margin-top:64px}
+h2{font-size:17px;margin:0 0 6px;letter-spacing:-.1px;display:flex;align-items:baseline;gap:10px}
+h2 .tag{font-size:11px;font-weight:500;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+.lede{color:var(--ink2);font-size:13.8px;margin:0 0 18px;max-width:78ch}
+.lede em{font-style:normal;color:var(--ink);font-weight:600}
+
+/* 论纲：事实 + 假设 */
+.thesis{display:grid;gap:14px;margin:22px 0 0}
+.th{padding:16px 18px}
+.th h3{font-size:14px;margin:0;display:flex;align-items:baseline;gap:9px;letter-spacing:-.1px}
+.th h3 .tag{font-size:10.5px;font-weight:500;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+.th .sub2{font-size:12px;color:var(--muted);margin:3px 0 0}
+.tlist{margin:11px 0 0;padding-left:17px;font-size:13px;color:var(--ink2)}
+.th .body{margin:11px 0 0;color:var(--ink2)}
+.th .body p{font-size:13px;margin:8px 0 0;max-width:75ch}
+.th .body p:first-child{margin-top:0}
+.th .body b{color:var(--ink);font-weight:600}
+.tlist li{margin:7px 0}
+.tlist li::marker{color:var(--line2)}
+.tlist b{color:var(--ink);font-weight:600}
+.tlist .n2{font-variant-numeric:tabular-nums}
+.hyp{margin-top:12px;display:grid;gap:11px}
+.hyp .h{border-top:1px solid var(--line);padding:12px 0 0}
+.hyp .hh{font-size:13px;color:var(--ink);font-weight:600}
+.hyp .hn{display:inline-block;font-size:11px;font-weight:700;color:var(--bg);background:var(--guide);
+  border-radius:4px;padding:1px 5px;margin-right:6px;vertical-align:1.5px;letter-spacing:.02em}
+.hyp p{margin:3px 0 0;font-size:12.2px;color:var(--muted);line-height:1.55}
+.hyp p b{color:var(--ink2);font-weight:600}
+.hyp .kx{color:var(--down);font-weight:600}
+
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;
+  padding:18px 18px 12px;box-shadow:var(--shadow)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media(max-width:900px){.grid2,.grid3{grid-template-columns:1fr}}
+
+.charthead{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:2px}
+.charthead .t{font-size:14px;font-weight:620}
+.charthead .m{font-size:12px;color:var(--muted)}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:12px;color:var(--ink2);margin:6px 0 10px}
+.legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:5px;
+  vertical-align:-1px}
+svg{display:block;width:100%;height:auto;overflow:visible}
+svg text{font-size:10.5px;fill:var(--muted);font-variant-numeric:tabular-nums}
+svg .ax{stroke:var(--line2);stroke-width:1}
+svg .gl{stroke:var(--line);stroke-width:1;stroke-dasharray:2 3}
+
+/* 矩阵 */
+
+/* 明细 */
+.tbl{border-collapse:collapse;width:100%;font-size:12.5px}
+.tbl th{text-align:left;font-size:11px;color:var(--muted);font-weight:600;padding:7px 9px;
+  border-bottom:1.5px solid var(--line2);position:sticky;top:0;background:var(--panel);z-index:2}
+.tbl td{padding:7px 9px;border-bottom:1px solid var(--line);vertical-align:top}
+.tbl tr:hover td{background:var(--panel2)}
+.tbl .q{color:var(--ink2);font-size:12px;max-width:520px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 12px}
+.chip{font-size:12px;padding:4px 11px;border-radius:999px;border:1px solid var(--line2);
+  background:var(--panel);color:var(--ink2);cursor:pointer;user-select:none}
+.chip[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.pill{display:inline-block;font-size:10.5px;padding:1px 6px;border-radius:4px;
+  background:var(--panel2);color:var(--ink2);margin-right:4px;letter-spacing:.02em}
+.pill.new{background:var(--guide-bg);color:var(--guide)}
+.pill.raised{background:rgba(28,122,77,.14);color:var(--up)}
+.pill.lowered{background:rgba(176,42,28,.13);color:var(--down)}
+.pill.narrowed{background:rgba(122,92,196,.14);color:var(--accent)}
+
+#tip{position:fixed;z-index:200;pointer-events:none;max-width:360px;background:var(--panel);
+  border:1px solid var(--line2);border-radius:9px;padding:9px 11px;font-size:12px;
+  box-shadow:0 6px 28px -8px rgba(0,0,0,.35);opacity:0;transition:opacity .1s}
+#tip.on{opacity:1}
+#tip .tt{font-weight:650;margin-bottom:3px}
+#tip .tv{color:var(--ink2);font-size:11.5px;line-height:1.5}
+
+.ex{font-size:11px;color:var(--muted);background:transparent;border:1px solid var(--line2);
+  border-radius:6px;padding:2px 8px;cursor:pointer;margin-left:8px;vertical-align:1px}
+.ex:hover{color:var(--ink);border-color:var(--muted)}
+.seg{display:inline-flex;border:1px solid var(--line2);border-radius:999px;overflow:hidden;margin:0 0 12px}
+.seg button{font-size:12px;padding:4px 13px;background:var(--panel);border:0;color:var(--ink2);cursor:pointer}
+.seg button[aria-pressed=true]{background:var(--ink);color:var(--bg)}
+.big{font-variant-numeric:tabular-nums}
+.note{font-size:12.5px;color:var(--ink2);background:var(--panel2);border:1px solid var(--line);
+  border-radius:9px;padding:12px 14px;margin-top:14px}
+.note b{color:var(--ink)}
+.note ul{margin:6px 0 0;padding-left:18px}
+.note li{margin:3px 0}
+
+/* 叙事编号 + 链条 */
+.sn{width:20px;height:20px;border-radius:50%;background:var(--ink);color:var(--bg);
+  font-size:11.5px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;
+  flex:0 0 20px;transform:translateY(-1px)}
+h2{position:relative}
+.story{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin:10px 0 0;font-size:12px;color:var(--muted)}
+.story b{color:var(--ink2);font-weight:600}
+.story .ar{opacity:.45;margin:0 1px}
+.q{font-size:12.5px;color:var(--muted);margin:0 0 14px}
+.q em{color:var(--ink2);font-style:normal;font-weight:600}
+
+.tbl.rev td{font-variant-numeric:tabular-nums}
+.tbl.rev td.yh{font-weight:650;white-space:nowrap}
+.tbl.rev td.tot{background:var(--panel2);font-weight:600;white-space:nowrap}
+.tbl.rev td.num{text-align:right;white-space:nowrap}
+.tbl.rev .mk{display:inline-block;font-weight:750;font-size:15px;line-height:1;
+  letter-spacing:1px;margin-right:1px}
+.tbl.rev .mk.up{color:var(--up)} .tbl.rev .mk.down{color:var(--down)}
+.tbl.rev .mk.none{color:var(--line2);font-size:12px;font-weight:400;letter-spacing:0}
+.tbl.rev .mk[title]{cursor:help}
+.tbl.rev td small{display:block;margin-top:3px;font-size:10px;color:var(--muted);
+  font-weight:500;letter-spacing:.02em}
+.tbl.rev tr.sum td{background:var(--panel2);border-top:1.5px solid var(--line2)}
+.calibsum{margin-top:10px;padding-top:10px;border-top:1px solid var(--line);font-size:12.5px;color:var(--ink2)}
+.calibsum b{color:var(--ink)}
+.calibsum em{font-style:normal;color:var(--guide);font-weight:600}
+/* 券商对照表 */
+.tbl.brk td{font-variant-numeric:tabular-nums}
+.tbl.brk td.num{text-align:right;white-space:nowrap}
+.tbl.brk th.num{text-align:right}
+.tbl.brk td small{display:block;font-size:12px;color:var(--muted);font-weight:500;margin-top:2px}
+.tbl.brk tr.top td{background:var(--panel2)}
+footer{border-top:1px solid var(--line);margin-top:60px;padding-top:18px;font-size:12px;color:var(--muted)}
+/* 图先行，方法按需展开；保留原有纸色与公司配色。 */
+header.top{padding:30px 0 18px}
+h1{font-size:28px}
+h2{font-size:21px;line-height:1.4;margin-bottom:8px}
+h3.subhead{font-size:16px;margin:28px 0 8px;scroll-margin-top:76px}
+.intro{color:var(--ink2);font-size:13px;margin:8px 0 0;max-width:75ch}
+.takeaway{font-size:13px;color:var(--ink2);margin:0 0 22px;max-width:75ch}
+.takeaway b{color:var(--ink)}
+.panel + .takeaway{margin-top:10px}
+.charthead{flex-wrap:wrap}
+.charthead .t{flex:1;font-size:15px;min-width:180px}
+.charthead .m{order:3;flex-basis:100%}
+.ex{flex-shrink:0}
+.chart-scroll,.table-scroll{overflow-x:auto;scrollbar-color:var(--line2) var(--panel)}
+.chart-scroll svg{min-width:1000px}
+.table-scroll .tbl{min-width:660px}
+details.method{border-top:1px solid var(--line);margin:14px 0 22px;color:var(--ink2);font-size:13px}
+summary{cursor:pointer;padding:12px 0;color:var(--ink2);font-weight:600}
+summary:hover{color:var(--actual)}
+details.method p,details.method li{max-width:75ch}
+details.method ul{padding-left:20px;margin:8px 0 16px}
+details.method li{margin:6px 0}
+details.method .grid2{margin:12px 0}
+.thesis .th{padding:0;border:0;border-radius:0;background:transparent;box-shadow:none}
+.hyp p{font-size:13px;color:var(--ink2);max-width:75ch}
+.hyp .hh{font-size:14px}
+.hyp .hn{background:var(--panel2);color:var(--ink2);border:1px solid var(--line2)}
+:focus-visible{outline:2px solid var(--actual);outline-offset:4px}
+::selection{background:var(--actual);color:var(--panel)}
+.chart-scroll:focus-visible,.table-scroll:focus-visible{outline-offset:-2px}
+@media(max-width:600px){
+  .wrap{padding:0 16px 48px}header.top{padding-top:24px}h1{font-size:24px}h2{font-size:19px}
+  nav.sticky .inner{padding:6px 0}nav a{padding:8px}.panel{padding:12px}
+  .chip,.seg button,.tbtn{min-height:40px}.ex{min-height:32px}
+  .charthead .t{font-size:14px}.lede{font-size:13px}.sn{flex-shrink:0}
+  .chart-scroll::before{content:'左右滑动查看完整图表';display:block;position:sticky;left:0;
+    padding:8px 0;font-size:12px;color:var(--muted)}
+}
+</style>
+
+<style id="site-topbar-style">
+  /* 由 build 注入：统一顶栏。固定定位 + html padding，避免影响原页面 body 布局。 */
+  html { padding-top: 42px !important; }
+  #site-topbar {
+    position: fixed; inset: 0 0 auto 0; z-index: 2147483000;
+    height: 42px; display: flex; align-items: center; gap: 10px;
+    padding: 0 14px;
+    font: 500 12.5px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+          "Noto Sans SC", "Microsoft YaHei", sans-serif;
+    background: #f7f5f0; color: #4b4437; border-bottom: 1px solid #e6ddc9;
+    box-shadow: 0 1px 3px rgba(0,0,0,.05);
+    -webkit-font-smoothing: antialiased;
+  }
+  #site-topbar[data-tone="dark"] {
+    background: #12161c; color: #c3cedb; border-bottom-color: #232b36;
+    box-shadow: 0 1px 3px rgba(0,0,0,.4);
+  }
+  #site-topbar a { color: inherit; text-decoration: none; opacity: .82; }
+  #site-topbar a:hover { opacity: 1; text-decoration: underline; text-underline-offset: 3px; }
+  #site-topbar .stb-home { font-weight: 700; }
+  #site-topbar .stb-sep { opacity: .32; }
+  #site-topbar .stb-title { font-weight: 650; opacity: 1;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  #site-topbar .stb-spacer { flex: 1 1 auto; }
+  #site-topbar .stb-asof { opacity: .62; font-variant-numeric: tabular-nums;
+    font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 11.5px; white-space: nowrap; }
+  #site-topbar .stb-btn {
+    font: inherit; font-size: 11.5px; cursor: pointer;
+    background: transparent; color: inherit; opacity: .7;
+    border: 1px solid currentColor; border-bottom-color: transparent;
+    border-radius: 5px; padding: 1px 8px; line-height: 1.55;
+  }
+  #site-topbar .stb-btn:hover { opacity: 1; }
+  #site-topbar .stb-btn:disabled { opacity: .3; cursor: default; }
+  /* 页面自带的吸顶表头要让开顶栏 */
+  thead th { top: 42px !important; }
+  @media (max-width: 720px) {
+    #site-topbar .stb-asof, #site-topbar .stb-group { display: none; }
+  }
+  @media print { #site-topbar { display: none; } html { padding-top: 0 !important; } }
+</style>
+</head>
+<body><div id="site-topbar" data-tone="light"><a class="stb-home" href="../../index.html">← 研究入口</a><span class="stb-sep">/</span><a class="stb-group" href="../../research/ai-chain/index.html">AI 产业链</a><span class="stb-sep">/</span><span class="stb-title">AI 资本开支 · 指引追踪</span><span class="stb-spacer"></span><span class="stb-asof">数据截至 2026-10-29</span></div>
+<div class="wrap">
+
+<header class="top">
+  <h1>AI 资本开支：过去的扩张，未来的边界</h1>
+  <p class="sub">北美云厂 Capex 指引追踪 · <b>数据截止 2026-10-29</b> · 金额单位：十亿美元（bn）</p>
+  <p class="intro">以 MSFT、GOOGL、AMZN、META 的资本开支观察 AI 投资周期；这些是公司总 Capex，<b>不等于纯 AI 支出</b>。</p>
+</header>
+
+<nav class="sticky" aria-label="章节导航"><div class="inner">
+  <a href="#s-year">① 年度总览</a>
+  <a href="#s-orbit">② 公司拆解</a>
+  <a href="#s-fcf">③ 现金流约束</a>
+  <a href="#s-outlook">④ 前景与验证</a>
+  <a href="#s-events">证据附录</a>
+  <span class="spacer"></span>
+  <button class="tbtn" id="theme">深色</button>
+</div></nav>
+
+<section id="s-year">
+  <h2><span class="sn">1</span>总览：投入有多大，预期如何变化</h2>
+  <p class="lede">2026 年四家指引合计 <b>730 bn</b>；未来路径分歧仍大，年内上修也并非所有公司同步。</p>
+  <div class="panel">
+    <div class="charthead"><span class="t">图 A｜从历史支出，到未来两年的可能路径</span>
+      <span class="m">四家合计 · 柱上为同比 · 浅色为指引隐含余量 · 斜纹为本页外推</span></div>
+    <div id="yearHost" class="chart-scroll" tabindex="0" role="region" aria-label="年度合计图，窄屏可横向滚动"></div>
+  </div>
+  <p class="takeaway"><b>当年看兑现，远期看情景。</b>2026 已披露支出 511.7 bn（AMZN 仅含两季）；2027–2028 不是公司指引。2028 仅一家机构的两条预测，窄须线不代表更确定。</p>
+
+  <div class="panel">
+    <div class="charthead"><span class="t">图 B｜同一目标年的预算，被上调了多少？</span>
+      <span class="m">固定可比公司组：GOOGL / AMZN / META · 不把新增覆盖公司计作上修</span></div>
+    <div id="vintageHost" class="chart-scroll" tabindex="0" role="region" aria-label="可比公司组指引修订图，窄屏可横向滚动"></div>
+  </div>
+  <p class="takeaway"><b>上修仍在，力度有所分化。</b>同公司组的年内增幅：2025 为 +18.8%，2026 为 +10.9%。四家金额齐备后，2026 合计由 4 月的 710 增至 730（+2.8%）。</p>
+  <details class="method">
+    <summary>计算方法与可比性</summary>
+    <ul>
+      <li>图 A：2023 / 2024 / 2025 是全年实际（2023 为 AI 周期前的基线年，四家仅 MSFT / META 有含租赁的公司口径）；2026 按各公司指引中值汇总，深色为已披露实际，浅色为隐含余量。AMZN 已披露 175.8 bn，仅含 Q1–Q2。</li>
+      <li>图 A 的年度支出采用公司披露口径，租赁处理并不完全一致；不包含 ORCL / CRWV，详见<a href="#s-basis">口径附录</a>。</li>
+      <li>2027 外推 = 730 × (1 + 44%) ≈ 1,051 bn；2028 在 2027 外推基数上继续增长。须线只是各预测增速代入同一基数所得的范围，不是置信区间；<a href="#s-outlook">样本与分歧见第四章</a>。</li>
+      <li>图 B 固定采用两个目标年、所有观察时点均有金额的公司组。MSFT 在 2025 全年和 2026 年初缺少年度金额，因此不进入可比柱；2026 年 4 月起的四家合计另在图下说明。</li>
+      <li>“年初首次 / Q1 财报季 / Q2 财报季 / 最近一次”是各目标年的观察时点；只使用当时已披露的指引，不以后来的数倒填。</li>
+    </ul>
+  </details>
+</section>
+
+<section id="s-orbit">
+  <h2><span class="sn">2</span>拆解：谁在推动扩张，何时兑现</h2>
+  <p class="lede">先看实际支出，再看管理层如何调整全年预算。同样的总量增长，可能对应不同的交付节奏。</p>
+  <h3 class="subhead">实际支出：年度预算如何在季度间兑现？</h3>
+  <div class="seg" id="orbitViewSeg">
+    <button data-view="q" aria-pressed="true">季度粒度</button>
+    <button data-view="y" aria-pressed="false">年度粒度</button>
+  </div>
+  <p class="q" id="orbitViewHint">柱＝季度实际　带＝年度指引 ÷ 4（均值参考，并非季度承诺）</p>
+  <div class="grid2" id="orbitGrid"></div>
+  <p class="takeaway" style="margin-top:10px"><b>关注兑现，而非只看预算。</b>META 当前指引隐含 Q4 支出 49–59 bn；MSFT 的交付延迟能否在下一季补回，是另一项观察重点。</p>
+  <details class="method">
+    <summary>读图方法与公司级观察</summary>
+    <ul>
+      <li>浅色带为当时年度指引 ÷ 4，只是均匀支出的参考，不是公司承诺的季度预算。柱高于或低于带，不足以单独证明未来一定上修或下修。</li>
+      <li>仅给下限时画点线；没有金额指引时不画带。MSFT 早期财年指引多为定性语言，不折算成金额。</li>
+      <li>年度模式：柱为已披露季度合计，箭头为首次至末次指引中值；未齐备年度用斜纹和 YTD 标记，不当作全年实际。</li>
+      <li>META 2026 前三季合计 85.8 bn，后续观察 Q4 能否兑现指引隐含余量。</li>
+      <li>AMZN 2026 前三季合计 175.8 bn（含租赁口径），其中 Q3 单季 77.4（公司口径 cash CapEx 75.9，卖方预期 58.7）。按 ≈220 的指引反推，Q4 只剩 44.2——比 Q3 低 43%，年末超出指引的概率高于不及。</li>
+      <li>MSFT 同场给出下一季 &gt;50 bn 的门槛，暂将 3P 延迟视为节奏问题；若 FY27Q2 未达门槛且继续延期，应重新评估供应与需求两端，不能仅凭延期断言需求转弱。</li>
+    </ul>
+  </details>
+  <details class="method">
+    <summary>附表：ORCL / CRWV 的支出节奏（不计入四家合计）</summary>
+    <p>财年与 Capex 定义不同，以下仅单独观察，不与四家直接相加；粒度跟随上方切换。</p>
+    <div class="grid2" id="appendixGrid"></div>
+  </details>
+
+  <h3 class="subhead" id="s-trail">管理层指引：哪些公司仍在上调？</h3>
+  <p class="q">线为年度金额指引中值，竖线为区间；悬停查看目标年，点击公司名显示或隐藏。</p>
+  <div class="chips" id="trailChips"></div>
+  <div class="panel">
+    <div class="charthead"><span class="t">各公司年度指引的修订轨迹</span><span class="m">单位：十亿美元 · 不同目标年的金额须分别解读</span></div>
+    <div id="trailHost" class="chart-scroll" tabindex="0" role="region" aria-label="公司指引轨迹，窄屏可横向滚动"></div>
+  </div>
+  <p class="takeaway"><b>总量上修不等于全面上修。</b>2026 年 4 月以来，MSFT 下调与其余三家上调部分抵消；原因需回到电话会原文查证。</p>
+  <details class="method">
+    <summary>展开修订次数、历史偏差与统计规则</summary>
+    <div id="revHost" class="table-scroll" tabindex="0" role="region" aria-label="指引修订次数表"></div>
+  </details>
+</section>
+
+<section id="s-fcf">
+  <h2><span class="sn">3</span>约束：这样的投入能持续多久</h2>
+  <p class="lede">先看四家剩余现金，再看压力集中在哪些公司。现金流不足是约束信号，但不等于投资会立即收缩。</p>
+
+  <div class="seg" id="fcfViewSeg">
+    <button data-view="q" aria-pressed="true">季度粒度</button>
+    <button data-view="y" aria-pressed="false">年度粒度</button>
+  </div>
+  <span style="font-size:12px;color:var(--muted)" id="fcfViewHint">柱＝含融资租赁的 capex　线＝经营现金流 − 现金 capex</span>
+
+  <div class="panel" style="margin-bottom:16px">
+    <div class="charthead"><span class="t">四家合计：资本开支（柱，含租赁）与自由现金流（线）</span>
+      <span class="m">柱上数字 = 同比增速</span></div>
+    <div id="aggFcfHost" class="chart-scroll" tabindex="0" role="region" aria-label="资本开支与自由现金流，窄屏可横向滚动"></div>
+  </div>
+
+  <div class="panel">
+    <div class="charthead"><span class="t">分家：资本开支 ÷ 经营现金流（自我造血覆盖）</span>
+      <span class="m">现金 Capex / OCF · 红色虚线为 100% · ORCL 单列为虚线，财季不同</span></div>
+    <div class="chips" id="fcfChips" style="margin:8px 0 4px"></div>
+    <div id="fcfLineHost" class="chart-scroll" tabindex="0" role="region" aria-label="现金资本开支覆盖率，窄屏可横向滚动"></div>
+  </div>
+
+  <p class="takeaway" style="margin-top:10px"><b>观察压力是否持续、是否扩散。</b>FCF 为负表示当期经营现金流不足以覆盖现金资本开支，缺口可由存量现金、融资或其他资金来源补足。</p>
+  <details class="method">
+    <summary>现金流定义、租赁差异与 ORCL 的比较边界</summary>
+    <ul>
+      <li>FCF = 经营现金流（OCF）− 现金 Capex。合计柱采用含租赁的公司口径，线采用现金口径，二者距离不是融资约束的直接指标。</li>
+      <li>比值图统一采用现金 Capex / OCF；OCF 为正时，100% 对应现金口径 FCF 为零。OCF 非正或缺失时不画比值，不能据此判断没有压力。</li>
+      <li>不用 FCF 作分母，因为它可能穿零或变号。年度模式只展示四季齐备的年份，不把未齐备年度当作全年。</li>
+      <li>MSFT 的新增融资租赁资产与 META 的租赁本金偿付不是同一概念。柱上提示框提供口径差额；扣除含租赁 Capex 后的余额只是补充观察，不是标准 FCF 或当期现金融资缺口。</li>
+      <li>ORCL 财年 5 月止，图中季度标签对应其财季，不能直接视为同一自然季；仅比较比值，不纳入总量。超过轴上限的点以顶格三角表示，真实数值见提示框。</li>
+    </ul>
+  </details>
+</section>
+
+<section id="s-outlook">
+  <h2><span class="sn">4</span>前景：分歧在哪里，接下来验证什么</h2>
+  <p class="lede">未来不只是一根更高的柱子。总量、价格与采购量、资金约束，决定这轮扩张能走多远。</p>
+  <h3 class="subhead">未来还能增长多少？</h3>
+  <p class="takeaway">2027 增速样本为 <b>+10.7% 至 +54%</b>，共 4 条预测，并非 4 家独立机构。报告日期、公司篮子和租赁口径不同，不能当作同一时点的严格共识。</p>
+  <div class="panel">
+    <div class="charthead"><span class="t">券商对照｜不同覆盖范围下的增长预期</span><span class="m">金额：十亿美元 · 日期与覆盖范围是比较的一部分</span></div>
+    <div class="table-scroll" tabindex="0" role="region" aria-label="券商预测对照表">
+      <table class="tbl brk">
+        <thead><tr><th style="width:14%">机构 / 日期</th><th style="width:14%">覆盖篮子 / 口径</th>
+          <th class="num" style="width:6%">2026</th><th class="num" style="width:6%">2027</th><th class="num" style="width:6%">2028</th>
+          <th class="num" style="width:8%">2027 增速</th><th style="width:46%">报告与出处</th></tr></thead>
+        <tbody><tr class="top"><td><b>高盛（共识 / FactSet）</b><small>2026-09-24</small></td><td>hyperscaler（≈ 四家 + ORCL）<small>capex 共识中值</small></td><td class="num">806</td><td class="num">1,104</td><td class="num">1,281</td><td class="num"><b>+37%</b></td><td style="color:var(--muted);font-size:12px">《US Equity Views：AI capex, required revenues, and what's priced in the AI trade》p.3 Exhibit 2/3</td></tr><tr><td><b>高盛（自家预测）</b><small>2026-09-24</small></td><td>hyperscaler（≈ 四家 + ORCL）<small>GS equity research 预测</small></td><td class="num">—</td><td class="num">1,234</td><td class="num">1,381</td><td class="num"><b>+54%</b></td><td style="color:var(--muted);font-size:12px">《US Equity Views：AI capex, required revenues, and what's priced in the AI trade》p.3（2027 = 1,104 + 130；2028 = 1,281 + 100）</td></tr><tr><td><b>大摩（自家 MSe）</b><small>2026-08-03</small></td><td>Top 14 全球 CSP<small>cloud cash capex</small></td><td class="num">—</td><td class="num">1,400</td><td class="num">—</td><td class="num"><b>+51%</b></td><td style="color:var(--muted);font-size:12px">《Global Cloud Capex Tracker：Spending Acceleration Continues》p.1（原文写作 $1.4T、+51%）</td></tr><tr><td><b>瑞银 UBS</b><small>2026-02-10</small></td><td>Top hyperscalers（11 家以上）<small>total hyperscale capex</small></td><td class="num">827</td><td class="num">915</td><td class="num">—</td><td class="num"><b>+10.7%</b></td><td style="color:var(--muted);font-size:12px">《Global IO Hardware：Memory's inflationary impact on cloud capex; deflationary impact on ODM/brand margins》p.1/p.6 Figure 10</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+  <details class="method">
+    <summary>外推方法、样本限制与来源</summary>
+    <ul>
+      <li>2027 以四家 2026 指引合计 730 bn 为基数，乘以样本增速中位数 +44%，得到约 1,051 bn；将更宽公司篮子的增速移用于四家，是情景假设，不是四家一致预期。</li>
+      <li>2028 在 2027 中位情景的基数上，代入 2 条 2028 增速的中位数 +14%（高盛）；须线不累计 2027 的区间不确定性，也不代表概率分布。</li>
+      <li>报告日期从 2026-02-10 至 2026-09-24 不等，共识与机构自家预测可能相关；不能把全部差异归因于观点。</li>
+      <li>共识只保留一条（券商转引的 FactSet 快照，窗口与统计量未披露，默认口径为 100 日窗口、算术均值）；各家自家预测与共识不同源，同权进中位数是简化，不是加权共识；第三方聚合共识（MarketScreener）与第二家券商共识均已移出表，理由见 notes。</li>
+      <li>“—”表示未披露。优先采用原文增速，反推或计算值在出处栏标明；表内「出处」给出报告标题与页码，逐页原文摘录在 <code>reports_md/</code>（索引见 <code>reports_md/README.md</code>）。</li>
+      <li>读表规则（来自 <code>data/annual_forward.json</code> 的 read_rule）：三条规则：①共识只保留一份（高盛 2026-09-24 引用的 FactSet 快照），不并列第二家共识或第三方聚合共识——同一时点不同篮子引出的「共识」差 100 以上，并列会被读成观点分歧；②其余行一律是各家自家预测，与共识不同源，同权参与中位数是简化；③篮子不同 → 只比 growth，不比 levels；UBS 的 levels 明显更大不是因为它更乐观，它的 Top hyperscalers 覆盖 11 家以上。</li>
+    </ul>
+  </details>
+
+  <h3 class="subhead">金额增长，是否意味着设备需求同步增长？</h3>
+  <p class="takeaway"><b>Capex 增长不能直接等同于算力或光模块需求增长。</b>元器件涨价会抬高预算；采购量、设备结构与交付时间，还需要容量和订单证据验证。</p>
+  <details class="method">
+    <summary>价格与数量：现有证据如何解读</summary>
+    <ul>
+      <li>现有电话会记录中，AMZN / META / MSFT 对部分预算变化提到内存或元器件涨价。它解释的是部分金额增量，不能机械推导成全部设备的采购量变化。</li>
+      <li>瑞银《Global IO Hardware：Memory's inflationary impact on cloud capex》（2026-02-10）p.6 的情景测算认为，2027 内存涨价贡献可超过预算净增量（111%）；这是该报告的估计，不是已发生的事实，也不能直接套到四家总量。</li>
+      <li>后续优先核对交付容量、设备采购与网络升级计划；若只有金额上调、缺乏数量信息，应保留判断。</li>
+    </ul>
+  </details>
+
+  <div class="thesis"><div class="th"><h3>增速：过去、预期，以及最近一次上修 <span class="tag">既定事实</span></h3><div class="body"><p>GS 共识口径（篮子含 ORCL）的年度资本开支：237 → 412 → 806 → 1,104 → 1,281（十亿美元）。</p><ul class="tlist"><li>过去：2024 +54%、2025 +73%，两年连续抬升</li><li>预期：2026 +96% 见顶，2027 +37%、2028 +16%——放缓已经在共识里，不是意外</li><li>上修轨迹：2026 年增速的预期年初只有 +36%，一路抬到 +96%；2027 共识自 Q2 财报季以来又加了约 1,750 亿美元（$929B → $1,104B）</li><li>最近一季的方向：MSFT 170（下调）、GOOGL 200（重申）、AMZN 220（重申）、META 140（收窄），即 1 家下调、1 家收窄、2 家重申——上修集中在 2026 上半年到 9 月，10 月这季没有再普遍上调</li><li>已实现的部分：四家 2026 指引合计 730、年内已实现 512（十亿美元，占全年指引 70%）；2026Q3 单季同比 +108%，仍在高位</li></ul></div></div>
+<div class="th"><h3>收入：需要的与已有的 <span class="tag">高盛《US Equity Views》2026-09-24</span></h3><div class="body"><p>高盛以 2026-2027 年均 capex（约 9,500 亿美元）为基数，反推这轮投入需要多少收入；再往上叠应用层需要的收入。</p><ul class="tlist"><li>云厂商保本：只覆盖折旧与运营费用，年收入需约 3,080 亿美元</li><li>云厂商 20% ROIC：年收入需约 5,260 亿美元（10%、30% ROIC 分别 4,170、6,360 亿）</li><li>应用层：要撑起 30% EBIT 与云厂商 10%-20% ROIC，年收入需 1.3-1.5 万亿美元；其中假设算力占应用层运营费用的 75%，高盛自己标为弱假设</li><li>已有的云收入：超出 AI 前趋势的年化收入，2025 年约 390 亿美元，2026Q2 约 670 亿美元，近几个季度大致翻倍</li><li>已有的订单：AMZN / GOOGL / MSFT 积压订单合计 1.7 万亿美元；按 AI 前趋势扣掉常规部分后约 1 万亿（这一拆分是自算，非公司披露）</li><li>对照池子：2026 年全球广告支出 1.5 万亿 + 软件支出 1.5 万亿，合计约 3 万亿美元</li></ul><p>对比：现有 <strong>670 亿</strong>超额年化收入约为 20% ROIC 门槛（<strong>5,260 亿</strong>）的八分之一；1 万亿积压订单约为应用层 1.3-1.5 万亿需求的六到七成。</p></div></div></div>
+</section>
+
+<section id="s-events">
+  <h2>附录：原始证据与统计口径</h2>
+  <p class="q">96 条事件，按时间倒序；保留原话、说话人与来源链接。<a href="#s-basis">跳至公司口径</a></p>
+  <details class="method">
+    <summary>查阅电话会原文与事件明细</summary>
+    <div class="chips" id="evChips"></div>
+    <div class="table-scroll" style="max-height:720px;overflow:auto" tabindex="0" role="region" aria-label="电话会事件明细"><div id="evHost"></div></div>
+  </details>
+</section>
+
+<section id="s-basis">
+  <h3 class="subhead">公司口径与边界</h3>
+  <p class="q">公司披露的 Capex 定义并不完全一致；四家合计也不是统一会计口径下的纯 AI 支出。</p>
+  <details class="method">
+    <summary>查阅六家公司定义与引用纪律</summary>
+    <div class="table-scroll" tabindex="0" role="region" aria-label="公司资本开支定义">
+      <table class="tbl"><thead><tr><th style="width:90px">公司</th><th>口径</th></tr></thead>
+      <tbody><tr><td><b>MSFT</b></td><td>公司电话会口径 = capex including finance leases（比现金流口径每年高约 20bn）；本库 norm_usd_bn 一律指该口径</td></tr><tr><td><b>AMZN</b></td><td>2024 年公司用 capital investments（= cash capex + 设备融资租赁）；2025 年起改用 cash CapEx（= purchases of PP&E − 处置/激励回款）。两者差 1–3bn/年</td></tr><tr><td><b>GOOGL</b></td><td>purchases of property and equipment（现金口径）；第三方容量桥接属费用不入 capex；2026 年起含 Intersect 并购相关投资</td></tr><tr><td><b>META</b></td><td>capex including principal payments on finance leases（自 2025Q1 起在指引句中明写）；2026 年起 Hyperion/Blue Owl 合资的建设成本不再进 capex，记入 other investing</td></tr><tr><td><b>ORCL</b></td><td>财年 5 月止（FY26=2025-06~2026-05）；现金口径 gross capex，不含土地/建筑；2026-06 起另设 net cash outlay（扣客户预付 20–25bn），跨期不可直接比</td></tr><tr><td><b>CRWV</b></td><td>公司口径 = additions to P&E **including assets acquired under finance leases, less changes in construction in progress**（含融资租赁、扣 CIP 增量）→ CIP 一动 capex 剧烈变形；公司**从不给** capex 强度(%)或 $/MW 指引，所有 % 与 $/MW 皆为外部推算；另有 backlog/RPO 与 MW 两类非金额指标族，与四家超大厂不可相加、不可同轴比较</td></tr></tbody></table>
+    </div>
+  <div class="note">
+    <b>三条纪律</b>
+    <ul>
+      <li><b>时点纪律</b>：每格只反映当时能拿到的东西，不用后续修正值倒填。</li>
+      <li><b>口径纪律</b>：MSFT / META 的租赁处理不同，AMZN 指引定义随年份变化，以公司行及原文为准；ORCL / CRWV 不直接并入四家合计。</li>
+      <li><b>定性纪律</b>：定性增长表述不折算成金额；外推必须标明本页情景假设。</li>
+    </ul>
+  </div>
+  </details>
+</section>
+
+<footer>
+  生成：<code>python build/build_all.py</code> · 数据：<code>data/capex_guidance.json</code>
+  · 底稿：<code>data/raw/*.md</code> · 长表：<code>docs/01_指引演变长表.md</code>
+</footer>
+</div>
+
+<script>const DATA = {"meta":{"cutoff":"2026-10-29","title":"北美云厂资本开支指引演变（point-in-time）","quarters":["2023Q1","2023Q2","2023Q3","2023Q4","2024Q1","2024Q2","2024Q3","2024Q4","2025Q1","2025Q2","2025Q3","2025Q4","2026Q1","2026Q2","2026Q3"],"years":[2023,2024,2025,2026],"main":["MSFT","GOOGL","AMZN","META"],"appendix":["ORCL","CRWV"],"basis":{"MSFT":"公司电话会口径 = capex including finance leases（比现金流口径每年高约 20bn）；本库 norm_usd_bn 一律指该口径","AMZN":"2024 年公司用 capital investments（= cash capex + 设备融资租赁）；2025 年起改用 cash CapEx（= purchases of PP&E − 处置/激励回款）。两者差 1–3bn/年","GOOGL":"purchases of property and equipment（现金口径）；第三方容量桥接属费用不入 capex；2026 年起含 Intersect 并购相关投资","META":"capex including principal payments on finance leases（自 2025Q1 起在指引句中明写）；2026 年起 Hyperion/Blue Owl 合资的建设成本不再进 capex，记入 other investing","ORCL":"财年 5 月止（FY26=2025-06~2026-05）；现金口径 gross capex，不含土地/建筑；2026-06 起另设 net cash outlay（扣客户预付 20–25bn），跨期不可直接比","CRWV":"公司口径 = additions to P&E **including assets acquired under finance leases, less changes in construction in progress**（含融资租赁、扣 CIP 增量）→ CIP 一动 capex 剧烈变形；公司**从不给** capex 强度(%)或 $/MW 指引，所有 % 与 $/MW 皆为外部推算；另有 backlog/RPO 与 MW 两类非金额指标族，与四家超大厂不可相加、不可同轴比较"},"scope_note":"本文件只记录『那一次财报电话会上当时说的话』，绝不倒填。实际值另见 actuals 段。CRWV 与四家超大厂口径不可比，单独隔离。"},"series":{"MSFT":[{"q":"2023Q1","label":"23Q1","actual":7.8,"report":"2023-04-25","guide":null},{"q":"2023Q2","label":"23Q2","actual":10.7,"report":"2023-07-25","guide":null},{"q":"2023Q3","label":"23Q3","actual":11.2,"report":"2023-10-24","guide":{"text":"定性✚ (FY24)","target":"FY24","date":"2023-07-25","mid":null,"lo":null,"hi":null,"dir":"new","ttype":"fiscal_year","qual":"FY24 首次表态：逐季上升（increase sequentially each quarter through the year）；仍无美元数","verbatim":"To support our Microsoft Cloud growth and demand for our AI platform, we will accelerate investment in our cloud infrastructure. We expect capital expenditures to increase sequentially each quarter through the year as we scale to meet demand signals.","speaker":"Amy Hood","url":"https://www.microsoft.com/en-us/investor/events/fy-2023/earnings-fy-2023-q4"}},{"q":"2023Q4","label":"23Q4","actual":11.5,"report":"2024-01-30","guide":{"text":"定性✚ (FY24)","target":"FY24","date":"2023-07-25","mid":null,"lo":null,"hi":null,"dir":"new","ttype":"fiscal_year","qual":"FY24 首次表态：逐季上升（increase sequentially each quarter through the year）；仍无美元数","verbatim":"To support our Microsoft Cloud growth and demand for our AI platform, we will accelerate investment in our cloud infrastructure. We expect capital expenditures to increase sequentially each quarter through the year as we scale to meet demand signals.","speaker":"Amy Hood","url":"https://www.microsoft.com/en-us/investor/events/fy-2023/earnings-fy-2023-q4"}},{"q":"2024Q1","label":"24Q1","actual":14.0,"report":"2024-04-25","guide":{"text":"定性✚ (FY24)","target":"FY24","date":"2023-07-25","mid":null,"lo":null,"hi":null,"dir":"new","ttype":"fiscal_year","qual":"FY24 首次表态：逐季上升（increase sequentially each quarter through the year）；仍无美元数","verbatim":"To support our Microsoft Cloud growth and demand for our AI platform, we will accelerate investment in our cloud infrastructure. We expect capital expenditures to increase sequentially each quarter through the year as we scale to meet demand signals.","speaker":"Amy Hood","url":"https://www.microsoft.com/en-us/investor/events/fy-2023/earnings-fy-2023-q4"}},{"q":"2024Q2","label":"24Q2","actual":19.0,"report":"2024-07-30","guide":{"text":"定性✚ (FY25)","target":"FY25","date":"2024-04-25","mid":null,"lo":null,"hi":null,"dir":"new","ttype":"fiscal_year","qual":"FY25 > FY24，无幅度","verbatim":"We expect capital expenditures to increase materially on a sequential basis driven by cloud and AI infrastructure investments. ... we expect FY25 capital expenditures to be higher than FY24.","speaker":"Amy Hood","url":"https://www.microsoft.com/en-us/investor/events/fy-2024/earnings-fy-2024-q3"}},{"q":"2024Q3","label":"24Q3","actual":20.0,"report":"2024-10-30","guide":{"text":"定性= (FY25)","target":"FY25","date":"2024-07-30","mid":null,"lo":null,"hi":null,"dir":"reaffirmed","ttype":"fiscal_year","qual":"环比上升但删去 materially；FY25 > FY24","verbatim":"We expect capital expenditures to increase on a sequential basis given our cloud and AI demand, as well as existing AI capacity constraints. ... we will scale our infrastructure investments with FY25 capital expenditures expected to be higher than FY24.","speaker":"Amy Hood","url":"https://www.microsoft.com/en-us/investor/events/fy-2024/earnings-fy-2024-q4"}},{"q":"2024Q4","label":"24Q4","actual":22.6,"report":"2025-01-29","guide":{"text":"定性= (FY25)","target":"FY25","date":"2024-07-30","mid":null,"lo":null,"hi":null,"dir":"reaffirmed","ttype":"fiscal_year","qual":"环比上升但删去 materially；FY25 > FY24","verbatim":"We expect capital expenditures to increase on a sequential basis given our cloud and AI demand, as well as existing AI capacity constraints. ... we will scale our infrastructure investments with FY25 capital expenditures expected to be higher than FY24.","speaker":"Amy Hood","url":"https://www.microsoft.com/en-us/investor/events/fy-2024/earnings-fy-2024-q4"}},{"q":"2025Q1","label":"25Q1","actual":21.4,"report":"2025-04-30","guide":{"text":"定性↓ (FY26)","target":"FY26","date":"2025-01-29","mid":null,"lo":null,"hi":null,"dir":"lowered","ttype":"fiscal_year","qual":"Q3/Q4 持平于 Q2（≈22.6）；FY26 增速 < FY25","verbatim":"We expect quarterly spend in Q3 and Q4 to remain at similar levels as our Q2 spend. ... In FY26, we expect to continue investing against strong demand signals ... However, the growth rate will be lower than FY25 and the mix of spend will begin to shift back to short-lived assets.","speaker":"Amy Hood","url":"https://www.microsoft.com/en-us/investor/events/fy-2025/earnings-fy-2025-q2"}},{"q":"2025Q2","label":"25Q2","actual":24.2,"report":"2025-07-30","guide":{"text":"定性= (FY26)","target":"FY26","date":"2025-04-30","mid":null,"lo":null,"hi":null,"dir":"reaffirmed","ttype":"fiscal_year","qual":"Q4 环比上升但 H2 合计不变；FY26 增速 < FY25 维持","verbatim":"We expect Q4 capital expenditures to increase on a sequential basis. H2 capex in total remains unchanged from our January H2 guidance. ... We expect capex to grow, it will grow at a lower rate than FY25.","speaker":"Amy Hood","url":"https://www.microsoft.com/en-us/investor/events/fy-2025/earnings-fy-2025-q3"}},{"q":"2025Q3","label":"25Q3","actual":34.9,"report":"2025-10-29","guide":{"text":"定性= (FY26)","target":"FY26","date":"2025-04-30","mid":null,"lo":null,"hi":null,"dir":"reaffirmed","ttype":"fiscal_year","qual":"Q4 环比上升但 H2 合计不变；FY26 增速 < FY25 维持","verbatim":"We expect Q4 capital expenditures to increase on a sequential basis. H2 capex in total remains unchanged from our January H2 guidance. ... We expect capex to grow, it will grow at a lower rate than FY25.","speaker":"Amy Hood","url":"https://www.microsoft.com/en-us/investor/events/fy-2025/earnings-fy-2025-q3"}},{"q":"2025Q4","label":"25Q4","actual":37.5,"report":"2026-01-28","guide":{"text":"定性↑ (FY26)","target":"FY26","date":"2025-10-29","mid":null,"lo":null,"hi":null,"dir":"raised","ttype":"fiscal_year","qual":"FY26 增速由『低于 FY25』上修为『高于 FY25』","verbatim":"With accelerating demand and a growing RPO balance, we're increasing our spend on GPUs and CPUs. Therefore, total spend will increase sequentially, and we now expect the FY26 growth rate to be higher than FY25.","speaker":"Amy Hood","url":"https://www.microsoft.com/en-us/investor/events/fy-2026/earnings-fy-2026-q1"}},{"q":"2026Q1","label":"26Q1","actual":31.9,"report":"2026-04-29","guide":{"text":"定性↑ (FY26)","target":"FY26","date":"2025-10-29","mid":null,"lo":null,"hi":null,"dir":"raised","ttype":"fiscal_year","qual":"FY26 增速由『低于 FY25』上修为『高于 FY25』","verbatim":"With accelerating demand and a growing RPO balance, we're increasing our spend on GPUs and CPUs. Therefore, total spend will increase sequentially, and we now expect the FY26 growth rate to be higher than FY25.","speaker":"Amy Hood","url":"https://www.microsoft.com/en-us/investor/events/fy-2026/earnings-fy-2026-q1"}},{"q":"2026Q2","label":"26Q2","actual":41.0,"report":"2026-07-29","guide":{"text":"≈190 (2026)","target":"2026","date":"2026-04-29","mid":190.0,"lo":null,"hi":null,"dir":"new","ttype":"calendar_year","qual":"首次给日历年美元数，含约 25bn 涨价","verbatim":"For calendar year 2026, we expect to invest roughly $190 billion in capital expenditures which includes approximately $25 billion from the impact of higher component pricing.","speaker":"Amy Hood","url":"https://www.microsoft.com/en-us/investor/events/fy-2026/earnings-fy-2026-q3"}},{"q":"2026Q3","label":"26Q3","actual":45.2,"report":"2026-10-28","guide":{"text":"≈175 (2026)","target":"2026","date":"2026-07-29","mid":175.0,"lo":null,"hi":null,"dir":"lowered","ttype":"calendar_year","qual":"表面 190→175 下调，但公司明示『计划未变』= 口径下调非计划下调","verbatim":"Outside of this useful life impact, our calendar year 2026 CapEx investment expectations remain unchanged. However, the shift from finance to operating leases adjusts our expectation to approximately $175 billion.","speaker":"Amy Hood","url":"https://www.microsoft.com/en-us/investor/events/fy-2026/earnings-fy-2026-q4"}}],"GOOGL":[{"q":"2023Q1","label":"23Q1","actual":6.289,"report":"2023-04-25","guide":{"text":"定性✚ (FY2023)","target":"FY2023","date":"2023-02-02","mid":null,"lo":null,"hi":null,"dir":"new","ttype":"calendar_year","qual":"只说「大致与 2022 持平」（in line），结构上技术基础设施增、办公设施减；无美元数","verbatim":"For 2023, we expect total capex to be generally in line with 2022, with an increase in technical infrastructure versus a decline in office facilities. Our ongoing investment in technical infrastructure is obviously a critical component of supporting our long-term growth opportunities.","speaker":"Ruth Porat","url":"https://www.fool.com/earnings/call-transcripts/2023/02/02/alphabet-googl-q4-2022-earnings-call-transcript/"}},{"q":"2023Q2","label":"23Q2","actual":6.888,"report":"2023-07-25","guide":{"text":"定性↑ (FY2023)","target":"FY2023","date":"2023-04-25","mid":null,"lo":null,"hi":null,"dir":"raised","ttype":"calendar_year","qual":"由「持平」上修为「略高于 2022」，并预告 Q2 起逐季抬升——2023 年内唯一一次方向性上修","verbatim":"Finally, as it relates to CapEx, for 2023, we now expect total CapEx to be modestly higher than in 2022. As discussed last quarter, CapEx this year will include a meaningful increase in technical infrastructure versus a decline in office facilities. We expect the pace of investment in both data center construction and servers to step up in the second quarter and continue to increase throughout the year.","speaker":"Ruth Porat","url":"https://transcripts.platformaeronaut.com/transcripts/GOOG-1Q23-transcript"}},{"q":"2023Q3","label":"23Q3","actual":8.055,"report":"2023-10-24","guide":{"text":"定性= (FY2023)","target":"FY2023","date":"2023-07-25","mid":null,"lo":null,"hi":null,"dir":"reaffirmed","ttype":"calendar_year","qual":"Q2 环比抬升低于计划（办公设施交付变慢 + 数据中心建设延期），全年方向不变；首次把 2024 与 2023 绑在一起说「继续增长」","verbatim":"Finally, as it relates to CapEx, in Q2, the largest component was for servers, which included a meaningful increase in our investments in AI compute. The sequential step up in the second quarter was lower than anticipated for two reasons. First, with respect to office facilities, we continue to moderate the pace of fit outs and ground up construction to reflect the slower expected pace of headcount growth. Second, there were delays in certain data center construction projects. We expect elevated levels of investment in our technical infrastructure increasing through the back half of 2023 and continuing to grow in 2024.","speaker":"Ruth Porat","url":"https://transcripts.platformaeronaut.com/transcripts/GOOG-2Q23-transcript"}},{"q":"2023Q4","label":"23Q4","actual":11.019,"report":"2024-01-30","guide":{"text":"定性✚ (FY2024)","target":"FY2024","date":"2023-10-24","mid":null,"lo":null,"hi":null,"dir":"new","ttype":"calendar_year","qual":"FY2024 首次表态：全年高于 2023，Q4 环比继续升；FY2024 的美元数要到 2025-02-04 才给（≈750）","verbatim":"We continue to invest meaningfully in the technical infrastructure needed to support the opportunities we see in AI across Alphabet and expect elevated levels of investment, increasing in the fourth quarter of 2023 and continuing to grow in 2024.","speaker":"Ruth Porat","url":"https://transcripts.platformaeronaut.com/transcripts/GOOG-3Q23-transcript"}},{"q":"2024Q1","label":"24Q1","actual":12.0,"report":"2024-04-25","guide":{"text":"定性✚ (FY2024)","target":"FY2024","date":"2024-01-30","mid":null,"lo":null,"hi":null,"dir":"new","ttype":"calendar_year","qual":"『notably larger』，全程未给数字区间","verbatim":"In 2024, we expect investment in capex will be notably larger than in 2023. ... There was no one-time item in there.","speaker":"Ruth Porat","url":"https://www.fool.com/earnings/call-transcripts/2024/01/30/alphabet-googl-q4-2023-earnings-call-transcript/"}},{"q":"2024Q2","label":"24Q2","actual":13.2,"report":"2024-07-23","guide":{"text":"≥12 (2024)","target":"2024","date":"2024-04-25","mid":null,"lo":12.0,"hi":null,"dir":"new","ttype":"run_rate","qual":"≥12/季（隐含全年 ≥48）；对 2025 明确拒绝表态","verbatim":"we do expect the quarterly capex throughout the year to be roughly at or above the $12 billion cash capex we had here in Q1, keeping in mind that the timing of cash payments can cause variability.","speaker":"Ruth Porat","url":"https://www.fool.com/earnings/call-transcripts/2024/04/25/alphabet-googl-q1-2024-earnings-call-transcript/"}},{"q":"2024Q3","label":"24Q3","actual":13.1,"report":"2024-10-29","guide":{"text":"≥12 (2024)","target":"2024","date":"2024-07-23","mid":null,"lo":12.0,"hi":null,"dir":"reaffirmed","ttype":"run_rate","qual":"≥12/季，不变","verbatim":"we continue to expect quarterly capex throughout the year to be roughly at or above the Q1 capex of $12 billion.","speaker":"Ruth Porat","url":"https://www.fool.com/earnings/call-transcripts/2024/07/23/alphabet-googl-q2-2024-earnings-call-transcript/"}},{"q":"2024Q4","label":"24Q4","actual":14.3,"report":"2025-02-04","guide":{"text":"≥12 (2024)","target":"2024","date":"2024-07-23","mid":null,"lo":12.0,"hi":null,"dir":"reaffirmed","ttype":"run_rate","qual":"≥12/季，不变","verbatim":"we continue to expect quarterly capex throughout the year to be roughly at or above the Q1 capex of $12 billion.","speaker":"Ruth Porat","url":"https://www.fool.com/earnings/call-transcripts/2024/07/23/alphabet-googl-q2-2024-earnings-call-transcript/"}},{"q":"2025Q1","label":"25Q1","actual":17.2,"report":"2025-04-24","guide":{"text":"≈75 (FY2025)","target":"FY2025","date":"2025-02-04","mid":75.0,"lo":null,"hi":null,"dir":"new","ttype":"calendar_year","qual":"首次给全年具体金额","verbatim":"We expect to invest approximately $75 billion in capex in 2025, with approximately $16 billion to $18 billion of that in the first quarter.","speaker":"Anat Ashkenazi","url":"https://www.fool.com/earnings/call-transcripts/2025/02/05/alphabet-goog-q4-2024-earnings-call-transcript/"}},{"q":"2025Q2","label":"25Q2","actual":22.4,"report":"2025-07-23","guide":{"text":"≈75 (FY2025)","target":"FY2025","date":"2025-04-24","mid":75.0,"lo":null,"hi":null,"dir":"reaffirmed","ttype":"calendar_year","qual":"不变（still expect）","verbatim":"starting with our expectation for CapEx for the full year 2025, we still expect to invest approximately $75 billion in CapEx this year.","speaker":"Anat Ashkenazi","url":"https://transcripts.platformaeronaut.com/transcripts/GOOG-1Q25-transcript"}},{"q":"2025Q3","label":"25Q3","actual":23.95,"report":"2025-10-29","guide":{"text":"≈85 (FY2025)","target":"FY2025","date":"2025-07-23","mid":85.0,"lo":null,"hi":null,"dir":"raised","ttype":"calendar_year","qual":"+10（+13%）","verbatim":"given the strong demand for our cloud products and services, we now expect to invest approximately $85 billion in CapEx in 2025, up from a previous estimate of $75 billion. Our updated outlook reflects additional investment in servers, the timing of delivery of servers, and an acceleration in the pace of data center construction.","speaker":"Anat Ashkenazi","url":"https://www.fool.com/earnings/call-transcripts/2025/07/23/alphabet-googl-q2-2025-earnings-call-transcript/"}},{"q":"2025Q4","label":"25Q4","actual":27.9,"report":"2026-02-04","guide":{"text":"91–93 (FY2025)","target":"FY2025","date":"2025-10-29","mid":92.0,"lo":91.0,"hi":93.0,"dir":"raised","ttype":"calendar_year","qual":"中值 +7，形态由单点改为区间","verbatim":"We now expect CapEx to be in the range of $91 billion to $93 billion in 2025, up from our previous estimate of $85 billion, keeping in mind that the timing of cash payments can cause variability in the reported CapEx number.","speaker":"Anat Ashkenazi","url":"https://www.fool.com/earnings/call-transcripts/2025/10/30/alphabet-goog-q3-2025-earnings-call-transcript/"}},{"q":"2026Q1","label":"26Q1","actual":35.7,"report":"2026-04-29","guide":{"text":"175–185 (FY2026)","target":"FY2026","date":"2026-02-04","mid":180.0,"lo":175.0,"hi":185.0,"dir":"new","ttype":"calendar_year","qual":"FY2026 首个区间；年内逐季上行","verbatim":"For the full year 2026, we expect CapEx to be in the range of $175 billion to $185 billion, with investments ramping over the course of the year.","speaker":"Anat Ashkenazi","url":"https://transcripts.platformaeronaut.com/transcripts/GOOG-4Q25-transcript"}},{"q":"2026Q2","label":"26Q2","actual":44.9,"report":"2026-07-22","guide":{"text":"180–190 (FY2026)","target":"FY2026","date":"2026-04-29","mid":185.0,"lo":180.0,"hi":190.0,"dir":"raised","ttype":"calendar_year","qual":"中值 +5，但性质是并购口径并入，非纯有机上修","verbatim":"we are updating our full-year 2026 CapEx Guidance Range to $180 to $190 billion, up from our previous estimate of $175 to $185 billion, to now include investment related to the acquisition of Intersect, which closed in March.","speaker":"Anat Ashkenazi","url":"https://transcripts.platformaeronaut.com/transcripts/GOOG-1Q26-transcript"}},{"q":"2026Q3","label":"26Q3","actual":51.36,"report":"2026-10-28","guide":{"text":"195–205 (FY2026)","target":"FY2026","date":"2026-07-22","mid":200.0,"lo":195.0,"hi":205.0,"dir":"raised","ttype":"calendar_year","qual":"中值 +15，有机（容量交付加速）","verbatim":"we are updating our full-year 2026 CapEx guidance range to $195 to $205 billion, up from our previous estimate of $180 to $190 billion. The increase in the range is primarily due to an acceleration in the delivery of capacity to meet growing demand.","speaker":"Anat Ashkenazi","url":"https://transcripts.platformaeronaut.com/transcripts/GOOG-2Q26-transcript"}}],"AMZN":[{"q":"2023Q1","label":"23Q1","actual":14.207,"report":"2023-04-27","guide":null},{"q":"2023Q2","label":"23Q2","actual":11.455,"report":"2023-08-03","guide":{"text":"定性✚ (FY2023)","target":"FY2023","date":"2023-04-27","mid":null,"lo":null,"hi":null,"dir":"new","ttype":"calendar_year","qual":"只说低于 2022 的 590 亿、不给数字；履约交通省下的钱转投 AWS 与生成式 AI","verbatim":"For the full year 2023, we expect capital investments to be lower than our $59 billion investment level in 2022, primarily driven by an expected year-over-year decrease in fulfillment network investments.","speaker":"Brian Olsavsky","url":"https://transcripts.platformaeronaut.com/transcripts/AMZN-1Q23-transcript"}},{"q":"2023Q3","label":"23Q3","actual":12.479,"report":"2023-10-26","guide":{"text":"50 (FY2023)","target":"FY2023","date":"2023-08-03","mid":50.0,"lo":null,"hi":null,"dir":"new","ttype":"calendar_year","qual":"首次给美元数（slightly more than 50），是 4 月「低于 59」的具体化，不是新上修","verbatim":"Looking ahead to the full year 2023, we expect capital investments to be slightly more than $50 billion compared to $59 billion in 2022. We expect fulfillment and transportation CapEx to be down year-over-year, partially offset by increased infrastructure CapEx to support growth of our AWS business, including additional investments related to generative AI and large language model efforts.","speaker":"Brian Olsavsky","url":"https://equibles.com/stocks/amzn/calls/2023-q2"}},{"q":"2023Q4","label":"23Q4","actual":14.588,"report":"2024-02-01","guide":{"text":"≈50 (FY2023)","target":"FY2023","date":"2023-10-26","mid":50.0,"lo":null,"hi":null,"dir":"reaffirmed","ttype":"calendar_year","qual":"措辞由 slightly more than 改为 approximately（口径微调，非新信息）","verbatim":"For the full year 2023, we expect capital investments to be approximately $50 billion compared to $59 billion in 2022.","speaker":"Brian Olsavsky","url":"https://www.fool.com/earnings/call-transcripts/2023/10/26/amazoncom-amzn-q3-2023-earnings-call-transcript/"}},{"q":"2024Q1","label":"24Q1","actual":13.98,"report":"2024-04-30","guide":{"text":"定性✚ (FY2024)","target":"FY2024","date":"2024-02-01","mid":null,"lo":null,"hi":null,"dir":"new","ttype":"calendar_year","qual":"同比上升，明确拒绝给数字","verbatim":"capex will go up in 2024. I'm not giving a number today, but we do expect capex to rise as we add capacity in AWS for region expansions, but primarily the work we're doing with generative AI projects.","speaker":"Brian Olsavsky","url":"https://www.fool.com/earnings/call-transcripts/2024/02/01/amazoncom-amzn-q4-2023-earnings-call-transcript/"}},{"q":"2024Q2","label":"24Q2","actual":16.57,"report":"2024-08-01","guide":{"text":"定性= (FY2024)","target":"FY2024","date":"2024-04-30","mid":null,"lo":null,"hi":null,"dir":"reaffirmed","ttype":"calendar_year","qual":"『meaningfully』同比增长；Q1 为全年低点","verbatim":"We anticipate our overall capital expenditures to meaningfully increase year over year in 2024 ... Right now, in Q1, we had $14 billion of capex. We expect that to be the low quarter for the year.","speaker":"Brian Olsavsky","url":"https://www.fool.com/earnings/call-transcripts/2024/04/30/amazoncom-amzn-q1-2024-earnings-call-transcript/"}},{"q":"2024Q3","label":"24Q3","actual":21.47,"report":"2024-10-31","guide":{"text":"定性= (FY2024)","target":"FY2024","date":"2024-08-01","mid":null,"lo":null,"hi":null,"dir":"reaffirmed","ttype":"calendar_year","qual":"H2 > H1","verbatim":"For the first half of the year, capex was $30.5 billion. Looking ahead to the rest of 2024, we expect capital investments to be higher in the second half of the year.","speaker":"Brian Olsavsky","url":"https://www.fool.com/earnings/call-transcripts/2024/08/01/amazoncom-amzn-q2-2024-earnings-call-transcript/"}},{"q":"2024Q4","label":"24Q4","actual":26.5,"report":"2025-02-06","guide":{"text":"≈75 (FY2024)","target":"FY2024","date":"2024-10-31","mid":75.0,"lo":null,"hi":null,"dir":"new","ttype":"calendar_year","qual":"FY2024 首个美元指引","verbatim":"Year-to-date capital investments were $51.9 billion. We expect to spend approximately $75 billion in capex in 2024.","speaker":"Brian Olsavsky","url":"https://www.fool.com/earnings/call-transcripts/2024/10/31/amazoncom-amzn-q3-2024-earnings-call-transcript/"}},{"q":"2025Q1","label":"25Q1","actual":24.31,"report":"2025-05-01","guide":{"text":"105* (FY2025)","target":"FY2025","date":"2025-02-06","mid":105.0,"lo":null,"hi":null,"dir":"new","ttype":"run_rate","qual":"未给全年数字；26.3×4 为本库外推值，非公司口径","verbatim":"Capital investments were $26.3 billion in the fourth quarter. And we think that run rate will be reasonably representative of our 2025 capital investment rate.","speaker":"Brian Olsavsky","url":"https://www.fool.com/earnings/call-transcripts/2025/02/06/amazoncom-amzn-q4-2024-earnings-call-transcript/"}},{"q":"2025Q2","label":"25Q2","actual":32.31,"report":"2025-07-31","guide":{"text":"105* (FY2025)","target":"FY2025","date":"2025-02-06","mid":105.0,"lo":null,"hi":null,"dir":"new","ttype":"run_rate","qual":"未给全年数字；26.3×4 为本库外推值，非公司口径","verbatim":"Capital investments were $26.3 billion in the fourth quarter. And we think that run rate will be reasonably representative of our 2025 capital investment rate.","speaker":"Brian Olsavsky","url":"https://www.fool.com/earnings/call-transcripts/2025/02/06/amazoncom-amzn-q4-2024-earnings-call-transcript/"}},{"q":"2025Q3","label":"25Q3","actual":35.21,"report":"2025-10-30","guide":{"text":"125* (FY2025)","target":"FY2025","date":"2025-07-31","mid":125.0,"lo":null,"hi":null,"dir":"raised","ttype":"run_rate","qual":"31.4×4≈125.6 为本库外推值","verbatim":"Now turning to our cash CapEx, which was $31.4 billion in Q2. We expect Q2 CapEx to be reasonably representative of our quarterly capital investment rate for the back half of this year.","speaker":"Brian Olsavsky","url":"https://stockanalysis.com/stocks/amzn/transcripts/341150-q2-2025/"}},{"q":"2025Q4","label":"25Q4","actual":39.41,"report":"2026-02-05","guide":{"text":"≈125 (FY2025)","target":"FY2025","date":"2025-10-30","mid":125.0,"lo":null,"hi":null,"dir":"reaffirmed","ttype":"calendar_year","qual":"FY2025 首个正式全年指引（与 7 月外推一致）；FY2026 仅定性上升","verbatim":"We've now spent $89.9 billion so far this year. ... Looking ahead, we expect our full year cash CapEx to be approximately $125 billion in 2025, and we expect that amount will increase in 2026.","speaker":"Brian Olsavsky","url":"https://www.fool.com/earnings/call-transcripts/2025/10/31/amazoncom-amzn-q3-2025-earnings-call-transcript/"}},{"q":"2026Q1","label":"26Q1","actual":44.8,"report":"2026-04-29","guide":{"text":"≈200 (FY2026)","target":"FY2026","date":"2026-02-05","mid":200.0,"lo":null,"hi":null,"dir":"new","ttype":"calendar_year","qual":"FY2026 首个美元指引；隐含 vs FY2025 实际 128.3 约 +56%","verbatim":"We expect to invest about $200 billion in capital expenditures across Amazon, but predominantly in AWS because we have very high demand, customers really want AWS for core and AI workloads, and we're monetizing capacity as fast as we can install it.","speaker":"Andy Jassy","url":"https://earningscalls.dev/transcripts/amazon-com-inc_amzn_earnings_call_transcript_2026-02-05"}},{"q":"2026Q2","label":"26Q2","actual":53.64,"report":"2026-07-30","guide":{"text":"200 (FY2026)","target":"FY2026","date":"2026-04-29","mid":200.0,"lo":null,"hi":null,"dir":"reaffirmed","ttype":"calendar_year","qual":"维持 200，明确『无新数字』；首提『现金支出与投产错配』","verbatim":"So I do not have a new update on capital. Our plan is largely the same ... Of the AWS CapEx we intend to spend in 2026, much of which will be installed in future years, we have high confidence this will be monetized well.","speaker":"Andy Jassy","url":"https://www.fool.com/earnings/call-transcripts/2026/04/29/amazon-amzn-q1-2026-earnings-call-transcript/"}},{"q":"2026Q3","label":"26Q3","actual":77.37,"report":"2026-10-29","guide":{"text":"≈220 (FY2026)","target":"FY2026","date":"2026-07-30","mid":220.0,"lo":null,"hi":null,"dir":"raised","ttype":"calendar_year","qual":"200→220（+10%），唯一归因为 memory 涨价（成本推动，非需求上修）","verbatim":"We now believe we will spend approximately $220 billion in cash CapEx in 2026. The higher cost of memory pushing this number up from our prior estimate of about $200 billion. Even at that amount, we will still not have enough capacity to meet all the demand we have in 2026.","speaker":"Andy Jassy","url":"https://stockanalysis.com/stocks/amzn/transcripts/657334-q2-2026/"}}],"META":[{"q":"2023Q1","label":"23Q1","actual":7.09,"report":"2023-04-26","guide":{"text":"30–33 (FY2023)","target":"FY2023","date":"2023-02-01","mid":31.5,"lo":30.0,"hi":33.0,"dir":"lowered","ttype":"calendar_year","qual":"首次落到 30–33；业绩稿原文写「lowered from our prior estimate of $34-37」（公司此前已在 34–39 内另行收窄过，引用以原文为准）","verbatim":"We expect capital expenditures to be in the range of $30-33 billion, lowered from our prior estimate of $34-37 billion. The reduced outlook reflects our updated plans for lower data center construction spend in 2023 as we shift to a new data center architecture that is more cost efficient and can support both AI and non-AI workloads.","speaker":"Susan Li","url":"https://investor.atmeta.com/investor-news/press-release-details/2023/Meta-Reports-Fourth-Quarter-and-Full-Year-2022-Results/default.aspx"}},{"q":"2023Q2","label":"23Q2","actual":6.35,"report":"2023-07-26","guide":{"text":"30–33 (FY2023)","target":"FY2023","date":"2023-04-26","mid":31.5,"lo":30.0,"hi":33.0,"dir":"reaffirmed","ttype":"calendar_year","qual":"原样重申（unchanged）；同场把 AI 容量列为主要投向，下一个季度即下调","verbatim":"We expect capital expenditures to be in the range of $30-33 billion, unchanged from our prior estimate.","speaker":"Susan Li","url":"https://investor.atmeta.com/investor-news/press-release-details/2023/Meta-Reports-First-Quarter-2023-Results/default.aspx"}},{"q":"2023Q3","label":"23Q3","actual":6.76,"report":"2023-10-25","guide":{"text":"27–30 (FY2023)","target":"FY2023","date":"2023-07-26","mid":28.5,"lo":27.0,"hi":30.0,"dir":"lowered","ttype":"calendar_year","qual":"下调并写明两条理由：非 AI 服务器省钱 + 部分支出推迟到 2024（不是砍计划）","verbatim":"We expect our full-year 2023 capital expenditures to be in the range of $27-30 billion, lowered from our prior estimate of $30-33 billion. The reduced forecast is due to both cost savings, particularly on non-AI servers, as well as shifts in capital expenditures into 2024 from delays in projects and equipment deliveries rather than a reduction in overall investment plans.","speaker":"Susan Li","url":"https://investor.atmeta.com/investor-news/press-release-details/2023/Meta-Reports-Second-Quarter-2023-Results/default.aspx"}},{"q":"2023Q4","label":"23Q4","actual":7.9,"report":"2024-02-01","guide":{"text":"27–29 (FY2023)","target":"FY2023","date":"2023-10-25","mid":28.0,"lo":27.0,"hi":29.0,"dir":"narrowed","ttype":"calendar_year","qual":"收窄：下限不动、上限 −1（中点 28.5→28，故按中点方向计为下调）；同场首次给 FY2024 30–35","verbatim":"We expect 2023 capital expenditures to be in the range of $27-29 billion, updated from our prior estimate of $27-30 billion.","speaker":"Susan Li","url":"https://investor.atmeta.com/investor-news/press-release-details/2023/Meta-Reports-Third-Quarter-2023-Results/default.aspx"}},{"q":"2024Q1","label":"24Q1","actual":6.71,"report":"2024-04-24","guide":{"text":"30–37 (FY2024)","target":"FY2024","date":"2024-02-01","mid":33.5,"lo":30.0,"hi":37.0,"dir":"new","ttype":"calendar_year","qual":"相对窗口外 10/2023 的 30–35，上限 +2（实质上调）","verbatim":"We anticipate our full-year 2024 capital expenditures will be in the range of $30-37 billion, a $2 billion increase of the high end of our prior range.","speaker":"Susan Li","url":"https://s21.q4cdn.com/399680738/files/doc_financials/2023/q4/META-Q4-2023-Earnings-Call-Transcript.pdf"}},{"q":"2024Q2","label":"24Q2","actual":8.47,"report":"2024-07-31","guide":{"text":"35–40 (FY2024)","target":"FY2024","date":"2024-04-24","mid":37.5,"lo":35.0,"hi":40.0,"dir":"raised","ttype":"calendar_year","qual":"上下限 +5/+3","verbatim":"We anticipate our full-year 2024 capital expenditures will be in the range of $35-40 billion, increased from our prior range of $30-37 billion as we continue to accelerate our infrastructure investments to support our AI roadmap.","speaker":"Susan Li","url":"https://s21.q4cdn.com/399680738/files/doc_financials/2024/q1/META-Q1-2024-Earnings-Call-Transcript.pdf"}},{"q":"2024Q3","label":"24Q3","actual":9.2,"report":"2024-10-30","guide":{"text":"37–40 (FY2024)","target":"FY2024","date":"2024-07-31","mid":38.5,"lo":37.0,"hi":40.0,"dir":"narrowed","ttype":"calendar_year","qual":"上限不动，下限 +2","verbatim":"We anticipate our full-year 2024 capital expenditures will be in the range of $37-40 billion, updated from our prior range of $35-40 billion.","speaker":"Susan Li","url":"https://s21.q4cdn.com/399680738/files/doc_financials/2024/q2/META-Q2-2024-Earnings-Call-Transcript.pdf"}},{"q":"2024Q4","label":"24Q4","actual":14.84,"report":"2025-01-29","guide":{"text":"38–40 (FY2024)","target":"FY2024","date":"2024-10-30","mid":39.0,"lo":38.0,"hi":40.0,"dir":"narrowed","ttype":"calendar_year","qual":"上限不动，下限 +1","verbatim":"We anticipate our full year 2024 capital expenditures will be in the range of $38-40 billion, updated from our prior range of $37-40 billion.","speaker":"Susan Li","url":"https://s21.q4cdn.com/399680738/files/doc_financials/2024/q3/META-Q3-2024-Earnings-Call-Transcript.pdf"}},{"q":"2025Q1","label":"25Q1","actual":13.69,"report":"2025-04-30","guide":{"text":"60–65 (FY2025)","target":"FY2025","date":"2025-01-29","mid":62.5,"lo":60.0,"hi":65.0,"dir":"new","ttype":"calendar_year","qual":"FY2025 首个区间；主体仍为核心业务","verbatim":"We anticipate our full year 2025 capital expenditures will be in the range of $60-65 billion. We expect capex growth in 2025 will be driven by increased investment to support both our generative AI efforts and our core business.","speaker":"Susan Li","url":"https://s21.q4cdn.com/399680738/files/doc_financials/2024/q4/META-Q4-2024-Earnings-Call-Transcript.pdf"}},{"q":"2025Q2","label":"25Q2","actual":17.01,"report":"2025-07-30","guide":{"text":"64–72 (FY2025)","target":"FY2025","date":"2025-04-30","mid":68.0,"lo":64.0,"hi":72.0,"dir":"raised","ttype":"calendar_year","qual":"上下限 +4/+7，区间由 5 放宽到 8","verbatim":"We anticipate our full year 2025 capital expenditures, including principal payments on finance leases, will be in the range of $64-72 billion, increased from our prior outlook of $60-65 billion. This updated outlook reflects additional data center investments to support our AI efforts as well as an increase in the expected cost of infrastructure hardware.","speaker":"Susan Li","url":"https://s21.q4cdn.com/399680738/files/doc_financials/2025/q1/Transcripts/META-Q1-2025-Earnings-Call-Transcript-1.pdf"}},{"q":"2025Q3","label":"25Q3","actual":19.37,"report":"2025-10-29","guide":{"text":"66–72 (FY2025)","target":"FY2025","date":"2025-07-30","mid":69.0,"lo":66.0,"hi":72.0,"dir":"narrowed","ttype":"calendar_year","qual":"上限不动下限 +2；FY2026 『similarly significant』（≈再增 300 亿）","verbatim":"We currently expect 2025 capital expenditures, including principal payments on finance leases, to be in the range of $66-72 billion, narrowed from our prior outlook of $64-72 billion and up approximately $30 billion year-over-year at the mid-point. ... we currently expect another year of similarly significant capex dollar growth in 2026.","speaker":"Susan Li","url":"https://s21.q4cdn.com/399680738/files/doc_financials/2025/q2/META-Q2-2025-Earnings-Call-Transcript.pdf"}},{"q":"2025Q4","label":"25Q4","actual":22.14,"report":"2026-01-28","guide":{"text":"70–72 (FY2025)","target":"FY2025","date":"2025-10-29","mid":71.0,"lo":70.0,"hi":72.0,"dir":"narrowed","ttype":"calendar_year","qual":"区间收窄到 2（极窄）；FY2026 措辞升级为 notably larger","verbatim":"We currently expect 2025 capital expenditures, including principal payments on finance leases, to be in the range of $70-72 billion, increased from our prior outlook of $66-72 billion. ... our current expectation is that capex dollar growth will be notably larger in 2026 than 2025.","speaker":"Susan Li","url":"https://s21.q4cdn.com/399680738/files/doc_financials/2025/q3/META-Q3-2025-Earnings-Call-Transcript.pdf"}},{"q":"2026Q1","label":"26Q1","actual":19.84,"report":"2026-04-29","guide":{"text":"115–135 (FY2026)","target":"FY2026","date":"2026-01-28","mid":125.0,"lo":115.0,"hi":135.0,"dir":"new","ttype":"calendar_year","qual":"区间宽度 20，为历史最宽；中值 vs FY2025 实际 72.2 约 +73%","verbatim":"We anticipate 2026 capital expenditures, including principal payments on finance leases, to be in the range of $115-135 billion, with year-over-year growth driven by increased investment to support our Meta Superintelligence Labs efforts and core business.","speaker":"Susan Li","url":"https://s21.q4cdn.com/399680738/files/doc_financials/2025/q4/META-Q4-2025-Earnings-Call-Transcript.pdf"}},{"q":"2026Q2","label":"26Q2","actual":31.08,"report":"2026-07-29","guide":{"text":"125–145 (FY2026)","target":"FY2026","date":"2026-04-29","mid":135.0,"lo":125.0,"hi":145.0,"dir":"raised","ttype":"calendar_year","qual":"上下限各 +10，宽度维持 20；归因=元器件涨价（成本推动）","verbatim":"We anticipate 2026 capital expenditures, including principal payments on finance leases, to be in the range of $125-145 billion, increased from our prior range of $115-135 billion. This reflects our expectations for higher component pricing this year and, to a lesser extent, additional data center costs to support future year capacity.","speaker":"Susan Li","url":"https://s21.q4cdn.com/399680738/files/doc_financials/2026/q1/META-Q1-2026-Earnings-Call-Transcript.pdf"}},{"q":"2026Q3","label":"26Q3","actual":34.91,"report":"2026-10-21","guide":{"text":"130–145 (FY2026)","target":"FY2026","date":"2026-07-29","mid":137.5,"lo":130.0,"hi":145.0,"dir":"narrowed","ttype":"calendar_year","qual":"上限不动，下限 +5，宽度 20→15","verbatim":"We anticipate 2026 capital expenditures, including principal payments on finance leases, to be in the range of $130-145 billion, narrowed from our prior outlook of $125-145 billion.","speaker":"Susan Li","url":"https://s21.q4cdn.com/399680738/files/doc_financials/2026/q2/META-Q2-2026-Earnings-Call-Transcript.pdf"}}],"ORCL":[{"q":"2023Q1","label":"23Q1","actual":2.63,"report":null,"guide":null,"not_listed":true},{"q":"2023Q2","label":"23Q2","actual":1.91,"report":"2023-06-12","guide":null},{"q":"2023Q3","label":"23Q3","actual":1.31,"report":"2023-09-11","guide":{"text":"8.7 (FY24)","target":"FY24","date":"2023-06-12","mid":8.7,"lo":null,"hi":null,"dir":"new","ttype":"fiscal_year","qual":"「similar to this year's capex」＝ FY23 实际 8.7；同场自述这是「上调后」的预测","verbatim":"Capex was 1.9 billion in Q4 and 8.7 billion for fiscal year 2023, as we continue to build capacity for existing bookings and our customers' growing needs. Given the demand we have and see in our pipeline, I've increased our capex projection and I now expect the fiscal 2024 will be similar to this year's capex.","speaker":"Safra Catz","url":"https://www.fool.com/earnings/call-transcripts/2023/06/12/oracle-orcl-q4-2023-earnings-call-transcript/"}},{"q":"2023Q4","label":"23Q4","actual":1.08,"report":"2023-12-11","guide":{"text":"8.7 (FY24)","target":"FY24","date":"2023-09-11","mid":8.7,"lo":null,"hi":null,"dir":"reaffirmed","ttype":"fiscal_year","qual":"原样重申 similar（口径为过去 12 个月 8.3，全年类推 8.7）","verbatim":"Capital expenditures were 8.3 billion over the last four quarters ... Given the demand we have and see in the pipeline, I expect the fiscal year 2024 capex will be similar to this past year's capex.","speaker":"Safra Catz","url":"https://www.fool.com/earnings/call-transcripts/2023/09/11/oracle-orcl-q1-2024-earnings-call-transcript/"}},{"q":"2024Q1","label":"24Q1","actual":1.67,"report":"2024-03-11","guide":{"text":"8 (FY24)","target":"FY24","date":"2023-12-11","mid":8.0,"lo":null,"hi":null,"dir":"lowered","ttype":"fiscal_year","qual":"8.7→around 8，全库唯一一条在财年内被下调的 ORCL 指引；同场仍强调 H2 才放量（实际全年只花 6.87）","verbatim":"Given the enormity of our pipeline and backlog, I expect CapEx will be somewhere around $8 billion this fiscal year, meaning our second half CapEx will be considerably higher as we bring online more capacity.","speaker":"Safra Catz","url":"https://investiment.io/symbols/ORCL/earnings/transcripts/2024/2"}},{"q":"2024Q2","label":"24Q2","actual":2.8,"report":"2024-06-11","guide":{"text":"7–7.5 (FY24)","target":"FY24","date":"2024-03-11","mid":7.25,"lo":7.0,"hi":7.5,"dir":"lowered","ttype":"fiscal_year","qual":"8.0→7.0–7.5，FY24 的第三次下修；同场 Q&A 首次给 FY25 初步 ≈10。「首次给数」的身份移交给了 2023-06-12 的 ≈8.7","verbatim":"I expect the capex will be somewhere around 7 billion to 7.5 billion this fiscal year, meaning our Q4 capex should be considerably higher.","speaker":"Safra Catz","url":"https://equibles.com/stocks/orcl/calls/2024-q3"}},{"q":"2024Q3","label":"24Q3","actual":2.3,"report":"2024-09-09","guide":{"text":"13.7* (FY25)","target":"FY25","date":"2024-06-11","mid":13.7,"lo":null,"hi":null,"dir":"raised","ttype":"fiscal_year","qual":"相对表述「翻倍」，13.7=2×FY24 实际 6.87（本库推断，非公司绝对值）；Fool 版用 will probably、Equibles 版用 could，措辞不一致","verbatim":"Capex in fiscal year '25 will probably be double what it is in fiscal year '24.","speaker":"Safra Catz","url":"https://www.fool.com/earnings/call-transcripts/2024/06/11/oracle-orcl-q4-2024-earnings-call-transcript/"}},{"q":"2024Q4","label":"24Q4","actual":3.97,"report":"2024-12-09","guide":{"text":"13.7 (FY25)","target":"FY25","date":"2024-09-09","mid":13.7,"lo":null,"hi":null,"dir":"reaffirmed","ttype":"fiscal_year","qual":"口径从 could be 硬化为 will be","verbatim":"We spent $2.3 billion on CapEx this quarter. Given the demand that we see in our RPO growth ... I expect fiscal year 2025 CapEx will be double what it was in fiscal 2024.","speaker":"Safra Catz","url":"https://www.fool.com/earnings/call-transcripts/2024/09/09/oracle-orcl-q1-2025-earnings-call-transcript/"}},{"q":"2025Q1","label":"25Q1","actual":5.86,"report":"2025-03-10","guide":{"text":"13.7 (FY25)","target":"FY25","date":"2024-12-09","mid":13.7,"lo":null,"hi":null,"dir":"reaffirmed","ttype":"fiscal_year","qual":"不变","verbatim":"With CapEx at $4 billion for the quarter, free cash flow was negative $2.7 billion... I expect fiscal year 2025 CapEx will be double what it was in fiscal year FY '24.","speaker":"Safra Catz","url":"https://www.fool.com/earnings/call-transcripts/2024/12/09/oracle-orcl-q2-2025-earnings-call-transcript/"}},{"q":"2025Q2","label":"25Q2","actual":9.08,"report":"2025-06-11","guide":{"text":"16 (FY25)","target":"FY25","date":"2025-03-10","mid":16.0,"lo":null,"hi":null,"dir":"raised","ttype":"fiscal_year","qual":"首次给绝对值；13.7→16（+17%）","verbatim":"I expect fiscal year 2025 CapEx to be a little more than double last year's, around $16 billion.","speaker":"Safra Catz","url":"https://www.fool.com/earnings/call-transcripts/2025/03/10/oracle-orcl-q3-2025-earnings-call-transcript/"}},{"q":"2025Q3","label":"25Q3","actual":8.5,"report":"2025-09-09","guide":{"text":"≥25 (FY26)","target":"FY26","date":"2025-06-11","mid":null,"lo":25.0,"hi":null,"dir":"new","ttype":"fiscal_year","qual":"FY26 首指引 ≥25，当场自认「可能被低估」；同场披露 FY25 实际 21.2，远高于 ≈16 的指引","verbatim":"I expect that FY 2026 CapEx will be higher at over $25 billion as we work to meet demand from our backlog. ... I do believe that the $25 billion next year may turn out to be understated.","speaker":"Safra Catz","url":"https://investiment.io/symbols/ORCL/earnings/transcripts/2025/4"}},{"q":"2025Q4","label":"25Q4","actual":12.03,"report":"2025-12-10","guide":{"text":"35 (FY26)","target":"FY26","date":"2025-09-09","mid":35.0,"lo":null,"hi":null,"dir":"raised","ttype":"fiscal_year","qual":"≥25→≈35（+10bn/+40%），对应 RPO 跳升至 455bn 后的第一次跳升","verbatim":"Given our RPO growth, I now expect fiscal year 2026 CapEx will be around $35 billion. As a reminder, the vast majority of our CapEx investments are for revenue-generating equipment that is going into the data centers and not for land or buildings.","speaker":"Safra Catz","url":"https://investiment.io/symbols/ORCL/earnings/transcripts/2026/1"}},{"q":"2026Q1","label":"26Q1","actual":18.64,"report":"2026-03-10","guide":{"text":"≈50 (FY26)","target":"FY26","date":"2025-12-10","mid":50.0,"lo":null,"hi":null,"dir":"raised","ttype":"fiscal_year","qual":"35+15=50（本库推断，公司未直接报 50）；同场首次系统提出 BYOH／供应商租赁芯片／客户预付三条降现金支出路径","verbatim":"given the added RPO this quarter, that can be monetized quickly starting next year, we now expect fiscal 2026 CapEx will be about $15 billion higher than we forecasted after Q1.","speaker":"Doug Kehring","url":"https://investiment.io/symbols/ORCL/earnings/transcripts/2026/2"}},{"q":"2026Q2","label":"26Q2","actual":16.49,"report":"2026-06-10","guide":{"text":"50 (FY26)","target":"FY26","date":"2026-03-10","mid":50.0,"lo":null,"hi":null,"dir":"reaffirmed","ttype":"fiscal_year","qual":"同日新闻稿重申 FY26 capex $50B 不变（数字来自 8-K/新闻稿，非电话会口述）；电话会本身只谈 capex 与融资脱钩","verbatim":"For fiscal year 2026, we expect revenue of $67 billion and capital expenditures of $50 billion. This is unchanged from our most recent previous guidance.","speaker":"Doug Kehring（电话会）/ 公司新闻稿","url":"https://s23.q4cdn.com/440135859/files/doc_financials/2026/q3/3q26-pressrelease-March-FINAL.pdf"}},{"q":"2026Q3","label":"26Q3","actual":28.5,"report":"2026-09-10","guide":{"text":"90–95 (FY27)","target":"FY27","date":"2026-06-10","mid":92.5,"lo":90.0,"hi":95.0,"dir":"new","ttype":"fiscal_year","qual":"首次引入 net cash outlay 口径：net≈70，reported≈92.5（=70+20~25，本库推断）；FY27 拟融资 40bn","verbatim":"with an expected net cash outlay for capital expenditures of around $70 billion. This includes customer prepayments and timing impacts expected at around $20 billion to $25 billion so our reported CapEx will be higher by this amount.","speaker":"Hilary Maxson","url":"https://www.fool.com/earnings/call-transcripts/2026/06/10/oracle-orcl-q4-2026-earnings-call-transcript/"}}],"CRWV":[{"q":"2023Q1","label":"23Q1","actual":null,"report":null,"guide":null,"not_listed":true},{"q":"2023Q2","label":"23Q2","actual":null,"report":null,"guide":null,"not_listed":true},{"q":"2023Q3","label":"23Q3","actual":null,"report":null,"guide":null,"not_listed":true},{"q":"2023Q4","label":"23Q4","actual":null,"report":null,"guide":null,"not_listed":true},{"q":"2024Q1","label":"24Q1","actual":null,"report":null,"guide":null,"not_listed":true},{"q":"2024Q2","label":"24Q2","actual":null,"report":null,"guide":null,"not_listed":true},{"q":"2024Q3","label":"24Q3","actual":null,"report":null,"guide":null,"not_listed":true},{"q":"2024Q4","label":"24Q4","actual":null,"report":null,"guide":null,"not_listed":true},{"q":"2025Q1","label":"25Q1","actual":1.858,"report":"2025-05-14","guide":null},{"q":"2025Q2","label":"25Q2","actual":2.938,"report":"2025-08-12","guide":{"text":"20–23 (FY2025)","target":"FY2025","date":"2025-05-14","mid":21.5,"lo":20.0,"hi":23.0,"dir":"new","ttype":"calendar_year","qual":"","verbatim":"We expect adjusted operating income in the range of $800 million to $830 million and CapEx of $20 billion to $23 billion due to increased and accelerated investment in our platform to meet customer demand.","speaker":"Nitin Agrawal","url":"https://s205.q4cdn.com/133937190/files/doc_financials/2025/q1/CORRECTED-TRANSCRIPT_-CoreWeave-Inc-CRWV-US-Q1-2025-Earnings-Call-14-May-2025-5_00-PM-ET.pdf"}},{"q":"2025Q3","label":"25Q3","actual":1.9,"report":"2025-11-10","guide":{"text":"20–23 (FY2025)","target":"FY2025","date":"2025-08-12","mid":21.5,"lo":20.0,"hi":23.0,"dir":"reaffirmed","ttype":"calendar_year","qual":"同会强调节奏：全年 capex 很大一部分落在 Q4（go-live 时点）","verbatim":"We expect CapEx in the range of $20 billion to $23 billion, unchanged from our prior guidance in the backdrop of continued strong customer demand.","speaker":"Nitin Agrawal","url":"https://s205.q4cdn.com/133937190/files/doc_financials/2025/q2/CORRECTED-TRANSCRIPT_-CoreWeave-Inc-CRWV-US-Q2-2025-Earnings-Call-12-August-2025-5_00-PM-ET.pdf"}},{"q":"2025Q4","label":"25Q4","actual":8.2,"report":"2026-02-26","guide":{"text":"12–14 (FY2025)","target":"FY2025","date":"2025-11-10","mid":13.0,"lo":12.0,"hi":14.0,"dir":"lowered","ttype":"calendar_year","qual":"−8.5bn/−40%，但主要是口径位移（钱进 CIP、推迟到 2026Q1 才『变回』capex），不是少花钱","verbatim":"Moving to CapEx, we now expect 2025 CapEx in the range of $12 billion to $14 billion. ... We expect this reduction in CapEx from our prior guidance will be mostly reflected by a corresponding increase in construction in progress.","speaker":"Nitin Agrawal","url":"https://s205.q4cdn.com/133937190/files/doc_financials/2025/q3/CORRECTED-TRANSCRIPT_-CoreWeave-Inc-CRWV-US-Q3-2025-Earnings-Call-10-November-2025-5_00-PM-ET.pdf"}},{"q":"2026Q1","label":"26Q1","actual":6.786,"report":"2026-05-07","guide":{"text":"30–35 (FY2026)","target":"FY2026","date":"2026-02-26","mid":32.5,"lo":30.0,"hi":35.0,"dir":"new","ttype":"calendar_year","qual":"CEO 同会说『at least $30 billion』，与 CFO/官方 deck 的 30–35 不一致，须并列引用","verbatim":"We expect 2026 CapEx of $30 billion-$35 billion, which is more than double our 2025 investment.","speaker":"Nitin Agrawal","url":"https://s205.q4cdn.com/133937190/files/doc_financials/2025/q4/CoreWeave-4Q25-Outlook-Presentation-vF.pdf"}},{"q":"2026Q2","label":"26Q2","actual":9.352,"report":"2026-08-11","guide":{"text":"31–35 (FY2026)","target":"FY2026","date":"2026-05-07","mid":33.0,"lo":31.0,"hi":35.0,"dir":"raised","ttype":"calendar_year","qual":"仅下限 +1、上限不变；归因=零部件涨价（非需求上调）","verbatim":"For the full year, we now expect CapEx of $31 billion to $35 billion. The increase on the low end from our previous guidance is related to increases in component pricing.","speaker":"Nitin Agrawal","url":"https://s205.q4cdn.com/133937190/files/doc_financials/2026/q1/CoreWeave-1Q26-Outlook-Presentation.pdf"}},{"q":"2026Q3","label":"26Q3","actual":null,"report":null,"guide":null,"not_listed":false}]},"revSeq":{"MSFT":[{"d":"2025-01-29","y":"2025","t":2026,"m":"down","v":null,"tag":"lowered"},{"d":"2025-10-29","y":"2025","t":2026,"m":"up","v":null,"tag":"raised"},{"d":"2026-07-29","y":"2026","t":2026,"m":"down","v":175.0,"tag":"lowered"},{"d":"2026-10-28","y":"2026","t":2026,"m":"down","v":170.0,"tag":"lowered"}],"GOOGL":[{"d":"2023-04-25","y":"2023","t":2023,"m":"up","v":null,"tag":"raised"},{"d":"2025-07-23","y":"2025","t":2025,"m":"up","v":85.0,"tag":"raised"},{"d":"2025-10-29","y":"2025","t":2025,"m":"up","v":92.0,"tag":"raised"},{"d":"2026-04-29","y":"2026","t":2026,"m":"up","v":185.0,"tag":"raised"},{"d":"2026-07-22","y":"2026","t":2026,"m":"up","v":200.0,"tag":"raised"}],"AMZN":[{"d":"2025-07-31","y":"2025","t":2025,"m":"up","v":125.0,"tag":"raised"},{"d":"2026-07-30","y":"2026","t":2026,"m":"up","v":220.0,"tag":"raised"}],"META":[{"d":"2023-02-01","y":"2023","t":2023,"m":"down","v":31.5,"tag":"lowered"},{"d":"2023-07-26","y":"2023","t":2023,"m":"down","v":28.5,"tag":"lowered"},{"d":"2023-10-25","y":"2023","t":2023,"m":"down","v":28.0,"tag":"narrowed"},{"d":"2024-04-24","y":"2024","t":2024,"m":"up","v":37.5,"tag":"raised"},{"d":"2024-07-31","y":"2024","t":2024,"m":"up","v":38.5,"tag":"narrowed"},{"d":"2024-10-30","y":"2024","t":2024,"m":"up","v":39.0,"tag":"narrowed"},{"d":"2025-04-30","y":"2025","t":2025,"m":"up","v":68.0,"tag":"raised"},{"d":"2025-07-30","y":"2025","t":2025,"m":"up","v":69.0,"tag":"narrowed"},{"d":"2025-10-29","y":"2025","t":2025,"m":"up","v":71.0,"tag":"narrowed"},{"d":"2026-04-29","y":"2026","t":2026,"m":"up","v":135.0,"tag":"raised"},{"d":"2026-07-29","y":"2026","t":2026,"m":"up","v":137.5,"tag":"narrowed"},{"d":"2026-10-21","y":"2026","t":2026,"m":"up","v":140.0,"tag":"narrowed"}],"ORCL":[{"d":"2023-12-11","y":"2023","t":2024,"m":"down","v":8.0,"tag":"lowered"},{"d":"2024-03-11","y":"2024","t":2024,"m":"down","v":7.2,"tag":"lowered"},{"d":"2024-06-11","y":"2024","t":2025,"m":"up","v":13.7,"tag":"raised"},{"d":"2025-03-10","y":"2025","t":2025,"m":"up","v":16.0,"tag":"raised"},{"d":"2025-09-09","y":"2025","t":2026,"m":"up","v":35.0,"tag":"raised"},{"d":"2025-12-10","y":"2025","t":2026,"m":"up","v":50.0,"tag":"raised"}],"CRWV":[{"d":"2025-11-10","y":"2025","t":2025,"m":"down","v":13.0,"tag":"lowered"},{"d":"2026-05-07","y":"2026","t":2026,"m":"up","v":33.0,"tag":"raised"},{"d":"2026-08-11","y":"2026","t":2026,"m":"up","v":37.0,"tag":"raised"}]},"revYears":["2022","2023","2024","2025","2026"],"recon":[{"company":"META","target_period":"FY2023","first_text":"34–39（2022-10-26）","last_text":"27–29（2023-10-25）","guided_low":27,"guided_high":29,"guided_mid":28,"actual":28.1,"dev":0.4,"inband":"区间内","fmid":36.5,"fdate":"2022-10-26","lmid":28.0,"ldate":"2023-10-25","dev_first":-23.0,"dev_last":0.4},{"company":"AMZN","target_period":"FY2023","first_text":"低于 2022 的 590 亿（2023-04-27，无数字）","last_text":"≈50（2023-10-26）","guided_low":null,"guided_high":null,"guided_mid":50.0,"actual":52.73,"dev":5.5,"inband":"","fmid":50.0,"fdate":"2023-08-03","lmid":50.0,"ldate":"2023-10-26","dev_first":5.5,"dev_last":5.5},{"company":"GOOGL","target_period":"FY2025","first_text":"≈75（2025-02-04）","last_text":"91–93（2025-10-29）","guided_low":91,"guided_high":93,"guided_mid":92,"actual":91.4,"dev":-0.7,"inband":"区间内","fmid":75,"fdate":"2025-02-04","lmid":92,"ldate":"2025-10-29","dev_first":21.9,"dev_last":-0.7},{"company":"GOOGL","target_period":"FY2024","first_text":"notably larger（无数字）","last_text":"≥12/季","guided_low":48,"guided_high":null,"guided_mid":null,"actual":52.5,"dev":null,"inband":"","fmid":null,"fdate":null,"lmid":null,"ldate":null,"dev_first":null,"dev_last":null},{"company":"AMZN","target_period":"FY2024","first_text":"定性上升（2024-02-01）","last_text":"≈75（2024-10-31）","guided_low":null,"guided_high":null,"guided_mid":75,"actual":77.66,"dev":3.5,"inband":"","fmid":75,"fdate":"2024-10-31","lmid":75,"ldate":"2024-10-31","dev_first":3.5,"dev_last":3.5},{"company":"AMZN","target_period":"FY2025","first_text":"26.3×4≈105 外推（2025-02-06）","last_text":"≈125（2025-10-30）","guided_low":null,"guided_high":null,"guided_mid":125,"actual":128.32,"dev":2.7,"inband":"","fmid":105,"fdate":"2025-02-06","lmid":125,"ldate":"2025-10-30","dev_first":22.2,"dev_last":2.7},{"company":"AMZN","target_period":"FY2026","first_text":"≈200（2026-02-05）","last_text":"≈220（2026-07-30）","guided_low":null,"guided_high":null,"guided_mid":220,"actual":null,"dev":null,"inband":"","fmid":200,"fdate":"2026-02-05","lmid":220,"ldate":"2026-10-29","dev_first":null,"dev_last":null},{"company":"META","target_period":"FY2024","first_text":"30–37（2024-02-01）","last_text":"38–40（2024-10-30）","guided_low":38,"guided_high":40,"guided_mid":39,"actual":39.23,"dev":0.6,"inband":"区间内","fmid":33.5,"fdate":"2024-02-01","lmid":39,"ldate":"2024-10-30","dev_first":17.1,"dev_last":0.6},{"company":"META","target_period":"FY2025","first_text":"60–65（2025-01-29）","last_text":"70–72（2025-10-29）","guided_low":70,"guided_high":72,"guided_mid":71,"actual":72.22,"dev":1.7,"inband":"高于上限","fmid":62.5,"fdate":"2025-01-29","lmid":71,"ldate":"2025-10-29","dev_first":15.6,"dev_last":1.7},{"company":"META","target_period":"FY2026","first_text":"115–135（2026-01-28）","last_text":"135–145（2026-10-21）","guided_low":135,"guided_high":145,"guided_mid":140,"actual":null,"dev":null,"inband":"","fmid":125,"fdate":"2026-01-28","lmid":140,"ldate":"2026-10-21","dev_first":null,"dev_last":null},{"company":"CRWV","target_period":"FY2025","first_text":"20–23（2025-05-14）","last_text":"12–14（2025-11-10）","guided_low":12,"guided_high":14,"guided_mid":13,"actual":14.9,"dev":14.6,"inband":"高于上限","fmid":21.5,"fdate":"2025-05-14","lmid":13,"ldate":"2025-11-10","dev_first":-30.7,"dev_last":14.6},{"company":"CRWV","target_period":"FY2026","first_text":"30–35（2026-02-26）","last_text":"35–39（2026-08-11）","guided_low":35,"guided_high":39,"guided_mid":37,"actual":null,"dev":null,"inband":"","fmid":32.5,"fdate":"2026-02-26","lmid":37,"ldate":"2026-08-11","dev_first":null,"dev_last":null},{"company":"ORCL","target_period":"FY2024","first_text":"≈8.7（2023-06-12，similar to FY23）","last_text":"7.0–7.5（2024-03-11）","guided_low":7.0,"guided_high":7.5,"guided_mid":7.25,"actual":6.87,"dev":-5.2,"inband":"低于下限","fmid":8.7,"fdate":"2023-06-12","lmid":7.25,"ldate":"2024-03-11","dev_first":-21.0,"dev_last":-5.2},{"company":"ORCL","target_period":"FY2025","first_text":"≈10 初步（2024-03-11）","last_text":"≈16（2025-03-10）","guided_low":null,"guided_high":null,"guided_mid":16.0,"actual":21.22,"dev":32.6,"inband":"","fmid":10.0,"fdate":"2024-03-11","lmid":16,"ldate":"2025-03-10","dev_first":112.2,"dev_last":32.6},{"company":"ORCL","target_period":"FY2026","first_text":"≥25（2025-06-11）","last_text":"≈50（2025-12-10）","guided_low":25,"guided_high":null,"guided_mid":50.0,"actual":55.66,"dev":11.3,"inband":"","fmid":35,"fdate":"2025-09-09","lmid":50,"ldate":"2026-03-10","dev_first":59.0,"dev_last":11.3},{"company":"GOOGL","target_period":"FY2026","first_text":"175–185（2026-02-04）","last_text":"195–205（2026-07-22；2026-10-28 重申不变）","guided_low":195,"guided_high":205,"guided_mid":200,"actual":null,"dev":null,"inband":"","fmid":180,"fdate":"2026-02-04","lmid":200,"ldate":"2026-10-28","dev_first":null,"dev_last":null},{"company":"MSFT","target_period":"CY2026","first_text":"≈190（旧口径，2026-04-29；其中约 25 为零部件涨价）","last_text":"≈170（2026-10-28；175 再降至 170，因 3P 容量交付延迟）","guided_low":null,"guided_high":null,"guided_mid":170,"actual":null,"dev":null,"inband":"","fmid":190,"fdate":"2026-04-29","lmid":170,"ldate":"2026-10-28","dev_first":null,"dev_last":null}],"events":[{"c":"META","d":"2022-10-26","fr":"2022Q3","nq":"2022Q3","t":"FY2023（全年）","tt":"calendar_year","sp":"公司业绩稿（CFO 评论）","mid":36.5,"lo":34.0,"hi":39.0,"q":"AI 周期前的最后一份高指引；此后 12 个月被连续下调 3 次","dir":"new","b":"金额区间；2023 年指引句未写含融资租赁（META 从 2025Q1 起才明写）","v":"For 2023, we expect capital expenditures to be in the range of $34-39 billion, driven by our investments in data centers, servers, and network infrastructure.","u":"https://investor.atmeta.com/investor-news/press-release-details/2022/Meta-Reports-Third-Quarter-2022-Results/default.aspx","cf":"high"},{"c":"MSFT","d":"2023-01-24","fr":"FY23Q2","nq":"2022Q4","t":"FY23Q3（季度）","tt":"quarter","sp":"Amy Hood","mid":null,"lo":null,"hi":null,"q":"环比上升，措辞不带 material；无美元数","dir":"new","b":"口径A 含融资租赁；纯定性无美元数","v":"In capital expenditures, we expect a sequential increase on a dollar basis with normal quarterly spend variability in the timing of our cloud infrastructure build-out. Our data center investments continue to be based on a near-term and longer-term customer demand, including AI opportunities.","u":"https://www.fool.com/earnings/call-transcripts/2023/01/24/microsoft-msft-q2-2023-earnings-call-transcript/","cf":"high"},{"c":"META","d":"2023-02-01","fr":"2022Q4","nq":"2022Q4","t":"FY2023（全年）","tt":"calendar_year","sp":"Susan Li","mid":31.5,"lo":30.0,"hi":33.0,"q":"首次落到 30–33；业绩稿原文写「lowered from our prior estimate of $34-37」（公司此前已在 34–39 内另行收窄过，引用以原文为准）","dir":"lowered","b":"金额区间；2023 年指引句未写含融资租赁（META 从 2025Q1 起才明写）","v":"We expect capital expenditures to be in the range of $30-33 billion, lowered from our prior estimate of $34-37 billion. The reduced outlook reflects our updated plans for lower data center construction spend in 2023 as we shift to a new data center architecture that is more cost efficient and can support both AI and non-AI workloads.","u":"https://investor.atmeta.com/investor-news/press-release-details/2023/Meta-Reports-Fourth-Quarter-and-Full-Year-2022-Results/default.aspx","cf":"high"},{"c":"GOOGL","d":"2023-02-02","fr":"2022Q4","nq":"2022Q4","t":"FY2023（全年）","tt":"calendar_year","sp":"Ruth Porat","mid":null,"lo":null,"hi":null,"q":"只说「大致与 2022 持平」（in line），结构上技术基础设施增、办公设施减；无美元数","dir":"new","b":"现金口径；定性指引不折算成数字","v":"For 2023, we expect total capex to be generally in line with 2022, with an increase in technical infrastructure versus a decline in office facilities. Our ongoing investment in technical infrastructure is obviously a critical component of supporting our long-term growth opportunities.","u":"https://www.fool.com/earnings/call-transcripts/2023/02/02/alphabet-googl-q4-2022-earnings-call-transcript/","cf":"high"},{"c":"MSFT","d":"2023-04-25","fr":"FY23Q3","nq":"2023Q1","t":"FY23Q4（季度）","tt":"quarter","sp":"Amy Hood","mid":null,"lo":null,"hi":null,"q":"措辞升级为 material 环比上升，并首次把增量直接归因于 Azure AI 基础设施","dir":"new","b":"口径A 含融资租赁；纯定性无美元数","v":"We expect capital expenditures to have a material sequential increase on a dollar basis driven by investments in Azure AI infrastructure. Reminder there can be normal quarterly spend variability in the timing of our cloud infrastructure buildout.","u":"https://www.microsoft.com/en-us/investor/events/fy-2023/earnings-fy-2023-q3","cf":"high"},{"c":"GOOGL","d":"2023-04-25","fr":"2023Q1","nq":"2023Q1","t":"FY2023（全年）","tt":"calendar_year","sp":"Ruth Porat","mid":null,"lo":null,"hi":null,"q":"由「持平」上修为「略高于 2022」，并预告 Q2 起逐季抬升——2023 年内唯一一次方向性上修","dir":"raised","b":"现金口径；定性指引不折算成数字","v":"Finally, as it relates to CapEx, for 2023, we now expect total CapEx to be modestly higher than in 2022. As discussed last quarter, CapEx this year will include a meaningful increase in technical infrastructure versus a decline in office facilities. We expect the pace of investment in both data center construction and servers to step up in the second quarter and continue to increase throughout the year.","u":"https://transcripts.platformaeronaut.com/transcripts/GOOG-1Q23-transcript","cf":"high"},{"c":"META","d":"2023-04-26","fr":"2023Q1","nq":"2023Q1","t":"FY2023（全年）","tt":"calendar_year","sp":"Susan Li","mid":31.5,"lo":30.0,"hi":33.0,"q":"原样重申（unchanged）；同场把 AI 容量列为主要投向，下一个季度即下调","dir":"reaffirmed","b":"金额区间；2023 年指引句未写含融资租赁（META 从 2025Q1 起才明写）","v":"We expect capital expenditures to be in the range of $30-33 billion, unchanged from our prior estimate.","u":"https://investor.atmeta.com/investor-news/press-release-details/2023/Meta-Reports-First-Quarter-2023-Results/default.aspx","cf":"high"},{"c":"AMZN","d":"2023-04-27","fr":"2023Q1","nq":"2023Q1","t":"FY2023（全年，仅定性）","tt":"calendar_year","sp":"Brian Olsavsky","mid":null,"lo":null,"hi":null,"q":"只说低于 2022 的 590 亿、不给数字；履约交通省下的钱转投 AWS 与生成式 AI","dir":"new","b":"口径A（capital investments = capex + 设备融资租赁）","v":"For the full year 2023, we expect capital investments to be lower than our $59 billion investment level in 2022, primarily driven by an expected year-over-year decrease in fulfillment network investments.","u":"https://transcripts.platformaeronaut.com/transcripts/AMZN-1Q23-transcript","cf":"high"},{"c":"ORCL","d":"2023-06-12","fr":"FY23Q4","nq":"2023Q2","t":"FY24（财年，5月止）","tt":"fiscal_year","sp":"Safra Catz","mid":8.7,"lo":null,"hi":null,"q":"「similar to this year's capex」＝ FY23 实际 8.7；同场自述这是「上调后」的预测","dir":"new","b":"现金口径 gross capex（不含土地/建筑，数据中心以租赁取得）","v":"Capex was 1.9 billion in Q4 and 8.7 billion for fiscal year 2023, as we continue to build capacity for existing bookings and our customers' growing needs. Given the demand we have and see in our pipeline, I've increased our capex projection and I now expect the fiscal 2024 will be similar to this year's capex.","u":"https://www.fool.com/earnings/call-transcripts/2023/06/12/oracle-orcl-q4-2023-earnings-call-transcript/","cf":"high"},{"c":"MSFT","d":"2023-07-25","fr":"FY23Q4","nq":"2023Q2","t":"FY24（全年）","tt":"fiscal_year","sp":"Amy Hood","mid":null,"lo":null,"hi":null,"q":"FY24 首次表态：逐季上升（increase sequentially each quarter through the year）；仍无美元数","dir":"new","b":"口径A 含融资租赁；纯定性无美元数","v":"To support our Microsoft Cloud growth and demand for our AI platform, we will accelerate investment in our cloud infrastructure. We expect capital expenditures to increase sequentially each quarter through the year as we scale to meet demand signals.","u":"https://www.microsoft.com/en-us/investor/events/fy-2023/earnings-fy-2023-q4","cf":"high"},{"c":"GOOGL","d":"2023-07-25","fr":"2023Q2","nq":"2023Q2","t":"FY2023（全年）","tt":"calendar_year","sp":"Ruth Porat","mid":null,"lo":null,"hi":null,"q":"Q2 环比抬升低于计划（办公设施交付变慢 + 数据中心建设延期），全年方向不变；首次把 2024 与 2023 绑在一起说「继续增长」","dir":"reaffirmed","b":"现金口径；定性指引不折算成数字","v":"Finally, as it relates to CapEx, in Q2, the largest component was for servers, which included a meaningful increase in our investments in AI compute. The sequential step up in the second quarter was lower than anticipated for two reasons. First, with respect to office facilities, we continue to moderate the pace of fit outs and ground up construction to reflect the slower expected pace of headcount growth. Second, there were delays in certain data center construction projects. We expect elevated levels of investment in our technical infrastructure increasing through the back half of 2023 and continuing to grow in 2024.","u":"https://transcripts.platformaeronaut.com/transcripts/GOOG-2Q23-transcript","cf":"high"},{"c":"META","d":"2023-07-26","fr":"2023Q2","nq":"2023Q2","t":"FY2023（全年）","tt":"calendar_year","sp":"Susan Li","mid":28.5,"lo":27.0,"hi":30.0,"q":"下调并写明两条理由：非 AI 服务器省钱 + 部分支出推迟到 2024（不是砍计划）","dir":"lowered","b":"金额区间；2023 年指引句未写含融资租赁（META 从 2025Q1 起才明写）","v":"We expect our full-year 2023 capital expenditures to be in the range of $27-30 billion, lowered from our prior estimate of $30-33 billion. The reduced forecast is due to both cost savings, particularly on non-AI servers, as well as shifts in capital expenditures into 2024 from delays in projects and equipment deliveries rather than a reduction in overall investment plans.","u":"https://investor.atmeta.com/investor-news/press-release-details/2023/Meta-Reports-Second-Quarter-2023-Results/default.aspx","cf":"high"},{"c":"AMZN","d":"2023-08-03","fr":"2023Q2","nq":"2023Q2","t":"FY2023（全年）","tt":"calendar_year","sp":"Brian Olsavsky","mid":50.0,"lo":null,"hi":null,"q":"首次给美元数（slightly more than 50），是 4 月「低于 59」的具体化，不是新上修","dir":"new","b":"口径A（capital investments = capex + 设备融资租赁）","v":"Looking ahead to the full year 2023, we expect capital investments to be slightly more than $50 billion compared to $59 billion in 2022. We expect fulfillment and transportation CapEx to be down year-over-year, partially offset by increased infrastructure CapEx to support growth of our AWS business, including additional investments related to generative AI and large language model efforts.","u":"https://equibles.com/stocks/amzn/calls/2023-q2","cf":"high"},{"c":"ORCL","d":"2023-09-11","fr":"FY24Q1","nq":"2023Q3","t":"FY24（财年，5月止）","tt":"fiscal_year","sp":"Safra Catz","mid":8.7,"lo":null,"hi":null,"q":"原样重申 similar（口径为过去 12 个月 8.3，全年类推 8.7）","dir":"reaffirmed","b":"现金口径 gross capex（不含土地/建筑，数据中心以租赁取得）","v":"Capital expenditures were 8.3 billion over the last four quarters ... Given the demand we have and see in the pipeline, I expect the fiscal year 2024 capex will be similar to this past year's capex.","u":"https://www.fool.com/earnings/call-transcripts/2023/09/11/oracle-orcl-q1-2024-earnings-call-transcript/","cf":"high"},{"c":"MSFT","d":"2023-10-24","fr":"FY24Q1","nq":"2023Q3","t":"FY24Q2（季度）","tt":"quarter","sp":"Amy Hood","mid":null,"lo":null,"hi":null,"q":"措辞回落：去掉 material，只留 increase sequentially；FY24 全年依旧没有美元数","dir":"new","b":"口径A 含融资租赁；纯定性无美元数","v":"We expect capital expenditures to increase sequentially on a dollar basis, driven by investments in our cloud and AI infrastructure. As a reminder, there can be normal quarterly spend variability in the timing of our cloud infrastructure buildout.","u":"https://www.fool.com/earnings/call-transcripts/2023/10/24/microsoft-msft-q1-2024-earnings-call-transcript/","cf":"high"},{"c":"GOOGL","d":"2023-10-24","fr":"2023Q3","nq":"2023Q3","t":"FY2024（定性）","tt":"calendar_year","sp":"Ruth Porat","mid":null,"lo":null,"hi":null,"q":"FY2024 首次表态：全年高于 2023，Q4 环比继续升；FY2024 的美元数要到 2025-02-04 才给（≈750）","dir":"new","b":"现金口径；定性指引不折算成数字","v":"We continue to invest meaningfully in the technical infrastructure needed to support the opportunities we see in AI across Alphabet and expect elevated levels of investment, increasing in the fourth quarter of 2023 and continuing to grow in 2024.","u":"https://transcripts.platformaeronaut.com/transcripts/GOOG-3Q23-transcript","cf":"high"},{"c":"META","d":"2023-10-25","fr":"2023Q3","nq":"2023Q3","t":"FY2023（全年）","tt":"calendar_year","sp":"Susan Li","mid":28.0,"lo":27.0,"hi":29.0,"q":"收窄：下限不动、上限 −1（中点 28.5→28，故按中点方向计为下调）；同场首次给 FY2024 30–35","dir":"narrowed","b":"金额区间；2023 年指引句未写含融资租赁（META 从 2025Q1 起才明写）","v":"We expect 2023 capital expenditures to be in the range of $27-29 billion, updated from our prior estimate of $27-30 billion.","u":"https://investor.atmeta.com/investor-news/press-release-details/2023/Meta-Reports-Third-Quarter-2023-Results/default.aspx","cf":"high"},{"c":"AMZN","d":"2023-10-26","fr":"2023Q3","nq":"2023Q3","t":"FY2023（全年）","tt":"calendar_year","sp":"Brian Olsavsky","mid":50.0,"lo":null,"hi":null,"q":"措辞由 slightly more than 改为 approximately（口径微调，非新信息）","dir":"reaffirmed","b":"口径A（capital investments = capex + 设备融资租赁）","v":"For the full year 2023, we expect capital investments to be approximately $50 billion compared to $59 billion in 2022.","u":"https://www.fool.com/earnings/call-transcripts/2023/10/26/amazoncom-amzn-q3-2023-earnings-call-transcript/","cf":"high"},{"c":"ORCL","d":"2023-12-11","fr":"FY24Q2","nq":"2023Q4","t":"FY24（财年，5月止）","tt":"fiscal_year","sp":"Safra Catz","mid":8.0,"lo":null,"hi":null,"q":"8.7→around 8，全库唯一一条在财年内被下调的 ORCL 指引；同场仍强调 H2 才放量（实际全年只花 6.87）","dir":"lowered","b":"现金口径 gross capex（不含土地/建筑，数据中心以租赁取得）","v":"Given the enormity of our pipeline and backlog, I expect CapEx will be somewhere around $8 billion this fiscal year, meaning our second half CapEx will be considerably higher as we bring online more capacity.","u":"https://investiment.io/symbols/ORCL/earnings/transcripts/2024/2","cf":"high"},{"c":"MSFT","d":"2024-01-30","fr":"FY24Q2","nq":"2023Q4","t":"FY24Q3（季度）","tt":"quarter","sp":"Amy Hood","mid":null,"lo":null,"hi":null,"q":"环比 materially 上升","dir":"new","b":"口径A 含融资租赁；纯定性无美元数","v":"We expect capital expenditures to increase materially on a sequential basis driven by investments in our cloud and AI infrastructure and the slip of a delivery date from Q2 to Q3 from a third-party provider noted earlier.","u":"https://www.microsoft.com/en-us/investor/events/fy-2024/earnings-fy-2024-q2","cf":"high"},{"c":"GOOGL","d":"2024-01-30","fr":"2023Q4","nq":"2023Q4","t":"FY2024（全年）","tt":"calendar_year","sp":"Ruth Porat","mid":null,"lo":null,"hi":null,"q":"『notably larger』，全程未给数字区间","dir":"new","b":"现金 capex；2023 基数 32.3","v":"In 2024, we expect investment in capex will be notably larger than in 2023. ... There was no one-time item in there.","u":"https://www.fool.com/earnings/call-transcripts/2024/01/30/alphabet-googl-q4-2023-earnings-call-transcript/","cf":"high"},{"c":"AMZN","d":"2024-02-01","fr":"2023Q4","nq":"2023Q4","t":"FY2024（全年）","tt":"calendar_year","sp":"Brian Olsavsky","mid":null,"lo":null,"hi":null,"q":"同比上升，明确拒绝给数字","dir":"new","b":"口径A（capital investments = cash + 设备融资租赁）；FY2023 基数 48.4","v":"capex will go up in 2024. I'm not giving a number today, but we do expect capex to rise as we add capacity in AWS for region expansions, but primarily the work we're doing with generative AI projects.","u":"https://www.fool.com/earnings/call-transcripts/2024/02/01/amazoncom-amzn-q4-2023-earnings-call-transcript/","cf":"high"},{"c":"META","d":"2024-02-01","fr":"2023Q4","nq":"2023Q4","t":"FY2024（全年）","tt":"calendar_year","sp":"Susan Li","mid":33.5,"lo":30.0,"hi":37.0,"q":"相对窗口外 10/2023 的 30–35，上限 +2（实质上调）","dir":"new","b":"金额区间；本句未点明 finance lease 限定","v":"We anticipate our full-year 2024 capital expenditures will be in the range of $30-37 billion, a $2 billion increase of the high end of our prior range.","u":"https://s21.q4cdn.com/399680738/files/doc_financials/2023/q4/META-Q4-2023-Earnings-Call-Transcript.pdf","cf":"high"},{"c":"ORCL","d":"2024-03-11","fr":"FY24Q3","nq":"2024Q1","t":"FY24（财年，5月止）","tt":"fiscal_year","sp":"Safra Catz","mid":7.25,"lo":7.0,"hi":7.5,"q":"8.0→7.0–7.5，FY24 的第三次下修；同场 Q&A 首次给 FY25 初步 ≈10。「首次给数」的身份移交给了 2023-06-12 的 ≈8.7","dir":"lowered","b":"现金口径 gross capex（不含土地/建筑，数据中心以租赁取得）；管理层口径为「已花/将付」，与现金流量表存在付款时序差","v":"I expect the capex will be somewhere around 7 billion to 7.5 billion this fiscal year, meaning our Q4 capex should be considerably higher.","u":"https://equibles.com/stocks/orcl/calls/2024-q3","cf":"high"},{"c":"ORCL","d":"2024-03-11","fr":"FY24Q3","nq":"2024Q1","t":"FY25（财年，首次）","tt":"fiscal_year","sp":"Safra Catz","mid":10.0,"lo":null,"hi":null,"q":"下一财年初步数（about / at least preliminarily），非本年指引；同年 6 月被「翻倍」口径取代","dir":"new","b":"现金口径 gross capex；第三方逐字稿（equibles/goodmoat 两站一致，未取得公司官方原文）","v":"For fiscal year '25, we're looking at about $10 billion in CapEx because it also involves not only some big centers but also expansions of existing centers. So we've already got some areas that we will be filling out. So at least preliminarily, we're looking at $10 billion for next year.","u":"https://equibles.com/stocks/orcl/calls/2024-q3","cf":"medium"},{"c":"META","d":"2024-04-24","fr":"2024Q1","nq":"2024Q1","t":"FY2024（全年）","tt":"calendar_year","sp":"Susan Li","mid":37.5,"lo":35.0,"hi":40.0,"q":"上下限 +5/+3","dir":"raised","b":"金额区间","v":"We anticipate our full-year 2024 capital expenditures will be in the range of $35-40 billion, increased from our prior range of $30-37 billion as we continue to accelerate our infrastructure investments to support our AI roadmap.","u":"https://s21.q4cdn.com/399680738/files/doc_financials/2024/q1/META-Q1-2024-Earnings-Call-Transcript.pdf","cf":"high"},{"c":"MSFT","d":"2024-04-25","fr":"FY24Q3","nq":"2024Q1","t":"FY24Q4（季度）+ FY25（全年）","tt":"fiscal_year","sp":"Amy Hood","mid":null,"lo":null,"hi":null,"q":"FY25 > FY24，无幅度","dir":"new","b":"口径A；FY25 首次表态，纯定性","v":"We expect capital expenditures to increase materially on a sequential basis driven by cloud and AI infrastructure investments. ... we expect FY25 capital expenditures to be higher than FY24.","u":"https://www.microsoft.com/en-us/investor/events/fy-2024/earnings-fy-2024-q3","cf":"high"},{"c":"GOOGL","d":"2024-04-25","fr":"2024Q1","nq":"2024Q1","t":"2024 全年（季度 run-rate 表述）","tt":"run_rate","sp":"Ruth Porat","mid":null,"lo":12.0,"hi":null,"q":"≥12/季（隐含全年 ≥48）；对 2025 明确拒绝表态","dir":"new","b":"cash capex；形态是季度 run-rate 而非全年金额","v":"we do expect the quarterly capex throughout the year to be roughly at or above the $12 billion cash capex we had here in Q1, keeping in mind that the timing of cash payments can cause variability.","u":"https://www.fool.com/earnings/call-transcripts/2024/04/25/alphabet-googl-q1-2024-earnings-call-transcript/","cf":"high"},{"c":"AMZN","d":"2024-04-30","fr":"2024Q1","nq":"2024Q1","t":"FY2024（全年）","tt":"calendar_year","sp":"Brian Olsavsky","mid":null,"lo":null,"hi":null,"q":"『meaningfully』同比增长；Q1 为全年低点","dir":"reaffirmed","b":"口径A；措辞由 increase 升级为 meaningfully increase","v":"We anticipate our overall capital expenditures to meaningfully increase year over year in 2024 ... Right now, in Q1, we had $14 billion of capex. We expect that to be the low quarter for the year.","u":"https://www.fool.com/earnings/call-transcripts/2024/04/30/amazoncom-amzn-q1-2024-earnings-call-transcript/","cf":"high"},{"c":"ORCL","d":"2024-06-11","fr":"FY24Q4","nq":"2024Q2","t":"FY25（财年）","tt":"fiscal_year","sp":"Safra Catz","mid":13.7,"lo":null,"hi":null,"q":"相对表述「翻倍」，13.7=2×FY24 实际 6.87（本库推断，非公司绝对值）；Fool 版用 will probably、Equibles 版用 could，措辞不一致","dir":"raised","b":"现金口径 gross capex（不含土地/建筑，数据中心以租赁取得）；13.7 = 2×FY24 实际 6.87，属推算值，公司只给了「翻倍」措辞，未给绝对值","v":"Capex in fiscal year '25 will probably be double what it is in fiscal year '24.","u":"https://www.fool.com/earnings/call-transcripts/2024/06/11/oracle-orcl-q4-2024-earnings-call-transcript/","cf":"medium"},{"c":"GOOGL","d":"2024-07-23","fr":"2024Q2","nq":"2024Q2","t":"2024 全年（季度 run-rate）","tt":"run_rate","sp":"Ruth Porat","mid":null,"lo":12.0,"hi":null,"q":"≥12/季，不变","dir":"reaffirmed","b":"cash capex","v":"we continue to expect quarterly capex throughout the year to be roughly at or above the Q1 capex of $12 billion.","u":"https://www.fool.com/earnings/call-transcripts/2024/07/23/alphabet-googl-q2-2024-earnings-call-transcript/","cf":"high"},{"c":"MSFT","d":"2024-07-30","fr":"FY24Q4","nq":"2024Q2","t":"FY25（全年）","tt":"fiscal_year","sp":"Amy Hood","mid":null,"lo":null,"hi":null,"q":"环比上升但删去 materially；FY25 > FY24","dir":"reaffirmed","b":"口径A；措辞降级（删 materially）","v":"We expect capital expenditures to increase on a sequential basis given our cloud and AI demand, as well as existing AI capacity constraints. ... we will scale our infrastructure investments with FY25 capital expenditures expected to be higher than FY24.","u":"https://www.microsoft.com/en-us/investor/events/fy-2024/earnings-fy-2024-q4","cf":"high"},{"c":"META","d":"2024-07-31","fr":"2024Q2","nq":"2024Q2","t":"FY2024（全年）","tt":"calendar_year","sp":"Susan Li","mid":38.5,"lo":37.0,"hi":40.0,"q":"上限不动，下限 +2","dir":"narrowed","b":"金额区间；公司用词 updated from","v":"We anticipate our full-year 2024 capital expenditures will be in the range of $37-40 billion, updated from our prior range of $35-40 billion.","u":"https://s21.q4cdn.com/399680738/files/doc_financials/2024/q2/META-Q2-2024-Earnings-Call-Transcript.pdf","cf":"high"},{"c":"AMZN","d":"2024-08-01","fr":"2024Q2","nq":"2024Q2","t":"FY2024（H2 vs H1）","tt":"calendar_year","sp":"Brian Olsavsky","mid":null,"lo":null,"hi":null,"q":"H2 > H1","dir":"reaffirmed","b":"口径A 明示（capex plus equipment finance leases）；H1 30.5 = cash 30.33 + 租赁 0.22","v":"For the first half of the year, capex was $30.5 billion. Looking ahead to the rest of 2024, we expect capital investments to be higher in the second half of the year.","u":"https://www.fool.com/earnings/call-transcripts/2024/08/01/amazoncom-amzn-q2-2024-earnings-call-transcript/","cf":"high"},{"c":"ORCL","d":"2024-09-09","fr":"FY25Q1","nq":"2024Q3","t":"FY25（财年）","tt":"fiscal_year","sp":"Safra Catz","mid":13.7,"lo":null,"hi":null,"q":"口径从 could be 硬化为 will be","dir":"reaffirmed","b":"现金口径 gross capex（不含土地/建筑，数据中心以租赁取得）","v":"We spent $2.3 billion on CapEx this quarter. Given the demand that we see in our RPO growth ... I expect fiscal year 2025 CapEx will be double what it was in fiscal 2024.","u":"https://www.fool.com/earnings/call-transcripts/2024/09/09/oracle-orcl-q1-2025-earnings-call-transcript/","cf":"high"},{"c":"GOOGL","d":"2024-10-29","fr":"2024Q3","nq":"2024Q3","t":"2024Q4 + FY2025（定性）","tt":"quarter","sp":"Anat Ashkenazi","mid":13.0,"lo":null,"hi":null,"q":"FY2025 增加但增速低于 2024 的 +63%","dir":"narrowed","b":"cash capex；问答逐字稿（官方页 403）","v":"we will be investing in Q4 at approximately the same level of what we've invested in Q3, approximately $13 billion. And as we think into 2025, we do see an increase coming in 2025 ... Likely not the same percent step up that we saw between 23 and 24, but additional increase.","u":"https://transcripts.platformaeronaut.com/transcripts/GOOG-3Q24-transcript","cf":"medium"},{"c":"MSFT","d":"2024-10-30","fr":"FY25Q1","nq":"2024Q3","t":"FY25Q2（季度）","tt":"quarter","sp":"Amy Hood","mid":null,"lo":null,"hi":null,"q":"环比上升，附『可按需求调整』条件句","dir":"reaffirmed","b":"口径A；定性","v":"We expect capital expenditures to increase on a sequential basis given our cloud and AI demand signals. As I said last quarter, we will stay aligned, and if needed adjust, to the demand signals we see.","u":"https://www.microsoft.com/en-us/investor/events/fy-2025/earnings-fy-2025-q1","cf":"high"},{"c":"META","d":"2024-10-30","fr":"2024Q3","nq":"2024Q3","t":"FY2024（全年）","tt":"calendar_year","sp":"Susan Li","mid":39.0,"lo":38.0,"hi":40.0,"q":"上限不动，下限 +1","dir":"narrowed","b":"金额区间；当季实际受 Q3 服务器交付时点影响（付款落在 Q4）","v":"We anticipate our full year 2024 capital expenditures will be in the range of $38-40 billion, updated from our prior range of $37-40 billion.","u":"https://s21.q4cdn.com/399680738/files/doc_financials/2024/q3/META-Q3-2024-Earnings-Call-Transcript.pdf","cf":"high"},{"c":"AMZN","d":"2024-10-31","fr":"2024Q3","nq":"2024Q3","t":"FY2024（全年）","tt":"calendar_year","sp":"Brian Olsavsky","mid":75.0,"lo":null,"hi":null,"q":"FY2024 首个美元指引","dir":"new","b":"口径A（含设备融资租赁）；未拆 AI 单独金额","v":"Year-to-date capital investments were $51.9 billion. We expect to spend approximately $75 billion in capex in 2024.","u":"https://www.fool.com/earnings/call-transcripts/2024/10/31/amazoncom-amzn-q3-2024-earnings-call-transcript/","cf":"high"},{"c":"ORCL","d":"2024-12-09","fr":"FY25Q2","nq":"2024Q4","t":"FY25（财年）","tt":"fiscal_year","sp":"Safra Catz","mid":13.7,"lo":null,"hi":null,"q":"不变","dir":"reaffirmed","b":"现金口径 gross capex（不含土地/建筑，数据中心以租赁取得）","v":"With CapEx at $4 billion for the quarter, free cash flow was negative $2.7 billion... I expect fiscal year 2025 CapEx will be double what it was in fiscal year FY '24.","u":"https://www.fool.com/earnings/call-transcripts/2024/12/09/oracle-orcl-q2-2025-earnings-call-transcript/","cf":"high"},{"c":"MSFT","d":"2025-01-29","fr":"FY25Q2","nq":"2024Q4","t":"FY25Q3+Q4（季度）+ FY26（全年）","tt":"fiscal_year","sp":"Amy Hood","mid":null,"lo":null,"hi":null,"q":"Q3/Q4 持平于 Q2（≈22.6）；FY26 增速 < FY25","dir":"lowered","b":"口径A；FY26 是同比增速语言，非金额","v":"We expect quarterly spend in Q3 and Q4 to remain at similar levels as our Q2 spend. ... In FY26, we expect to continue investing against strong demand signals ... However, the growth rate will be lower than FY25 and the mix of spend will begin to shift back to short-lived assets.","u":"https://www.microsoft.com/en-us/investor/events/fy-2025/earnings-fy-2025-q2","cf":"high"},{"c":"META","d":"2025-01-29","fr":"2024Q4","nq":"2024Q4","t":"FY2025（全年）","tt":"calendar_year","sp":"Susan Li","mid":62.5,"lo":60.0,"hi":65.0,"q":"FY2025 首个区间；主体仍为核心业务","dir":"new","b":"金额区间；仍在指引句未加 finance lease 限定","v":"We anticipate our full year 2025 capital expenditures will be in the range of $60-65 billion. We expect capex growth in 2025 will be driven by increased investment to support both our generative AI efforts and our core business.","u":"https://s21.q4cdn.com/399680738/files/doc_financials/2024/q4/META-Q4-2024-Earnings-Call-Transcript.pdf","cf":"high"},{"c":"GOOGL","d":"2025-02-04","fr":"2024Q4","nq":"2024Q4","t":"FY2025（全年）","tt":"calendar_year","sp":"Anat Ashkenazi","mid":75.0,"lo":null,"hi":null,"q":"首次给全年具体金额","dir":"new","b":"cash capex；approximately","v":"We expect to invest approximately $75 billion in capex in 2025, with approximately $16 billion to $18 billion of that in the first quarter.","u":"https://www.fool.com/earnings/call-transcripts/2025/02/05/alphabet-goog-q4-2024-earnings-call-transcript/","cf":"high"},{"c":"AMZN","d":"2025-02-06","fr":"2024Q4","nq":"2024Q4","t":"FY2025（用单季 run-rate 锚定）","tt":"run_rate","sp":"Brian Olsavsky","mid":105.0,"lo":null,"hi":null,"q":"未给全年数字；26.3×4 为本库外推值，非公司口径","dir":"new","b":"口径A；标准化金额为研究者外推（低可信）","v":"Capital investments were $26.3 billion in the fourth quarter. And we think that run rate will be reasonably representative of our 2025 capital investment rate.","u":"https://www.fool.com/earnings/call-transcripts/2025/02/06/amazoncom-amzn-q4-2024-earnings-call-transcript/","cf":"medium"},{"c":"ORCL","d":"2025-03-10","fr":"FY25Q3","nq":"2025Q1","t":"FY25（财年）","tt":"fiscal_year","sp":"Safra Catz","mid":16.0,"lo":null,"hi":null,"q":"首次给绝对值；13.7→16（+17%）","dir":"raised","b":"现金口径 gross capex（不含土地/建筑，数据中心以租赁取得）","v":"I expect fiscal year 2025 CapEx to be a little more than double last year's, around $16 billion.","u":"https://www.fool.com/earnings/call-transcripts/2025/03/10/oracle-orcl-q3-2025-earnings-call-transcript/","cf":"high"},{"c":"GOOGL","d":"2025-04-24","fr":"2025Q1","nq":"2025Q1","t":"FY2025（全年）","tt":"calendar_year","sp":"Anat Ashkenazi","mid":75.0,"lo":null,"hi":null,"q":"不变（still expect）","dir":"reaffirmed","b":"cash capex","v":"starting with our expectation for CapEx for the full year 2025, we still expect to invest approximately $75 billion in CapEx this year.","u":"https://transcripts.platformaeronaut.com/transcripts/GOOG-1Q25-transcript","cf":"high"},{"c":"MSFT","d":"2025-04-30","fr":"FY25Q3","nq":"2025Q1","t":"FY25Q4（季度）+ FY26（全年）","tt":"fiscal_year","sp":"Amy Hood","mid":null,"lo":null,"hi":null,"q":"Q4 环比上升但 H2 合计不变；FY26 增速 < FY25 维持","dir":"reaffirmed","b":"口径A；定性","v":"We expect Q4 capital expenditures to increase on a sequential basis. H2 capex in total remains unchanged from our January H2 guidance. ... We expect capex to grow, it will grow at a lower rate than FY25.","u":"https://www.microsoft.com/en-us/investor/events/fy-2025/earnings-fy-2025-q3","cf":"high"},{"c":"META","d":"2025-04-30","fr":"2025Q1","nq":"2025Q1","t":"FY2025（全年）","tt":"calendar_year","sp":"Susan Li","mid":68.0,"lo":64.0,"hi":72.0,"q":"上下限 +4/+7，区间由 5 放宽到 8","dir":"raised","b":"首次在指引句中明写含 finance lease principal（口径从此固定）","v":"We anticipate our full year 2025 capital expenditures, including principal payments on finance leases, will be in the range of $64-72 billion, increased from our prior outlook of $60-65 billion. This updated outlook reflects additional data center investments to support our AI efforts as well as an increase in the expected cost of infrastructure hardware.","u":"https://s21.q4cdn.com/399680738/files/doc_financials/2025/q1/Transcripts/META-Q1-2025-Earnings-Call-Transcript-1.pdf","cf":"high"},{"c":"AMZN","d":"2025-05-01","fr":"2025Q1","nq":"2025Q1","t":"FY2025（未给指引）","tt":"none","sp":"Brian Olsavsky","mid":null,"lo":null,"hi":null,"q":"未给全年美元数字，仅定性下半年加产能","dir":"none","b":"口径B（cash CapEx 首次出现）","v":"We plan to bring on an increasing amount of capacity in the back half of the year. Now turning to our cash CapEx, which was $24.3 billion in Q1.","u":"https://earningscalls.dev/transcripts/amazon-com-inc_amzn_earnings_call_transcript_2025-05-01","cf":"high"},{"c":"CRWV","d":"2025-05-14","fr":"2025Q1","nq":"2025Q1","t":"2025Q2（季度）","tt":"quarter","sp":"Nitin Agrawal","mid":3.25,"lo":3.0,"hi":3.5,"q":"","dir":"new","b":"单季金额；公司口径含融资租赁资产、扣 CIP 增量","v":"And we expect our CapEx for the second quarter to be $3 billion to $3.5 billion, reflecting our strategic decision to accelerate our platform investments to meet customer demand.","u":"https://s205.q4cdn.com/133937190/files/doc_financials/2025/q1/CORRECTED-TRANSCRIPT_-CoreWeave-Inc-CRWV-US-Q1-2025-Earnings-Call-14-May-2025-5_00-PM-ET.pdf","cf":"high"},{"c":"CRWV","d":"2025-05-14","fr":"2025Q1","nq":"2025Q1","t":"FY2025（全年）","tt":"calendar_year","sp":"Nitin Agrawal","mid":21.5,"lo":20.0,"hi":23.0,"q":"","dir":"new","b":"全年金额；含 OpenAI 3 月合同、4bn 扩展、Weights & Biases 并表","v":"We expect adjusted operating income in the range of $800 million to $830 million and CapEx of $20 billion to $23 billion due to increased and accelerated investment in our platform to meet customer demand.","u":"https://s205.q4cdn.com/133937190/files/doc_financials/2025/q1/CORRECTED-TRANSCRIPT_-CoreWeave-Inc-CRWV-US-Q1-2025-Earnings-Call-14-May-2025-5_00-PM-ET.pdf","cf":"high"},{"c":"ORCL","d":"2025-06-11","fr":"FY25Q4","nq":"2025Q2","t":"FY26（财年）","tt":"fiscal_year","sp":"Safra Catz","mid":null,"lo":25.0,"hi":null,"q":"FY26 首指引 ≥25，当场自认「可能被低估」；同场披露 FY25 实际 21.2，远高于 ≈16 的指引","dir":"new","b":"现金口径 gross capex（不含土地/建筑，数据中心以租赁取得）","v":"I expect that FY 2026 CapEx will be higher at over $25 billion as we work to meet demand from our backlog. ... I do believe that the $25 billion next year may turn out to be understated.","u":"https://investiment.io/symbols/ORCL/earnings/transcripts/2025/4","cf":"high"},{"c":"GOOGL","d":"2025-07-23","fr":"2025Q2","nq":"2025Q2","t":"FY2025（全年）","tt":"calendar_year","sp":"Anat Ashkenazi","mid":85.0,"lo":null,"hi":null,"q":"+10（+13%）","dir":"raised","b":"cash capex；仍为单点 approximately","v":"given the strong demand for our cloud products and services, we now expect to invest approximately $85 billion in CapEx in 2025, up from a previous estimate of $75 billion. Our updated outlook reflects additional investment in servers, the timing of delivery of servers, and an acceleration in the pace of data center construction.","u":"https://www.fool.com/earnings/call-transcripts/2025/07/23/alphabet-googl-q2-2025-earnings-call-transcript/","cf":"high"},{"c":"MSFT","d":"2025-07-30","fr":"FY25Q4","nq":"2025Q2","t":"FY26Q1（季度）","tt":"quarter","sp":"Amy Hood","mid":null,"lo":30.0,"hi":null,"q":"首次给季度美元档位；FY26 增速 moderate(<FY25)","dir":"new","b":"口径A 含融资租赁；当季 A=24.2=B 17.1+租赁 6.5","v":"We expect Q1 capital expenditures to be over $30 billion driven by the continued strong demand signals we see. ... Capital expenditure growth ... will moderate compared to FY25 with a greater mix of short-lived assets.","u":"https://www.microsoft.com/en-us/investor/events/fy-2025/earnings-fy-2025-q4","cf":"high"},{"c":"META","d":"2025-07-30","fr":"2025Q2","nq":"2025Q2","t":"FY2025（全年）+ FY2026 定性","tt":"calendar_year","sp":"Susan Li","mid":69.0,"lo":66.0,"hi":72.0,"q":"上限不动下限 +2；FY2026 『similarly significant』（≈再增 300 亿）","dir":"narrowed","b":"含 finance lease；同比口径为绝对额非增速","v":"We currently expect 2025 capital expenditures, including principal payments on finance leases, to be in the range of $66-72 billion, narrowed from our prior outlook of $64-72 billion and up approximately $30 billion year-over-year at the mid-point. ... we currently expect another year of similarly significant capex dollar growth in 2026.","u":"https://s21.q4cdn.com/399680738/files/doc_financials/2025/q2/META-Q2-2025-Earnings-Call-Transcript.pdf","cf":"high"},{"c":"AMZN","d":"2025-07-31","fr":"2025Q2","nq":"2025Q2","t":"FY2025（H2 run-rate）","tt":"run_rate","sp":"Brian Olsavsky","mid":125.0,"lo":null,"hi":null,"q":"31.4×4≈125.6 为本库外推值","dir":"raised","b":"口径B；标准化金额为研究者外推","v":"Now turning to our cash CapEx, which was $31.4 billion in Q2. We expect Q2 CapEx to be reasonably representative of our quarterly capital investment rate for the back half of this year.","u":"https://stockanalysis.com/stocks/amzn/transcripts/341150-q2-2025/","cf":"medium"},{"c":"CRWV","d":"2025-08-12","fr":"2025Q2","nq":"2025Q2","t":"2025Q3（季度）","tt":"quarter","sp":"Nitin Agrawal","mid":3.15,"lo":2.9,"hi":3.4,"q":"官方逐字稿原文有笔误（and 应为 to），区间语义由 in the range of 体例推定","dir":"new","b":"单季金额","v":"We expect our CapEx for the third quarter to be $2.9 billion and $3.4 billion.","u":"https://s205.q4cdn.com/133937190/files/doc_financials/2025/q2/CORRECTED-TRANSCRIPT_-CoreWeave-Inc-CRWV-US-Q2-2025-Earnings-Call-12-August-2025-5_00-PM-ET.pdf","cf":"medium"},{"c":"CRWV","d":"2025-08-12","fr":"2025Q2","nq":"2025Q2","t":"FY2025（全年）","tt":"calendar_year","sp":"Nitin Agrawal","mid":21.5,"lo":20.0,"hi":23.0,"q":"同会强调节奏：全年 capex 很大一部分落在 Q4（go-live 时点）","dir":"reaffirmed","b":"全年金额","v":"We expect CapEx in the range of $20 billion to $23 billion, unchanged from our prior guidance in the backdrop of continued strong customer demand.","u":"https://s205.q4cdn.com/133937190/files/doc_financials/2025/q2/CORRECTED-TRANSCRIPT_-CoreWeave-Inc-CRWV-US-Q2-2025-Earnings-Call-12-August-2025-5_00-PM-ET.pdf","cf":"high"},{"c":"ORCL","d":"2025-09-09","fr":"FY26Q1","nq":"2025Q3","t":"FY26（财年）","tt":"fiscal_year","sp":"Safra Catz","mid":35.0,"lo":null,"hi":null,"q":"≥25→≈35（+10bn/+40%），对应 RPO 跳升至 455bn 后的第一次跳升","dir":"raised","b":"现金口径 gross capex（不含土地/建筑，数据中心以租赁取得）","v":"Given our RPO growth, I now expect fiscal year 2026 CapEx will be around $35 billion. As a reminder, the vast majority of our CapEx investments are for revenue-generating equipment that is going into the data centers and not for land or buildings.","u":"https://investiment.io/symbols/ORCL/earnings/transcripts/2026/1","cf":"high"},{"c":"MSFT","d":"2025-10-29","fr":"FY26Q1","nq":"2025Q3","t":"FY26（全年）","tt":"fiscal_year","sp":"Amy Hood","mid":null,"lo":null,"hi":null,"q":"FY26 增速由『低于 FY25』上修为『高于 FY25』","dir":"raised","b":"口径A；全序列最关键的一次方向反转","v":"With accelerating demand and a growing RPO balance, we're increasing our spend on GPUs and CPUs. Therefore, total spend will increase sequentially, and we now expect the FY26 growth rate to be higher than FY25.","u":"https://www.microsoft.com/en-us/investor/events/fy-2026/earnings-fy-2026-q1","cf":"high"},{"c":"GOOGL","d":"2025-10-29","fr":"2025Q3","nq":"2025Q3","t":"FY2025（全年）","tt":"calendar_year","sp":"Anat Ashkenazi","mid":92.0,"lo":91.0,"hi":93.0,"q":"中值 +7，形态由单点改为区间","dir":"raised","b":"cash capex；8-K 同日同句","v":"We now expect CapEx to be in the range of $91 billion to $93 billion in 2025, up from our previous estimate of $85 billion, keeping in mind that the timing of cash payments can cause variability in the reported CapEx number.","u":"https://www.fool.com/earnings/call-transcripts/2025/10/30/alphabet-goog-q3-2025-earnings-call-transcript/","cf":"high"},{"c":"META","d":"2025-10-29","fr":"2025Q3","nq":"2025Q3","t":"FY2025（全年）+ FY2026 定性","tt":"calendar_year","sp":"Susan Li","mid":71.0,"lo":70.0,"hi":72.0,"q":"区间收窄到 2（极窄）；FY2026 措辞升级为 notably larger","dir":"narrowed","b":"含 finance lease；同会披露 Hyperion/Blue Owl 合资：2026 起数据中心建设成本不入 capex，改记 other investing","v":"We currently expect 2025 capital expenditures, including principal payments on finance leases, to be in the range of $70-72 billion, increased from our prior outlook of $66-72 billion. ... our current expectation is that capex dollar growth will be notably larger in 2026 than 2025.","u":"https://s21.q4cdn.com/399680738/files/doc_financials/2025/q3/META-Q3-2025-Earnings-Call-Transcript.pdf","cf":"high"},{"c":"AMZN","d":"2025-10-30","fr":"2025Q3","nq":"2025Q3","t":"FY2025（全年）+ FY2026 方向","tt":"calendar_year","sp":"Brian Olsavsky","mid":125.0,"lo":null,"hi":null,"q":"FY2025 首个正式全年指引（与 7 月外推一致）；FY2026 仅定性上升","dir":"reaffirmed","b":"口径B","v":"We've now spent $89.9 billion so far this year. ... Looking ahead, we expect our full year cash CapEx to be approximately $125 billion in 2025, and we expect that amount will increase in 2026.","u":"https://www.fool.com/earnings/call-transcripts/2025/10/31/amazoncom-amzn-q3-2025-earnings-call-transcript/","cf":"high"},{"c":"CRWV","d":"2025-11-10","fr":"2025Q3","nq":"2025Q3","t":"FY2025（全年）","tt":"calendar_year","sp":"Nitin Agrawal","mid":13.0,"lo":12.0,"hi":14.0,"q":"−8.5bn/−40%，但主要是口径位移（钱进 CIP、推迟到 2026Q1 才『变回』capex），不是少花钱","dir":"lowered","b":"全年金额；口径位移陷阱，最易误读为需求转弱","v":"Moving to CapEx, we now expect 2025 CapEx in the range of $12 billion to $14 billion. ... We expect this reduction in CapEx from our prior guidance will be mostly reflected by a corresponding increase in construction in progress.","u":"https://s205.q4cdn.com/133937190/files/doc_financials/2025/q3/CORRECTED-TRANSCRIPT_-CoreWeave-Inc-CRWV-US-Q3-2025-Earnings-Call-10-November-2025-5_00-PM-ET.pdf","cf":"high"},{"c":"CRWV","d":"2025-11-10","fr":"2025Q3","nq":"2025Q3","t":"FY2026（首次定性）","tt":"calendar_year","sp":"Nitin Agrawal","mid":null,"lo":null,"hi":null,"q":"2026 capex > 2×2025（倍数基准是被压低的 12–14）","dir":"new","b":"定性倍数；基准受口径位移影响，倍数天然偏高","v":"given the significant growth in our backlog and continued insatiable demand for our cloud services, we expect CapEx in 2026 to be well in excess of double that of 2025.","u":"https://s205.q4cdn.com/133937190/files/doc_financials/2025/q3/CORRECTED-TRANSCRIPT_-CoreWeave-Inc-CRWV-US-Q3-2025-Earnings-Call-10-November-2025-5_00-PM-ET.pdf","cf":"high"},{"c":"ORCL","d":"2025-12-10","fr":"FY26Q2","nq":"2025Q4","t":"FY26（财年）","tt":"fiscal_year","sp":"Doug Kehring","mid":50.0,"lo":null,"hi":null,"q":"35+15=50（本库推断，公司未直接报 50）；同场首次系统提出 BYOH／供应商租赁芯片／客户预付三条降现金支出路径","dir":"raised","b":"现金口径 gross capex（不含土地/建筑，数据中心以租赁取得）","v":"given the added RPO this quarter, that can be monetized quickly starting next year, we now expect fiscal 2026 CapEx will be about $15 billion higher than we forecasted after Q1.","u":"https://investiment.io/symbols/ORCL/earnings/transcripts/2026/2","cf":"high"},{"c":"MSFT","d":"2026-01-28","fr":"FY26Q2","nq":"2025Q4","t":"FY26Q3（季度）","tt":"quarter","sp":"Amy Hood","mid":null,"lo":null,"hi":null,"q":"首次给『环比下降』指引；并首提内存涨价影响 capex","dir":"lowered","b":"口径A；定性","v":"Next, we expect capital expenditures to decrease on a sequential basis due to the normal variability from cloud infrastructure buildouts and the timing of delivery of finance leases. ... rising memory prices would impact capital expenditures.","u":"https://www.microsoft.com/en-us/investor/events/fy-2026/earnings-fy-2026-q2","cf":"high"},{"c":"META","d":"2026-01-28","fr":"2025Q4","nq":"2025Q4","t":"FY2026（全年）","tt":"calendar_year","sp":"Susan Li","mid":125.0,"lo":115.0,"hi":135.0,"q":"区间宽度 20，为历史最宽；中值 vs FY2025 实际 72.2 约 +73%","dir":"new","b":"含 finance lease；区间宽度 20 说明公司自身对落地规模无把握","v":"We anticipate 2026 capital expenditures, including principal payments on finance leases, to be in the range of $115-135 billion, with year-over-year growth driven by increased investment to support our Meta Superintelligence Labs efforts and core business.","u":"https://s21.q4cdn.com/399680738/files/doc_financials/2025/q4/META-Q4-2025-Earnings-Call-Transcript.pdf","cf":"high"},{"c":"GOOGL","d":"2026-02-04","fr":"2025Q4","nq":"2025Q4","t":"FY2026（全年）","tt":"calendar_year","sp":"Anat Ashkenazi","mid":180.0,"lo":175.0,"hi":185.0,"q":"FY2026 首个区间；年内逐季上行","dir":"new","b":"cash capex","v":"For the full year 2026, we expect CapEx to be in the range of $175 billion to $185 billion, with investments ramping over the course of the year.","u":"https://transcripts.platformaeronaut.com/transcripts/GOOG-4Q25-transcript","cf":"high"},{"c":"AMZN","d":"2026-02-05","fr":"2025Q4","nq":"2025Q4","t":"FY2026（全年）","tt":"calendar_year","sp":"Andy Jassy","mid":200.0,"lo":null,"hi":null,"q":"FY2026 首个美元指引；隐含 vs FY2025 实际 128.3 约 +56%","dir":"new","b":"口径B；未净额化客户预付","v":"We expect to invest about $200 billion in capital expenditures across Amazon, but predominantly in AWS because we have very high demand, customers really want AWS for core and AI workloads, and we're monetizing capacity as fast as we can install it.","u":"https://earningscalls.dev/transcripts/amazon-com-inc_amzn_earnings_call_transcript_2026-02-05","cf":"high"},{"c":"CRWV","d":"2026-02-26","fr":"2025Q4","nq":"2025Q4","t":"2026Q1（季度）","tt":"quarter","sp":"Nitin Agrawal","mid":6.5,"lo":6.0,"hi":7.0,"q":"","dir":"new","b":"单季金额；官方 Outlook deck 同页同数","v":"Q1 represents the trough in our annual margin trajectory as we expect our CapEx deployments to be $6 billion to $7 billion of infrastructure in the quarter.","u":"https://s205.q4cdn.com/133937190/files/doc_financials/2025/q4/CoreWeave-4Q25-Outlook-Presentation-vF.pdf","cf":"high"},{"c":"CRWV","d":"2026-02-26","fr":"2025Q4","nq":"2025Q4","t":"FY2026（全年）","tt":"calendar_year","sp":"Nitin Agrawal","mid":32.5,"lo":30.0,"hi":35.0,"q":"CEO 同会说『at least $30 billion』，与 CFO/官方 deck 的 30–35 不一致，须并列引用","dir":"new","b":"全年金额；『substantially all tied to already signed customer contracts』","v":"We expect 2026 CapEx of $30 billion-$35 billion, which is more than double our 2025 investment.","u":"https://s205.q4cdn.com/133937190/files/doc_financials/2025/q4/CoreWeave-4Q25-Outlook-Presentation-vF.pdf","cf":"high"},{"c":"ORCL","d":"2026-03-10","fr":"FY26Q3","nq":"2026Q1","t":"FY26（财年）","tt":"fiscal_year","sp":"Doug Kehring（电话会）/ 公司新闻稿","mid":50.0,"lo":null,"hi":null,"q":"同日新闻稿重申 FY26 capex $50B 不变（数字来自 8-K/新闻稿，非电话会口述）；电话会本身只谈 capex 与融资脱钩","dir":"reaffirmed","b":"现金口径 gross capex；新闻稿原文（电话会未复述数字）","v":"For fiscal year 2026, we expect revenue of $67 billion and capital expenditures of $50 billion. This is unchanged from our most recent previous guidance.","u":"https://s23.q4cdn.com/440135859/files/doc_financials/2026/q3/3q26-pressrelease-March-FINAL.pdf","cf":"high"},{"c":"ORCL","d":"2026-03-10","fr":"FY26Q3","nq":"2026Q1","t":"FY27（财年，被推迟）","tt":"none","sp":"Doug Kehring","mid":null,"lo":null,"hi":null,"q":"主动不给 FY27 指引，推迟到 6 月；提出 capex 与「Oracle 自筹资金」脱钩（>90% 数据中心与电力由合作方出资）","dir":"none","b":"现金口径 gross capex。**本场未给 FY27 数字**（明确推迟到财年结束后），故 target_type 记为 none：不进「事前指引」行；该季有效年度指引仍是同日重申的 FY26 $50B","v":"on CapEx, I think we will get back to everyone after the end of the fiscal year and talk about next year's CapEx at that point in time... the uncoupling of CapEx with capital requirements from Oracle Corporation.","u":"https://www.fool.com/earnings/call-transcripts/2026/03/10/oracle-orcl-q3-2026-earnings-call-transcript/","cf":"high"},{"c":"MSFT","d":"2026-04-29","fr":"FY26Q3","nq":"2026Q1","t":"FY26Q4（季度）","tt":"quarter","sp":"Amy Hood","mid":null,"lo":40.0,"hi":null,"q":"由『环比下降』转为 ≥40","dir":"raised","b":"口径A；含约 5bn 纯价格因素","v":"We expect CapEx spend to increase to over $40 billion as we continue to bring more capacity online. The sequential increase includes roughly $5 billion from higher component pricing.","u":"https://www.microsoft.com/en-us/investor/events/fy-2026/earnings-fy-2026-q3","cf":"high"},{"c":"MSFT","d":"2026-04-29","fr":"FY26Q3","nq":"2026Q1","t":"CY2026（日历年全年）","tt":"calendar_year","sp":"Amy Hood","mid":190.0,"lo":null,"hi":null,"q":"首次给日历年美元数，含约 25bn 涨价","dir":"new","b":"口径A；日历年 ≠ 财年，不可与 FY 数字比","v":"For calendar year 2026, we expect to invest roughly $190 billion in capital expenditures which includes approximately $25 billion from the impact of higher component pricing.","u":"https://www.microsoft.com/en-us/investor/events/fy-2026/earnings-fy-2026-q3","cf":"high"},{"c":"GOOGL","d":"2026-04-29","fr":"2026Q1","nq":"2026Q1","t":"FY2026（全年）","tt":"calendar_year","sp":"Anat Ashkenazi","mid":185.0,"lo":180.0,"hi":190.0,"q":"中值 +5，但性质是并购口径并入，非纯有机上修","dir":"raised","b":"cash capex；首次把 Intersect（2026-03 交割）投资并入，与 2025 及以前纯有机口径不可直接比","v":"we are updating our full-year 2026 CapEx Guidance Range to $180 to $190 billion, up from our previous estimate of $175 to $185 billion, to now include investment related to the acquisition of Intersect, which closed in March.","u":"https://transcripts.platformaeronaut.com/transcripts/GOOG-1Q26-transcript","cf":"high"},{"c":"AMZN","d":"2026-04-29","fr":"2026Q1","nq":"2026Q1","t":"FY2026（全年）","tt":"calendar_year","sp":"Andy Jassy","mid":200.0,"lo":null,"hi":null,"q":"维持 200，明确『无新数字』；首提『现金支出与投产错配』","dir":"reaffirmed","b":"口径B","v":"So I do not have a new update on capital. Our plan is largely the same ... Of the AWS CapEx we intend to spend in 2026, much of which will be installed in future years, we have high confidence this will be monetized well.","u":"https://www.fool.com/earnings/call-transcripts/2026/04/29/amazon-amzn-q1-2026-earnings-call-transcript/","cf":"high"},{"c":"META","d":"2026-04-29","fr":"2026Q1","nq":"2026Q1","t":"FY2026（全年）","tt":"calendar_year","sp":"Susan Li","mid":135.0,"lo":125.0,"hi":145.0,"q":"上下限各 +10，宽度维持 20；归因=元器件涨价（成本推动）","dir":"raised","b":"含 finance lease","v":"We anticipate 2026 capital expenditures, including principal payments on finance leases, to be in the range of $125-145 billion, increased from our prior range of $115-135 billion. This reflects our expectations for higher component pricing this year and, to a lesser extent, additional data center costs to support future year capacity.","u":"https://s21.q4cdn.com/399680738/files/doc_financials/2026/q1/META-Q1-2026-Earnings-Call-Transcript.pdf","cf":"high"},{"c":"CRWV","d":"2026-05-07","fr":"2026Q1","nq":"2026Q1","t":"2026Q2（季度）","tt":"quarter","sp":"Nitin Agrawal","mid":8.0,"lo":7.0,"hi":9.0,"q":"","dir":"new","b":"单季金额","v":"We expect CapEx to be $7 billion to $9 billion as we continue to bring significant capacity online in service of our contracted revenue backlog.","u":"https://s205.q4cdn.com/133937190/files/doc_financials/2026/q1/CoreWeave-1Q26-Outlook-Presentation.pdf","cf":"high"},{"c":"CRWV","d":"2026-05-07","fr":"2026Q1","nq":"2026Q1","t":"FY2026（全年）","tt":"calendar_year","sp":"Nitin Agrawal","mid":33.0,"lo":31.0,"hi":35.0,"q":"仅下限 +1、上限不变；归因=零部件涨价（非需求上调）","dir":"raised","b":"全年金额","v":"For the full year, we now expect CapEx of $31 billion to $35 billion. The increase on the low end from our previous guidance is related to increases in component pricing.","u":"https://s205.q4cdn.com/133937190/files/doc_financials/2026/q1/CoreWeave-1Q26-Outlook-Presentation.pdf","cf":"high"},{"c":"ORCL","d":"2026-06-10","fr":"FY26Q4","nq":"2026Q2","t":"FY27（财年）","tt":"fiscal_year","sp":"Hilary Maxson","mid":92.5,"lo":90.0,"hi":95.0,"q":"首次引入 net cash outlay 口径：net≈70，reported≈92.5（=70+20~25，本库推断）；FY27 拟融资 40bn","dir":"new","b":"gross/reported capex 与 net cash outlay 双口径首次并立；跨期比较会被口径切换污染","v":"with an expected net cash outlay for capital expenditures of around $70 billion. This includes customer prepayments and timing impacts expected at around $20 billion to $25 billion so our reported CapEx will be higher by this amount.","u":"https://www.fool.com/earnings/call-transcripts/2026/06/10/oracle-orcl-q4-2026-earnings-call-transcript/","cf":"high"},{"c":"GOOGL","d":"2026-07-22","fr":"2026Q2","nq":"2026Q2","t":"FY2026（全年）","tt":"calendar_year","sp":"Anat Ashkenazi","mid":200.0,"lo":195.0,"hi":205.0,"q":"中值 +15，有机（容量交付加速）","dir":"raised","b":"cash capex；同会提第三方容量为费用/采购安排，不入 capex","v":"we are updating our full-year 2026 CapEx guidance range to $195 to $205 billion, up from our previous estimate of $180 to $190 billion. The increase in the range is primarily due to an acceleration in the delivery of capacity to meet growing demand.","u":"https://transcripts.platformaeronaut.com/transcripts/GOOG-2Q26-transcript","cf":"high"},{"c":"MSFT","d":"2026-07-29","fr":"FY26Q4","nq":"2026Q2","t":"FY27Q1（季度）","tt":"quarter","sp":"Amy Hood","mid":null,"lo":50.0,"hi":null,"q":"季度 ≥50（新口径）","dir":"raised","b":"口径A；折旧年限 15→25 年，更多数据中心转 operating lease（不入 capex）","v":"We expect CapEx spend will be over $50 billion including the lease reclassification impact from the useful life update.","u":"https://www.microsoft.com/en-us/investor/events/fy-2026/earnings-fy-2026-q4","cf":"high"},{"c":"MSFT","d":"2026-07-29","fr":"FY26Q4","nq":"2026Q2","t":"CY2026（日历年全年，重述）","tt":"calendar_year","sp":"Amy Hood","mid":175.0,"lo":null,"hi":null,"q":"表面 190→175 下调，但公司明示『计划未变』= 口径下调非计划下调","dir":"lowered","b":"口径A；finance lease 入 capex、operating lease 不入 → 分子变小","v":"Outside of this useful life impact, our calendar year 2026 CapEx investment expectations remain unchanged. However, the shift from finance to operating leases adjusts our expectation to approximately $175 billion.","u":"https://www.microsoft.com/en-us/investor/events/fy-2026/earnings-fy-2026-q4","cf":"high"},{"c":"MSFT","d":"2026-07-29","fr":"FY26Q4","nq":"2026Q2","t":"FY27（全年）","tt":"fiscal_year","sp":"Amy Hood","mid":null,"lo":null,"hi":null,"q":"FY27 同比增长（无幅度）","dir":"new","b":"口径A；定性","v":"we expect FY27 capital expenditures will grow year-over-year given demand signals across our portfolio.","u":"https://www.microsoft.com/en-us/investor/events/fy-2026/earnings-fy-2026-q4","cf":"high"},{"c":"META","d":"2026-07-29","fr":"2026Q2","nq":"2026Q2","t":"FY2026（全年）","tt":"calendar_year","sp":"Susan Li","mid":137.5,"lo":130.0,"hi":145.0,"q":"上限不动，下限 +5，宽度 20→15","dir":"narrowed","b":"含 finance lease","v":"We anticipate 2026 capital expenditures, including principal payments on finance leases, to be in the range of $130-145 billion, narrowed from our prior outlook of $125-145 billion.","u":"https://s21.q4cdn.com/399680738/files/doc_financials/2026/q2/META-Q2-2026-Earnings-Call-Transcript.pdf","cf":"high"},{"c":"AMZN","d":"2026-07-30","fr":"2026Q2","nq":"2026Q2","t":"FY2026（全年）","tt":"calendar_year","sp":"Andy Jassy","mid":220.0,"lo":null,"hi":null,"q":"200→220（+10%），唯一归因为 memory 涨价（成本推动，非需求上修）","dir":"raised","b":"口径B 明示 cash CapEx","v":"We now believe we will spend approximately $220 billion in cash CapEx in 2026. The higher cost of memory pushing this number up from our prior estimate of about $200 billion. Even at that amount, we will still not have enough capacity to meet all the demand we have in 2026.","u":"https://stockanalysis.com/stocks/amzn/transcripts/657334-q2-2026/","cf":"high"},{"c":"CRWV","d":"2026-08-11","fr":"2026Q2","nq":"2026Q2","t":"2026Q3（季度）","tt":"quarter","sp":"Nitin Agrawal","mid":12.5,"lo":11.5,"hi":13.5,"q":"单季历史最高指引；全年 capex 高峰在 Q3","dir":"new","b":"单季金额","v":"We expect CapEx to be $11.5 billion to $13.5 billion based on the significant amount of new capacity we will be delivering to customers.","u":"https://s205.q4cdn.com/133937190/files/doc_financials/2026/q2/CRWV-US-CORRECTED-TRANSCRIPT-CoreWeave-Q2-2026-Earnings-Call-11August2026.pdf","cf":"high"},{"c":"CRWV","d":"2026-08-11","fr":"2026Q2","nq":"2026Q2","t":"FY2026（全年）","tt":"calendar_year","sp":"Nitin Agrawal","mid":37.0,"lo":35.0,"hi":39.0,"q":"+4bn，上下限同升；归因=交付节奏+新增大单（与 5 月的涨价原因不同）","dir":"raised","b":"全年金额","v":"As a result of our increased expectations around capacity to be delivered to customers this year, as well as some of our significant recent wins, we now expect 2026 CapEx in the range of $35 billion to $39 billion.","u":"https://s205.q4cdn.com/133937190/files/doc_financials/2026/q2/CRWV-US-CORRECTED-TRANSCRIPT-CoreWeave-Q2-2026-Earnings-Call-11August2026.pdf","cf":"high"},{"c":"ORCL","d":"2026-09-10","fr":"FY27Q1","nq":"2026Q3","t":"FY27（财年）","tt":"fiscal_year","sp":"Hilary Maxson","mid":92.5,"lo":90.0,"hi":95.0,"q":"点估计改为显式区间（reported 90–95）+ net ≤70；明确全年不线性","dir":"reaffirmed","b":"gross 90–95／net ≤70 双口径并列；当季 gross 28.5／net 18 → 预付≈10.5","v":"Our CapEx for the quarter was $28 billion ... our net cash CapEx, so net of pre[payments], was $18 billion for the quarter. ... We continue to anticipate $90 billion to $95 billion in CapEx for the full year with not more than $70 billion in net cash CapEx.","u":"https://www.fool.com/earnings/call-transcripts/2026/09/11/oracle-orcl-q1-2027-earnings-call-transcript/","cf":"high"},{"c":"META","d":"2026-10-21","fr":"2026Q3","nq":"2026Q3","t":"FY2026（全年）+ FY2027 定性","tt":"calendar_year","sp":"Susan Li","mid":140.0,"lo":135.0,"hi":145.0,"q":"上限不动，下限 +5，宽度 15→10；FY2027 无数字，Q4 会才给","dir":"narrowed","b":"含 finance lease；2024 年以来 12 次会从未下调、也从未原样重申（2023 年下调过 3 次）","v":"We anticipate 2026 capital expenditures, including principal payments on finance leases, to be in the range of $135-145 billion, narrowed from our prior outlook of $130-145 billion. ... we expect to continue investing aggressively to support both our core business and emerging AI initiatives.","u":"https://s21.q4cdn.com/399680738/files/content_files/META-Q3-2026-Earnings-Call-Transcript.pdf","cf":"high"},{"c":"MSFT","d":"2026-10-28","fr":"FY27Q1","nq":"2026Q3","t":"FY27Q2（季度）","tt":"quarter","sp":"Amy Hood","mid":null,"lo":50.0,"hi":null,"q":"季度 ≥50；本季（FY27Q1）实际 45.2 未达上次给的 ≥50（部分 3P 容量交付延迟）","dir":"new","b":"口径A（capex incl. finance leases）；本季融资租赁 7.4","v":"In Q2, we expect CapEx spend will be over $50 billion. Therefore, for the calendar year, spend should be approximately $170 billion due to the 3P capacity delays noted earlier.","u":"https://www.microsoft.com/en-us/investor/events/fy-2027/earnings-fy-2027-q1","cf":"high"},{"c":"MSFT","d":"2026-10-28","fr":"FY27Q1","nq":"2026Q3","t":"CY2026（日历年全年）","tt":"calendar_year","sp":"Amy Hood","mid":170.0,"lo":null,"hi":null,"q":"175→170，下调归因第三方(3P)容量交付延迟（非计划缩减）；同场 FY27Q2 单季 ≥50","dir":"lowered","b":"口径A（含融资租赁）。注意与 2026-07-29 的 190→175 不同：那次是会计口径（finance→operating lease），这次是交付时点","v":"Therefore, for the calendar year, spend should be approximately $170 billion due to the 3P capacity delays noted earlier.","u":"https://www.microsoft.com/en-us/investor/events/fy-2027/earnings-fy-2027-q1","cf":"high"},{"c":"GOOGL","d":"2026-10-28","fr":"2026Q3","nq":"2026Q3","t":"FY2026（全年）","tt":"calendar_year","sp":"Anat Ashkenazi","mid":200.0,"lo":195.0,"hi":205.0,"q":"维持 195–205 不动（Q3 实际 51.4，前三季累计 131.9，占中值 66%）","dir":"reaffirmed","b":"cash capex；本场无新增量，仅确认","v":"our full year 2026 CapEx guidance range of $195 billion to $205 billion remain unchanged. We continue to expect our CapEx to increase significantly in 2027 and will provide further details on our Q4 call.","u":"https://stockanalysis.com/stocks/googl/transcripts/712854-q3-2026/","cf":"high"},{"c":"AMZN","d":"2026-10-29","fr":"2026Q3","nq":"2026Q3","t":"FY2026（全年）+ FY2027 定性","tt":"calendar_year","sp":"Andy Jassy","mid":220.0,"lo":null,"hi":null,"q":"维持 ≈220（Q3 单季 cash CapEx 75.9，远超卖方预期 58.7）；FY2027 仅定性『meaningfully more』，无数字；同会确认 AWS 2027/2028 收入增速 >40%","dir":"reaffirmed","b":"口径B 明示 cash CapEx；未净额化客户预付","v":"We still expect 2026 cash CapEx of approximately $220 billion, the majority for AWS, and expect to spend meaningfully more in 2027 with a clear line of sight to attractive financial returns, as I laid out on our last call.","u":"https://stockanalysis.com/stocks/amzn/transcripts/720308-q3-2026/","cf":"high"}],"fin":{"MSFT":{"2023Q1":{"ocf":24.441,"capex_cash":6.607,"fcf":17.834,"capex_incl_fl":7.8,"fcf_incl_fl":16.641},"2023Q2":{"ocf":28.77,"capex_cash":8.943,"fcf":19.827,"capex_incl_fl":10.7,"fcf_incl_fl":18.07},"2023Q3":{"ocf":30.583,"capex_cash":9.917,"fcf":20.666,"capex_incl_fl":11.2,"fcf_incl_fl":19.383},"2023Q4":{"ocf":18.853,"capex_cash":9.735,"fcf":9.118,"capex_incl_fl":11.5,"fcf_incl_fl":7.353},"2024Q1":{"ocf":31.917,"capex_cash":10.952,"fcf":20.965,"capex_incl_fl":14.0,"fcf_incl_fl":17.917},"2024Q2":{"ocf":37.195,"capex_cash":13.873,"fcf":23.322,"capex_incl_fl":19.0,"fcf_incl_fl":18.195},"2024Q3":{"ocf":34.18,"capex_cash":14.923,"fcf":19.257,"capex_incl_fl":20.0,"fcf_incl_fl":14.18},"2024Q4":{"ocf":22.291,"capex_cash":15.804,"fcf":6.487,"capex_incl_fl":22.6,"fcf_incl_fl":-0.309},"2025Q1":{"ocf":37.044,"capex_cash":16.745,"fcf":20.299,"capex_incl_fl":21.4,"fcf_incl_fl":15.644},"2025Q2":{"ocf":42.647,"capex_cash":17.079,"fcf":25.568,"capex_incl_fl":24.2,"fcf_incl_fl":18.447},"2025Q3":{"ocf":45.057,"capex_cash":19.394,"fcf":25.663,"capex_incl_fl":34.9,"fcf_incl_fl":10.157},"2025Q4":{"ocf":35.758,"capex_cash":29.876,"fcf":5.882,"capex_incl_fl":37.5,"fcf_incl_fl":-1.742},"2026Q1":{"ocf":46.679,"capex_cash":30.876,"fcf":15.803,"capex_incl_fl":31.9,"fcf_incl_fl":14.779},"2026Q2":{"ocf":55.441,"capex_cash":35.802,"fcf":19.639,"capex_incl_fl":41.0,"fcf_incl_fl":14.441},"2026Q3":{"ocf":58.0,"capex_cash":39.367,"fcf":18.633,"capex_incl_fl":45.2,"fcf_incl_fl":12.8}},"GOOGL":{"2023Q1":{"ocf":23.509,"capex_cash":6.289,"fcf":17.22,"capex_incl_fl":6.289,"fcf_incl_fl":17.22},"2023Q2":{"ocf":28.666,"capex_cash":6.888,"fcf":21.778,"capex_incl_fl":6.888,"fcf_incl_fl":21.778},"2023Q3":{"ocf":30.656,"capex_cash":8.055,"fcf":22.601,"capex_incl_fl":8.055,"fcf_incl_fl":22.601},"2023Q4":{"ocf":18.915,"capex_cash":11.019,"fcf":7.896,"capex_incl_fl":11.019,"fcf_incl_fl":7.896},"2024Q1":{"ocf":28.848,"capex_cash":12.012,"fcf":16.836,"capex_incl_fl":12.012,"fcf_incl_fl":16.836},"2024Q2":{"ocf":26.64,"capex_cash":13.186,"fcf":13.454,"capex_incl_fl":13.186,"fcf_incl_fl":13.454},"2024Q3":{"ocf":30.698,"capex_cash":13.061,"fcf":17.637,"capex_incl_fl":13.061,"fcf_incl_fl":17.637},"2024Q4":{"ocf":39.113,"capex_cash":14.276,"fcf":24.837,"capex_incl_fl":14.276,"fcf_incl_fl":24.837},"2025Q1":{"ocf":36.15,"capex_cash":17.197,"fcf":18.953,"capex_incl_fl":17.197,"fcf_incl_fl":18.953},"2025Q2":{"ocf":27.747,"capex_cash":22.446,"fcf":5.301,"capex_incl_fl":22.446,"fcf_incl_fl":5.301},"2025Q3":{"ocf":48.414,"capex_cash":23.953,"fcf":24.461,"capex_incl_fl":23.953,"fcf_incl_fl":24.461},"2025Q4":{"ocf":52.402,"capex_cash":27.851,"fcf":24.551,"capex_incl_fl":27.851,"fcf_incl_fl":24.551},"2026Q1":{"ocf":45.79,"capex_cash":35.674,"fcf":10.116,"capex_incl_fl":35.674,"fcf_incl_fl":10.116},"2026Q2":{"ocf":39.069,"capex_cash":44.924,"fcf":-5.855,"capex_incl_fl":44.924,"fcf_incl_fl":-5.855},"2026Q3":{"ocf":42.29,"capex_cash":51.355,"fcf":-9.065,"capex_incl_fl":51.355,"fcf_incl_fl":-9.065}},"AMZN":{"2023Q1":{"ocf":4.788,"capex_cash":14.207,"fcf":-9.419,"capex_incl_fl":14.207,"fcf_incl_fl":-9.419},"2023Q2":{"ocf":16.476,"capex_cash":11.455,"fcf":5.021,"capex_incl_fl":11.455,"fcf_incl_fl":5.021},"2023Q3":{"ocf":21.217,"capex_cash":12.479,"fcf":8.738,"capex_incl_fl":12.479,"fcf_incl_fl":8.738},"2023Q4":{"ocf":42.465,"capex_cash":14.588,"fcf":27.877,"capex_incl_fl":14.588,"fcf_incl_fl":27.877},"2024Q1":{"ocf":18.989,"capex_cash":14.925,"fcf":4.064,"capex_incl_fl":13.98,"fcf_incl_fl":5.009},"2024Q2":{"ocf":25.281,"capex_cash":17.62,"fcf":7.661,"capex_incl_fl":16.57,"fcf_incl_fl":8.711},"2024Q3":{"ocf":25.971,"capex_cash":22.62,"fcf":3.351,"capex_incl_fl":21.47,"fcf_incl_fl":4.501},"2024Q4":{"ocf":45.636,"capex_cash":27.834,"fcf":17.802,"capex_incl_fl":26.5,"fcf_incl_fl":19.136},"2025Q1":{"ocf":17.015,"capex_cash":25.019,"fcf":-8.004,"capex_incl_fl":24.31,"fcf_incl_fl":-7.295},"2025Q2":{"ocf":32.515,"capex_cash":32.183,"fcf":0.332,"capex_incl_fl":32.31,"fcf_incl_fl":0.205},"2025Q3":{"ocf":35.525,"capex_cash":35.095,"fcf":0.43,"capex_incl_fl":35.21,"fcf_incl_fl":0.315},"2025Q4":{"ocf":54.459,"capex_cash":39.522,"fcf":14.937,"capex_incl_fl":39.41,"fcf_incl_fl":15.049},"2026Q1":{"ocf":26.032,"capex_cash":44.203,"fcf":-18.171,"capex_incl_fl":44.8,"fcf_incl_fl":-18.768},"2026Q2":{"ocf":45.387,"capex_cash":54.208,"fcf":-8.821,"capex_incl_fl":53.64,"fcf_incl_fl":-8.253},"2026Q3":{"ocf":42.422,"capex_cash":77.259,"fcf":-34.837,"capex_incl_fl":77.37,"fcf_incl_fl":-34.948}},"META":{"2023Q1":{"ocf":13.998,"capex_cash":6.842,"fcf":7.156,"capex_incl_fl":7.09,"fcf_incl_fl":6.908},"2023Q2":{"ocf":17.309,"capex_cash":6.216,"fcf":11.093,"capex_incl_fl":6.35,"fcf_incl_fl":10.959},"2023Q3":{"ocf":20.402,"capex_cash":6.543,"fcf":13.859,"capex_incl_fl":6.76,"fcf_incl_fl":13.642},"2023Q4":{"ocf":19.404,"capex_cash":7.665,"fcf":11.739,"capex_incl_fl":7.9,"fcf_incl_fl":11.504},"2024Q1":{"ocf":19.246,"capex_cash":6.4,"fcf":12.846,"capex_incl_fl":6.71,"fcf_incl_fl":12.536},"2024Q2":{"ocf":19.37,"capex_cash":8.173,"fcf":11.197,"capex_incl_fl":8.47,"fcf_incl_fl":10.9},"2024Q3":{"ocf":24.724,"capex_cash":8.258,"fcf":16.466,"capex_incl_fl":9.2,"fcf_incl_fl":15.524},"2024Q4":{"ocf":27.988,"capex_cash":14.425,"fcf":13.563,"capex_incl_fl":14.84,"fcf_incl_fl":13.148},"2025Q1":{"ocf":24.026,"capex_cash":12.941,"fcf":11.085,"capex_incl_fl":13.69,"fcf_incl_fl":10.336},"2025Q2":{"ocf":25.561,"capex_cash":16.538,"fcf":9.023,"capex_incl_fl":17.01,"fcf_incl_fl":8.551},"2025Q3":{"ocf":29.999,"capex_cash":18.829,"fcf":11.17,"capex_incl_fl":19.37,"fcf_incl_fl":10.629},"2025Q4":{"ocf":36.214,"capex_cash":21.383,"fcf":14.831,"capex_incl_fl":22.14,"fcf_incl_fl":14.074},"2026Q1":{"ocf":32.226,"capex_cash":18.997,"fcf":13.229,"capex_incl_fl":19.84,"fcf_incl_fl":12.386},"2026Q2":{"ocf":31.862,"capex_cash":30.116,"fcf":1.746,"capex_incl_fl":31.08,"fcf_incl_fl":0.782},"2026Q3":{"ocf":32.785,"capex_cash":33.942,"fcf":-1.157,"capex_incl_fl":34.91,"fcf_incl_fl":-2.125}},"ORCL":{"2023Q1":{"ocf":4.275,"capex_cash":2.628,"fcf":1.647,"capex_incl_fl":2.628,"fcf_incl_fl":1.647},"2023Q2":{"ocf":5.647,"capex_cash":1.913,"fcf":3.734,"capex_incl_fl":1.913,"fcf_incl_fl":3.734},"2023Q3":{"ocf":6.974,"capex_cash":1.314,"fcf":5.66,"capex_incl_fl":1.314,"fcf_incl_fl":5.66},"2023Q4":{"ocf":0.143,"capex_cash":1.08,"fcf":-0.937,"capex_incl_fl":1.08,"fcf_incl_fl":-0.937},"2024Q1":{"ocf":5.475,"capex_cash":1.674,"fcf":3.801,"capex_incl_fl":1.674,"fcf_incl_fl":3.801},"2024Q2":{"ocf":6.081,"capex_cash":2.798,"fcf":3.283,"capex_incl_fl":2.798,"fcf_incl_fl":3.283},"2024Q3":{"ocf":7.427,"capex_cash":2.303,"fcf":5.124,"capex_incl_fl":2.303,"fcf_incl_fl":5.124},"2024Q4":{"ocf":1.304,"capex_cash":3.97,"fcf":-2.666,"capex_incl_fl":3.97,"fcf_incl_fl":-2.666},"2025Q1":{"ocf":5.933,"capex_cash":5.862,"fcf":0.071,"capex_incl_fl":5.862,"fcf_incl_fl":0.071},"2025Q2":{"ocf":6.157,"capex_cash":9.08,"fcf":-2.923,"capex_incl_fl":9.08,"fcf_incl_fl":-2.923},"2025Q3":{"ocf":8.14,"capex_cash":8.502,"fcf":-0.362,"capex_incl_fl":8.502,"fcf_incl_fl":-0.362},"2025Q4":{"ocf":2.066,"capex_cash":12.033,"fcf":-9.967,"capex_incl_fl":12.033,"fcf_incl_fl":-9.967},"2026Q1":{"ocf":7.151,"capex_cash":18.635,"fcf":-11.484,"capex_incl_fl":18.635,"fcf_incl_fl":-11.484},"2026Q2":{"ocf":14.62,"capex_cash":16.493,"fcf":-1.873,"capex_incl_fl":16.493,"fcf_incl_fl":-1.873},"2026Q3":{"ocf":23.103,"capex_cash":28.499,"fcf":-5.396,"capex_incl_fl":28.499,"fcf_incl_fl":-5.396}},"CRWV":{"2024Q1":{"ocf":2.039,"capex_cash":1.742,"fcf":0.297,"capex_incl_fl":1.742,"fcf_incl_fl":0.297},"2024Q2":{"ocf":-0.118,"capex_cash":2.247,"fcf":-2.365,"capex_incl_fl":2.247,"fcf_incl_fl":-2.365},"2024Q3":{"ocf":0.641,"capex_cash":1.215,"fcf":-0.574,"capex_incl_fl":1.215,"fcf_incl_fl":-0.574},"2024Q4":{"ocf":0.187,"capex_cash":3.498,"fcf":-3.311,"capex_incl_fl":3.498,"fcf_incl_fl":-3.311},"2025Q1":{"ocf":0.061,"capex_cash":1.407,"fcf":-1.346,"capex_incl_fl":1.858,"fcf_incl_fl":-1.797},"2025Q2":{"ocf":-0.251,"capex_cash":2.453,"fcf":-2.704,"capex_incl_fl":2.938,"fcf_incl_fl":-3.189},"2025Q3":{"ocf":1.689,"capex_cash":2.389,"fcf":-0.7,"capex_incl_fl":1.9,"fcf_incl_fl":-0.211},"2025Q4":{"ocf":1.559,"capex_cash":4.06,"fcf":-2.501,"capex_incl_fl":8.2,"fcf_incl_fl":-6.641},"2026Q1":{"ocf":2.984,"capex_cash":7.695,"fcf":-4.711,"capex_incl_fl":6.786,"fcf_incl_fl":-3.802},"2026Q2":{"ocf":0.679,"capex_cash":6.422,"fcf":-5.743,"capex_incl_fl":9.352,"fcf_incl_fl":-8.673}}},"finNote":"FCF = 经营活动现金流(OCF) − 购建固定资产现金支出(cash capex)。另给 fcf_incl_fl = OCF − 含融资租赁 capex，因为 MSFT/META 的租赁本金不进现金流量表，标准 FCF 会高估其自由度。Amazon 自报 FCF 口径更宽松（还加资产处置回款）。","calib":{"n":11,"med_first":15.6,"med_last":2.7,"n_last":11},"year":{"bars":[{"y":"2023","kind":"act","parts":[{"c":"MSFT","v":41.2},{"c":"GOOGL","v":32.3},{"c":"AMZN","v":52.7},{"c":"META","v":28.1}],"total":154.3,"g":null},{"y":"2024","kind":"act","parts":[{"c":"MSFT","v":75.6},{"c":"GOOGL","v":52.6},{"c":"AMZN","v":78.5},{"c":"META","v":39.2}],"total":245.9,"g":59.4},{"y":"2025","kind":"act","parts":[{"c":"MSFT","v":118.0},{"c":"GOOGL","v":91.4},{"c":"AMZN","v":131.2},{"c":"META","v":72.2}],"total":412.8,"g":67.9},{"y":"2026","kind":"mix","parts":[{"c":"MSFT","done":118.1,"nq":3,"guide":170,"impl":51.9,"gd":"2026-10-28"},{"c":"GOOGL","done":132.0,"nq":3,"guide":200,"impl":68.0,"gd":"2026-10-28"},{"c":"AMZN","done":175.8,"nq":3,"guide":220,"impl":44.2,"gd":"2026-10-29"},{"c":"META","done":85.8,"nq":3,"guide":140,"impl":54.2,"gd":"2026-10-21"}],"total":730,"done":511.7,"nq":3,"g":76.8},{"y":"2027E","kind":"fwd","g":44.0,"n":4,"base":730,"total":1051.2,"lo":808.1,"hi":1124.2,"spread":[10.7,54]},{"y":"2028E","kind":"fwd","g":14.0,"n":2,"base":1051.2,"total":1198.4,"lo":1177.3,"hi":1219.4,"spread":[12,16]}],"cons":{"2023":154,"2024":237,"2025":412,"2026":806,"2027":1104,"2028":1281},"fwdAsof":"2026-10-30","est":[{"house":"高盛（共识 / FactSet）","date":"2026-09-24","basket":"hyperscaler（≈ 四家 + ORCL）","basis":"capex 共识中值","levels":{"2023":154,"2024":237,"2025":412,"2026":806,"2027":1104,"2028":1281},"growth":{"2024":54,"2025":73,"2026":96,"2027":37,"2028":16},"src":"《US Equity Views：AI capex, required revenues, and what's priced in the AI trade》p.3 Exhibit 2/3"},{"house":"高盛（自家预测）","date":"2026-09-24","basket":"hyperscaler（≈ 四家 + ORCL）","basis":"GS equity research 预测","levels":{"2027":1234,"2028":1381},"growth":{"2027":54,"2028":12},"src":"《US Equity Views：AI capex, required revenues, and what's priced in the AI trade》p.3（2027 = 1,104 + 130；2028 = 1,281 + 100）"},{"house":"大摩（自家 MSe）","date":"2026-08-03","basket":"Top 14 全球 CSP","basis":"cloud cash capex","levels":{"2027":1400},"growth":{"2027":51},"src":"《Global Cloud Capex Tracker：Spending Acceleration Continues》p.1（原文写作 $1.4T、+51%）"},{"house":"瑞银 UBS","date":"2026-02-10","basket":"Top hyperscalers（11 家以上）","basis":"total hyperscale capex","levels":{"2023":184.7,"2024":311.7,"2025":514.4,"2026":827,"2027":915},"growth":{"2024":68.8,"2025":65.0,"2026":60.8,"2027":10.7},"src":"《Global IO Hardware：Memory's inflationary impact on cloud capex; deflationary impact on ODM/brand margins》p.1/p.6 Figure 10"}],"notes":["大摩 2026-02-09 版（R03）另有 CY26 共识 734.5 / MSe 795 —— 同一个 2026 年，共识从 2 月的 734.5 走到 9 月的 806，本身就是『共识也在被上修』的旁证。","共识只留一条（高盛 2026-09-24 引用的 FactSet 快照）。大摩 2026-08-03 版引用的同一家 FactSet 共识为 Top-14 口径 2026 $943B / 2027 $1,216B（+29%）——它已从表中移出，不进中位数：两个「共识」差 112，差的是篮子而非观点，并列只会被读成分歧。","表中「共识」都是券商转引的快照，窗口与统计量未披露（FactSet 默认 100 日窗口、算术均值，券商通常不复述）。因此这一列只能逐条带日期引用，不能与其他机构口中的「共识」相减，也不能自己重算。","更新方式：新报告直接往 estimates 里追加一条（house/date/basket/basis/levels/growth/src），中位数、须线与页面上那几句由日期派生的文字会重算；同时改 asof 与 checked。","高盛把 2027/2028 的自家预测明确标注为『高于共识 130 / 100』，并同时说『上修幅度会递减』——数字更激进、语气更保守，两者不矛盾。","UBS 的 2027 +10.7% 是全表最低，理由写在 R04 p.6：2027 年内存涨价一项就吃掉全部预算增量（111%），剔除涨价后『量』是负的。这是唯一一家把价/量拆开算的。","2026-11-02 复核：Q3 财报季（10-21 ~ 10-29）后未取得 R12 及以后的大行逐页原文，表内四条数字均未改。可交叉验证的只有一条：高盛 2026-09-25 经 Bloomberg 口径为『2027 年 1.2 万亿、共识 1.1 万亿、2026 年 8,000 亿』，与表内 9-24 版（共识 806 / 1104，GS 自家 1234）一致，不构成新数。","四家同篮子共识（2026-08-05，I/O Fund 引 MarketScreener，已移出表）：2026 732.5 / 2027 934.5（+28%），逐家 GOOGL 284.8 / AMZN 256.5 / MSFT 207.6 / META 185.6。移出理由：①它本质也是共识（同一批四家），与 FactSet 共识同源同性质，同时进中位数等于共识计两次权；②转述链是 yieldtheory → I/O Fund → MarketScreener 两层，无逐页原文，是全表最弱一环。","这条已过时（方向可判）：marketscreener.com 免费页不给 capex 绝对值，只给逐年比率。按 2027 CAPEX/EBITDA 106.45% × EBITDA margin 29.24% = CAPEX/Revenue ≈ 31.1% 反推，AMZN 2027 capex 在当前共识下约 275–285bn（假设 2027 收入共识 880–920bn），比 8-05 快照里的 256.5 高 20–30bn —— Q3 后共识已被上修，即使请回来也会是高于 934.5 的数。"],"rule":"三条规则：①共识只保留一份（高盛 2026-09-24 引用的 FactSet 快照），不并列第二家共识或第三方聚合共识——同一时点不同篮子引出的「共识」差 100 以上，并列会被读成观点分歧；②其余行一律是各家自家预测，与共识不同源，同权参与中位数是简化；③篮子不同 → 只比 growth，不比 levels；UBS 的 levels 明显更大不是因为它更乐观，它的 Top hyperscalers 覆盖 11 家以上。","base":730},"vint":{"snaps":["年初首次","Q1 财报季","Q2 财报季","最近一次"],"series":[{"y":2025,"vals":[242.5,248,279,288],"n":[3,3,3,3],"parts":[[{"c":"MSFT","v":null,"d":null},{"c":"GOOGL","v":75,"d":"2025-02-04"},{"c":"AMZN","v":105,"d":"2025-02-06"},{"c":"META","v":62.5,"d":"2025-01-29"}],[{"c":"MSFT","v":null,"d":null},{"c":"GOOGL","v":75,"d":"2025-04-24"},{"c":"AMZN","v":105,"d":"2025-02-06"},{"c":"META","v":68,"d":"2025-04-30"}],[{"c":"MSFT","v":null,"d":null},{"c":"GOOGL","v":85,"d":"2025-07-23"},{"c":"AMZN","v":125,"d":"2025-07-31"},{"c":"META","v":69,"d":"2025-07-30"}],[{"c":"MSFT","v":null,"d":null},{"c":"GOOGL","v":92,"d":"2025-10-29"},{"c":"AMZN","v":125,"d":"2025-10-30"},{"c":"META","v":71,"d":"2025-10-29"}]],"cohort":["GOOGL","AMZN","META"],"same":[242.5,248,279,288],"rev":18.8,"revSame":18.8},{"y":2026,"vals":[505,710,732.5,730],"n":[3,4,4,4],"parts":[[{"c":"MSFT","v":null,"d":null},{"c":"GOOGL","v":180,"d":"2026-02-04"},{"c":"AMZN","v":200,"d":"2026-02-05"},{"c":"META","v":125,"d":"2026-01-28"}],[{"c":"MSFT","v":190,"d":"2026-04-29"},{"c":"GOOGL","v":185,"d":"2026-04-29"},{"c":"AMZN","v":200,"d":"2026-04-29"},{"c":"META","v":135,"d":"2026-04-29"}],[{"c":"MSFT","v":175,"d":"2026-07-29"},{"c":"GOOGL","v":200,"d":"2026-07-22"},{"c":"AMZN","v":220,"d":"2026-07-30"},{"c":"META","v":137.5,"d":"2026-07-29"}],[{"c":"MSFT","v":170,"d":"2026-10-28"},{"c":"GOOGL","v":200,"d":"2026-10-28"},{"c":"AMZN","v":220,"d":"2026-10-29"},{"c":"META","v":140,"d":"2026-10-21"}]],"cohort":["GOOGL","AMZN","META"],"same":[505,520,557.5,560],"rev":44.6,"revSame":10.9}],"cohort":["GOOGL","AMZN","META"]},"kpi":{"ytd2026":{"MSFT":118.1,"GOOGL":132.0,"AMZN":175.8,"META":85.8},"guide2026":{"MSFT":{"v":170,"date":"2026-10-28","t":"2026"},"GOOGL":{"v":200,"date":"2026-10-28","t":"FY2026"},"AMZN":{"v":220,"date":"2026-10-29","t":"FY2026"},"META":{"v":140,"date":"2026-10-21","t":"FY2026"}},"events":96,"calib":{"n":11,"med_first":15.6,"med_last":2.7,"n_last":11},"directions":{"raised":19,"lowered":9,"narrowed":8,"new":38,"reaffirmed":20,"none":2},"n_actuals":82,"latestFull":"2026Q3","growth":107.6,"capSum":201.9,"fcfSum":-26.4,"nNeg":3,"fcfFirst":32.8,"firstQ":"2023Q1"}};</script>
+<script>
+const Q = DATA.meta.quarters;
+const MAIN = DATA.meta.main, APPX = DATA.meta.appendix;
+const CO = MAIN.concat(APPX);
+const QL = Q.map(q => q.slice(2));
+const COL = {MSFT:'#2f6fb3', GOOGL:'#b8791a', AMZN:'#1c7a4d', META:'#7a5cc4',
+             ORCL:'#b02a1c', CRWV:'#0f8b8d'};
+const DIRTXT = {new:'首次', raised:'上调', lowered:'下调', reaffirmed:'重申',
+                narrowed:'收窄', none:'无'};
+const DIRCLS = {new:'new', raised:'raised', lowered:'lowered', narrowed:'narrowed',
+                reaffirmed:'', none:''};
+
+const $ = s => document.querySelector(s);
+const svgEl = (tag, attrs, txt) => {
+  const e = document.createElementNS('http://www.w3.org/2000/svg', tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (txt != null) e.textContent = txt;
+  return e;
+};
+
+/* ---------- tooltip ---------- */
+const tip = document.createElement('div'); tip.id='tip'; document.body.appendChild(tip);
+function showTip(ev, title, body){
+  tip.innerHTML = '<div class="tt">'+title+'</div><div class="tv">'+body+'</div>';
+  tip.classList.add('on');
+  const pad=14, w=tip.offsetWidth, h=tip.offsetHeight;
+  let x = ev.clientX+pad, y = ev.clientY+pad;
+  if (x+w > innerWidth-8) x = ev.clientX-w-pad;
+  if (y+h > innerHeight-8) y = ev.clientY-h-pad;
+  tip.style.left = x+'px'; tip.style.top = y+'px';
+}
+function hideTip(){ tip.classList.remove('on'); }
+
+/* ---------- 图1：季度轨道 ---------- */
+function lead(c){ return c; }
+function drawOrbit(company){
+  const cells = DATA.series[company];
+  const host = document.getElementById('orbit-'+company);
+  if(!host) return;
+  host.innerHTML = '';
+  const W=520, H=232, m={t:16,r:12,b:30,l:38};
+  const iw=W-m.l-m.r, ih=H-m.t-m.b;
+  const n=Q.length, bw=iw/n;
+  let vmax=0;
+  cells.forEach(c=>{
+    if(c.actual!=null) vmax=Math.max(vmax,c.actual);
+    const g=c.guide;
+    if(g){ const hi = g.hi!=null?g.hi:(g.mid!=null?g.mid:g.lo);
+           if(hi!=null) vmax=Math.max(vmax, hi/4); }
+  });
+  vmax = vmax>0 ? vmax*1.18 : 10;
+  const y = v => m.t + ih - (v/vmax)*ih;
+  const svg = svgEl('svg',{viewBox:`0 0 ${W} ${H}`,role:'img'});
+
+  // y grid
+  const ticks = 4;
+  for(let i=0;i<=ticks;i++){
+    const v = vmax*i/ticks;
+    svg.appendChild(svgEl('line',{x1:m.l,y1:y(v),x2:W-m.r,y2:y(v),class:'gl'}));
+    svg.appendChild(svgEl('text',{x:m.l-7,y:y(v)+3.5,'text-anchor':'end'},v.toFixed(0)));
+  }
+  svg.appendChild(svgEl('line',{x1:m.l,y1:y(0),x2:W-m.r,y2:y(0),class:'ax'}));
+
+  // 隐含季度带（年度指引 ÷ 4），阶梯
+  let started=false, pts=[];
+  const bandTop=[], bandBot=[];
+  cells.forEach((c,i)=>{
+    const g=c.guide;
+    let lo=null,hi=null;
+    if(g){
+      if(g.lo!=null){lo=g.lo/4;}
+      if(g.hi!=null){hi=g.hi/4;}
+      if(lo==null&&hi==null&&g.mid!=null){lo=hi=g.mid/4;}
+    }
+    if(lo!=null&&hi!=null){
+      const x0=m.l+i*bw, x1=x0+bw;
+      bandTop.push([x0,hi]); bandBot.push([x0,lo]);
+      const rect=svgEl('rect',{x:x0,y:y(hi),width:bw,height:Math.max(1,y(lo)-y(hi)),
+        fill:'var(--guide)',opacity:.16});
+      rect.style.cursor='pointer';
+      const gd=c.guide;
+      rect.addEventListener('mousemove',ev=>showTip(ev,
+        lead(company)+' · '+c.label+' 隐含季度轨道',
+        `年度指引 ${gd.text}<br>÷4 = ${lo.toFixed(1)}–${hi.toFixed(1)}<br>实际 ${c.actual!=null?c.actual.toFixed(1):'未披露'}`));
+      rect.addEventListener('mouseleave',hideTip);
+      svg.appendChild(rect);
+      svg.appendChild(svgEl('line',{x1:x0,y1:y((lo+hi)/2),x2:x1,y2:y((lo+hi)/2),
+        stroke:'var(--guide)','stroke-width':1.4,'stroke-dasharray':'4 3','opacity':.85}));
+    } else if(lo!=null||hi!=null){
+      // 只有下限（≥X）或只有上限：不画带，但把阙值画成一条虚线，否则「≥12/季」这类格子归图上看不见
+      const v=(lo!=null?lo:hi), isFloor=(lo!=null);
+      const x0=m.l+i*bw, x1=x0+bw;
+      const ln=svgEl('line',{x1:x0,y1:y(v),x2:x1,y2:y(v),
+        stroke:'var(--guide)','stroke-width':1.5,'stroke-dasharray':'2 2','opacity':.9});
+      ln.style.cursor='pointer';
+      ln.addEventListener('mousemove',ev=>showTip(ev,
+        lead(company)+' · '+c.label+' 隐含季度轨道',
+        `年度指引 ${c.guide.text}<br>÷4 = ${isFloor?'≥':''}${v.toFixed(1)}（${isFloor?'只有下限':'只有上限'}）<br>实际 ${c.actual!=null?c.actual.toFixed(1):'未披露'}`));
+      ln.addEventListener('mouseleave',hideTip);
+      svg.appendChild(ln);
+      bandTop.push([x0,v]); bandBot.push([x0,v]);
+    }
+  });
+
+  // 实际柱
+  cells.forEach((c,i)=>{
+    const x0=m.l+i*bw;
+    if(c.actual!=null){
+      const h=Math.max(1.5, y(0)-y(c.actual));
+      const r=svgEl('rect',{x:x0+bw*0.22,y:y(c.actual),width:bw*0.56,height:h,
+        rx:2,fill:'var(--actual)',opacity:.88});
+      r.style.cursor='pointer';
+      r.addEventListener('mousemove',ev=>{
+        const g=c.guide;
+        let extra = g? `<br>当时指引 ${g.text}（${g.date}）` : '';
+        if(g && (g.lo!=null||g.mid!=null)){
+          const imp=(g.lo!=null?g.lo/4:g.mid/4), imph=(g.hi!=null?g.hi/4:(g.mid!=null?g.mid/4:null));
+          if(imph!=null){
+            const f=(c.actual/((imp+imph)/2)-1)*100;
+            extra += `<br>vs 隐含季度 ${imp.toFixed(1)}–${imph.toFixed(1)} → <b>${f>0?'+':''}${f.toFixed(0)}%</b>`;
+          }
+        }
+        showTip(ev, lead(company)+' · '+c.label+' 实际', `${c.actual.toFixed(1)} bn${extra}`);
+      });
+      r.addEventListener('mouseleave',hideTip);
+      svg.appendChild(r);
+      if(c.actual>=vmax*0.14)
+        svg.appendChild(svgEl('text',{x:x0+bw/2,y:y(c.actual)-4,'text-anchor':'middle',
+          style:'font-weight:600;fill:var(--ink)'},c.actual.toFixed(0)));
+    } else {
+      svg.appendChild(svgEl('text',{x:x0+bw/2,y:y(0)-5,'text-anchor':'middle',
+        style:'fill:var(--line2);font-size:9px'},'—'));
+    }
+  });
+
+  // x labels
+  cells.forEach((c,i)=>{
+    svg.appendChild(svgEl('text',{x:m.l+i*bw+bw/2,y:H-10,'text-anchor':'middle'},c.label));
+  });
+  // 单位
+  svg.appendChild(svgEl('text',{x:m.l-7,y:m.t-4,'text-anchor':'end',
+    style:'font-size:9px'},'bn'));
+  host.appendChild(svg);
+}
+
+/* ---------- 图1b：年度粒度 ----------
+   柱＝全年实际 capex（含租赁，与季度粒度同柱口径：同一 series 求和）；
+   竖箭头＝该年「首次中值 → 末次中值」，箭头朝下＝这一年里指引被下调
+   （META 2023 的 36.5→28、MSFT 2026 的 190→170 都是这样）。
+   附表（ORCL/CRWV）只画柱：财年与日历年不对齐，叠上去就是假精确。 */
+let orbitView = 'q';                     // 'q' 季度 | 'y' 年度
+function drawOrbitYear(company){
+  const host=document.getElementById('orbit-'+company); if(!host) return;
+  host.innerHTML='';
+  const isAppx = APPX.indexOf(company)>=0;
+  const W=520, H=232, m={t:16,r:12,b:30,l:38};
+  const iw=W-m.l-m.r, ih=H-m.t-m.b;
+  const yrs=YRS, n=yrs.length, bw=iw/n;
+  const yOf=s=>{ const mm=String(s||'').match(/(\d{4})/); return mm?mm[1]:null; };
+
+  const act = yrs.map(y=>{
+    let s=0,cnt=0;
+    Q.filter(q=>q.slice(0,4)===String(y)).forEach(q=>{
+      const r=cell(company,q); if(!r) return;
+      const v=(r.capex_incl_fl!=null? r.capex_incl_fl : r.capex_cash);
+      if(v!=null){ s+=v; cnt++; }
+    });
+    return {v: cnt? s : null, n: cnt, full: cnt===4};
+  });
+  const gd = yrs.map(y=>{
+    if(isAppx) return null;
+    const r=(DATA.recon||[]).find(x=>x.company===company && yOf(x.target_period)===String(y));
+    if(!r || r.fmid==null) return null;
+    return {f:r.fmid, l:(r.lmid!=null? r.lmid : r.fmid), fd:r.fdate, ld:r.ldate,
+            lo:r.guided_low, hi:r.guided_high};
+  });
+
+  let vmax=0;
+  act.forEach(a=>{ if(a.v!=null) vmax=Math.max(vmax,a.v); });
+  gd.forEach(g=>{ if(g) vmax=Math.max(vmax,g.f,g.l); });
+  vmax = vmax>0 ? vmax*1.16 : 10;
+  const Y=v=> m.t+ih-(v/vmax)*ih;
+  const svg=svgEl('svg',{viewBox:`0 0 ${W} ${H}`,role:'img'});
+
+  // 斜纹：未齐备的年
+  const defs=svgEl('defs');
+  const pat=svgEl('pattern',{id:'hatch-'+company,width:6,height:6,
+    patternUnits:'userSpaceOnUse',patternTransform:'rotate(45)'});
+  pat.appendChild(svgEl('rect',{width:6,height:6,fill:'var(--actual)',opacity:.16}));
+  pat.appendChild(svgEl('line',{x1:0,y1:0,x2:0,y2:6,stroke:'var(--actual)','stroke-width':2.2,opacity:.45}));
+  defs.appendChild(pat); svg.appendChild(defs);
+
+  for(let i=0;i<=4;i++){
+    const v=vmax*i/4;
+    svg.appendChild(svgEl('line',{x1:m.l,y1:Y(v),x2:W-m.r,y2:Y(v),class:'gl'}));
+    svg.appendChild(svgEl('text',{x:m.l-7,y:Y(v)+3.5,'text-anchor':'end'},v.toFixed(0)));
+  }
+  svg.appendChild(svgEl('line',{x1:m.l,y1:Y(0),x2:W-m.r,y2:Y(0),class:'ax'}));
+
+  act.forEach((a,i)=>{
+    const x0=m.l+i*bw;
+    if(a.v!=null){
+      const cx=x0+bw*0.34, bwx=Math.min(34,bw*0.34);
+      const h=Math.max(1.5, Y(0)-Y(a.v));
+      const r=svgEl('rect',{x:cx-bwx/2,y:Y(a.v),width:bwx,height:h,rx:2,
+        fill: a.full?'var(--actual)':`url(#hatch-${company})`,
+        opacity: a.full?.88:1, stroke: a.full?'none':'var(--actual)','stroke-width':1,
+        'stroke-dasharray': a.full?'none':'3 2'});
+      r.style.cursor='pointer';
+      r.addEventListener('mousemove',ev=>{
+        const g=gd[i];
+        let extra = g? `<br>首次 ${g.f} bn（${g.fd}）→ 末次 ${g.l} bn（${g.ld}）`
+                    + `<br>vs 末次 → <b>${((a.v/g.l-1)*100>0?'+':'')}${((a.v/g.l-1)*100).toFixed(0)}%</b>` : '';
+        showTip(ev, lead(company)+' · '+yrs[i]+(a.full?' 全年实际':' 前三季累计'),
+          `${a.v.toFixed(1)} bn（含租赁，${a.n}/4 季）${extra}`);
+      });
+      r.addEventListener('mouseleave',hideTip);
+      svg.appendChild(r);
+      svg.appendChild(svgEl('text',{x:cx,y:Y(a.v)-5,'text-anchor':'middle',
+        style:'font-weight:600;fill:var(--ink);font-size:10.5px'},a.v.toFixed(0)));
+      if(!a.full) svg.appendChild(svgEl('text',{x:cx,y:Y(0)-5,'text-anchor':'middle',
+        style:'fill:var(--muted);font-size:9px'},'YTD'+a.n+'Q'));
+    }
+  });
+
+  // 首次→末次 指引箭头
+  gd.forEach((g,i)=>{
+    if(!g) return;
+    const x0=m.l+i*bw, cx=x0+bw*0.74;
+    const down = g.l<g.f-0.05, up = g.l>g.f+0.05;
+    const yF=Y(g.f), yL=Y(g.l);
+    svg.appendChild(svgEl('line',{x1:cx,y1:yF,x2:cx,y2:yL,
+      stroke:'var(--guide)','stroke-width':5,opacity:.30,'stroke-linecap':'round'}));
+    [yF,yL].forEach(yy=>svg.appendChild(svgEl('line',{x1:cx-7,y1:yy,x2:cx+7,y2:yy,
+      stroke:'var(--guide)','stroke-width':1.8,opacity:.85})));
+    if(up||down){
+      const yy=g.l, s=down?1:-1;
+      svg.appendChild(svgEl('path',{d:`M ${cx-4.5} ${Y(yy)+s*5} L ${cx+4.5} ${Y(yy)+s*5} L ${cx} ${Y(yy)} Z`,
+        fill:'var(--guide)',opacity:.9}));
+    } else {
+      svg.appendChild(svgEl('circle',{cx:cx,cy:yF,r:3.2,fill:'var(--guide)'}));
+    }
+    const lbl=svgEl('text',{x:cx+11,y:(yF+yL)/2+3.5,
+      style:'fill:var(--guide);font-size:10px;font-weight:650'},g.l.toFixed(0));
+    lbl.style.cursor='pointer';
+    lbl.addEventListener('mousemove',ev=>showTip(ev,lead(company)+' · '+yrs[i]+' 年度指引',
+      `首次 <b>${g.f}</b> bn（${g.fd}）<br>末次 <b>${g.l}</b> bn（${g.ld}）`
+      +(g.lo!=null&&g.hi!=null?`<br>末次区间 ${g.lo}–${g.hi}`:'')
+      +(up?'<br>→ 年内<em>上调</em>':down?'<br>→ 年内<em>下调</em>':'<br>→ 全年未变')));
+    lbl.addEventListener('mouseleave',hideTip);
+    svg.appendChild(lbl);
+  });
+
+  yrs.forEach((y,i)=>svg.appendChild(svgEl('text',{x:m.l+i*bw+bw/2,y:H-10,
+    'text-anchor':'middle'},String(y))));
+  svg.appendChild(svgEl('text',{x:m.l-7,y:m.t-4,'text-anchor':'end',
+    style:'font-size:9px'},'bn'));
+  host.appendChild(svg);
+
+  if(isAppx){
+    const nt=document.createElement('div');
+    nt.style.cssText='font-size:10.5px;color:var(--muted);margin:2px 0 0';
+    nt.textContent='柱＝日历年汇总；财年不等于日历年，故不叠加年度指引（见「口径与边界」）。';
+    host.appendChild(nt);
+  }
+}
+function redrawOrbitGroup(){
+  MAIN.concat(APPX).forEach(c=>{
+    const h=document.querySelector('#orbit-'+c);
+    const sub=h && h.parentNode ? h.parentNode.querySelector('.m') : null;
+    if(sub) sub.textContent = orbitView==='y'
+      ? '柱=年度实际　箭头=首次→末次指引'
+      : '柱=季度实际　带=年度指引÷4';
+    if(orbitView==='y') drawOrbitYear(c); else drawOrbit(c);
+  });
+}
+function wireOrbitToggle(){
+  const seg=$('#orbitViewSeg'), hint=$('#orbitViewHint'); if(!seg) return;
+  const txt={q:'柱＝季度实际　带＝年度指引 ÷ 4（均值参考，并非季度承诺）',
+             y:'柱＝全年实际（含租赁）　竖箭头＝该年首次→末次指引中值　斜纹＝未齐备'};
+  [].slice.call(seg.children).forEach(btn=>{
+    btn.onclick=()=>{
+      orbitView=btn.dataset.view;
+      [].slice.call(seg.children).forEach(x=>x.setAttribute('aria-pressed', x===btn));
+      if(hint) hint.textContent=txt[orbitView];
+      redrawOrbitGroup();
+    };
+  });
+  if(hint) hint.textContent=txt[orbitView];
+}
+
+/* ---------- 图2：指引修订轨迹 ---------- */
+let trailSet = new Set(MAIN);
+function drawTrail(){
+  const host = $('#trailHost'); if(!host) return;
+  host.innerHTML='';
+  const W=1180, H=330, m={t:18,r:96,b:34,l:48};
+  const iw=W-m.l-m.r, ih=H-m.t-m.b;
+  // 横轴按数据自身范围算：最早一次电话会（含 2022-10 的 META FY23 首指引）→ 最晚一次
+  const _ds=DATA.events.map(e=>new Date(e.d).getTime()).filter(t=>!isNaN(t));
+  const _d0=Math.min.apply(null,_ds), _d1=Math.max.apply(null,_ds);
+  const t0=_d0-12*864e5, t1=_d1+35*864e5;
+  const X = d => m.l + (new Date(d).getTime()-t0)/(t1-t0)*iw;
+  const evs = DATA.events.filter(e=>trailSet.has(e.c) && e.mid!=null &&
+      (e.tt==='fiscal_year'||e.tt==='calendar_year'));
+  let vmax=10; evs.forEach(e=>{ vmax=Math.max(vmax, e.hi!=null?e.hi:e.mid); });
+  vmax*=1.12;
+  const Y = v => m.t + ih - (v/vmax)*ih;
+  const svg=svgEl('svg',{viewBox:`0 0 ${W} ${H}`,role:'img'});
+
+  for(let i=0;i<=4;i++){
+    const v=vmax*i/4;
+    svg.appendChild(svgEl('line',{x1:m.l,y1:Y(v),x2:W-m.r,y2:Y(v),class:'gl'}));
+    svg.appendChild(svgEl('text',{x:m.l-8,y:Y(v)+3.5,'text-anchor':'end'},v.toFixed(0)));
+  }
+  // x: quarter ticks
+  Q.forEach((q,i)=>{
+    const dt = new Date(q.slice(0,4)+'-'+String((+q.slice(5)<3?1:(+q.slice(5)-1)*3)+1).padStart(2,'0')+'-01');
+    const x=X(dt.toISOString().slice(0,10));
+    svg.appendChild(svgEl('line',{x1:x,y1:m.t,x2:x,y2:m.t+ih,class:'gl',opacity:.5}));
+    svg.appendChild(svgEl('text',{x:x,y:H-12,'text-anchor':'middle'},q.slice(2)));
+  });
+
+  [...trailSet].forEach(c=>{
+    const pts = evs.filter(e=>e.c===c).sort((a,b)=>a.d<b.d?-1:1);
+    if(!pts.length) return;
+    // 步进线：同一水平保持到下一次修订
+    let dpath='', prev=null;
+    pts.forEach((e,i)=>{
+      const x=X(e.d), yy=Y(e.mid);
+      if(i===0){ dpath += `M ${x} ${yy}`; }
+      else { const px=X(prev.d), py=Y(prev.mid); dpath += ` L ${x} ${py} L ${x} ${yy}`; }
+      prev=e;
+    });
+    const last=pts[pts.length-1];
+    dpath += ` L ${W-m.r} ${Y(last.mid)}`;
+    svg.appendChild(svgEl('path',{d:dpath,fill:'none',stroke:COL[c],'stroke-width':2.2,
+      'stroke-linejoin':'round',opacity:.9}));
+    // 区间竖线 + 点
+    pts.forEach(e=>{
+      const x=X(e.d);
+      if(e.lo!=null&&e.hi!=null){
+        svg.appendChild(svgEl('line',{x1:x,y1:Y(e.hi),x2:x,y2:Y(e.lo),stroke:COL[c],
+          'stroke-width':1.6,opacity:.5}));
+        svg.appendChild(svgEl('line',{x1:x-3,y1:Y(e.hi),x2:x+3,y2:Y(e.hi),stroke:COL[c],'stroke-width':1.6,opacity:.5}));
+        svg.appendChild(svgEl('line',{x1:x-3,y1:Y(e.lo),x2:x+3,y2:Y(e.lo),stroke:COL[c],'stroke-width':1.6,opacity:.5}));
+      }
+      const dot=svgEl('circle',{cx:x,cy:Y(e.mid),r:4,fill:'var(--panel)',stroke:COL[c],'stroke-width':2});
+      dot.style.cursor='pointer';
+      dot.addEventListener('mousemove',ev=>showTip(ev,
+        c+' · '+e.d, `${e.t}<br><b>${e.mid}</b>${e.lo!=null?`（${e.lo}–${e.hi}）`:''}`
+        +`<br><span style="color:var(--muted)">${DIRTXT[e.dir]||e.dir}</span>`));
+      dot.addEventListener('mouseleave',hideTip);
+      svg.appendChild(dot);
+    });
+    // 末值标签
+    svg.appendChild(svgEl('text',{x:W-m.r+8,y:Y(last.mid)+4,
+      style:`fill:${COL[c]};font-weight:650;font-size:11px`},c+' '+last.mid));
+  });
+
+  host.appendChild(svg);
+}
+
+/* ---------- 图3：指引 vs 实际 ---------- */
+/* ---------- 修订方向序列：只看上下调，带上先后顺序 ---------- */
+/* 一次事件一根箭头，按时间排；首次给数、重申不计（它们不是「在原先基础上改」）。 */
+function buildRevisions(){
+  const host=$('#revHost'); if(!host) return;
+  const Y = DATA.revYears, COS = MAIN;
+  const seqOf=(c,y)=> (DATA.revSeq[c]||[]).filter(r=>y==null||r.y===y);
+  const cnt=a=>({up:a.filter(r=>r.m==='up').length, down:a.filter(r=>r.m==='down').length});
+  const arrows=a=>{
+    if(!a.length) return '<span class="mk none">—</span>';
+    return a.map(r=>{
+      const up=r.m==='up';
+      const tip=r.d+'　目标年 '+r.t+'　'+(up?'上调':'下调')
+        +(r.v!=null?'　→ 中值 '+r.v+' bn':'')+'　（原始标签：'+r.tag+'）';
+      return '<span class="mk '+(up?'up':'down')+'" title="'+tip+'">'+(up?'↑':'↓')+'</span>';
+    }).join('');
+  };
+  const cellHtml=a=>{ const n=cnt(a);
+    return arrows(a)+'<small>'+(a.length? '↑'+n.up+' ↓'+n.down : '')+'</small>'; };
+  const countHtml=a=>{ const n=cnt(a);
+    return a.length? '<span class="mk up">↑'+n.up+'</span> <span class="mk down">↓'+n.down+'</span>'
+                   : '<span class="mk none">—</span>'; };
+
+  const tbl=document.createElement('table'); tbl.className='tbl rev';
+  tbl.innerHTML='<thead><tr><th>电话会年份</th>'
+    + COS.map(c=>'<th>'+c+'</th>').join('')
+    + '<th class="tot">四家合计</th><th class="num">净（↑−↓）</th></tr></thead>';
+  const tb=document.createElement('tbody');
+
+  const rowOf=(label, y, isTot)=>{
+    const tr=document.createElement('tr'); if(isTot) tr.className='sum';
+    const td=document.createElement('td'); td.className='yh'; td.textContent=label; tr.appendChild(td);
+    const all=[];
+    COS.forEach(c=>{
+      const a=seqOf(c,y); all.push.apply(all,a);
+      const t=document.createElement('td'); t.innerHTML=arrows(a); tr.appendChild(t);
+    });
+    const n=cnt(all);
+    const tt=document.createElement('td'); tt.className='tot'; tt.innerHTML=countHtml(all);
+    tr.appendChild(tt);
+    const net=document.createElement('td'); net.className='num';
+    const d=n.up-n.down;
+    net.innerHTML='<b>'+(d>0?'+':'')+d+'</b>';
+    net.title='上调 '+n.up+' − 下调 '+n.down;
+    tr.appendChild(net);
+    tb.appendChild(tr);
+  };
+  Y.forEach(y=>rowOf(y,y,false));
+  rowOf('合计',null,true);
+  tbl.appendChild(tb);
+  host.innerHTML=''; host.appendChild(tbl);
+
+  /* 结论现算 */
+  const sum=(c,y)=>cnt(seqOf(c,y));
+  const tot=COS.reduce((a,c)=>{ const k=sum(c,null); a.up+=k.up; a.down+=k.down; return a; },{up:0,down:0});
+  const withDown=COS.filter(c=>sum(c,null).down>0);
+  const downList=withDown.map(c=>{
+    const a=(DATA.revSeq[c]||[]).filter(r=>r.m==='down');
+    return a.length+' 次（'+a.map(r=>r.d).join('、')+'）';
+  }).join('；');
+  const netBy=Y.map(y=>{
+    const k=COS.reduce((a,c)=>{const q=sum(c,y); a.up+=q.up; a.down+=q.down; return a;},{up:0,down:0});
+    return {y:y, net:k.up-k.down, up:k.up, down:k.down};
+  });
+  const peak=netBy.slice().sort((a,b)=>b.net-a.net)[0];
+  const appx=DATA.meta.appendix.map(c=>{ const k=sum(c,null);
+    return c+' ↑'+k.up+' ↓'+k.down; }).join('、');
+  const lb=DATA.calib||{};
+
+  const note=document.createElement('div'); note.className='calibsum';
+  note.innerHTML =
+    '<b>怎么数的 ▸</b> 一格一次事件，按<em>电话会时间</em>排成箭头序列。'
+  + '「首次给数」没有「原先」可比、「重申」没动数字，都不计；'
+  + '「收窄」按中点方向计入：META 2025/2026 那几次是<i>上限不动、下限抬升</i>（计为上修），'
+  + '2023-10-25 那次是<i>下限不动、上限压低</i>（计为下修）——这是本表与事件标签唯一打架的地方。<br>'
+  + '<b>读出来 ▸</b> 四家全窗口 <b>↑'+tot.up+'</b> / <b>↓'+tot.down+'</b>，净 <b>+'
+  + (tot.up-tot.down)+'</b>；'
+  + (withDown.length
+      ? '下调只出现在 <b>'+withDown.join(' / ')+'</b>：'+downList+'（原话见证据附录）'
+      : '没有任何一次下调')
+  + '。净上调按年：'
+  + netBy.map(x=>x.y+' <b>'+(x.net>0?'+':'')+x.net+'</b>').join('　·　')
+  + '，当前样本最多的是 <b>'+peak.y+'</b>；未结束年份与完整年份的次数不宜直接比较。<br>'
+  + '校准只留一句：已完成 '+(lb.n||0)+' 个「公司-年度」里，首次→实际中位 <b>'
+  + (lb.med_first>0?'+':'')+lb.med_first+'%</b>、末次→实际 <b>'
+  + (lb.med_last>0?'+':'')+lb.med_last+'%</b>；历史上修倾向不代表未来一定上修。<br>'
+  + '附表不计入上表（财年错位）：'+appx+'。';
+  host.appendChild(note);
+}
+
+/* ---------- 明细表 ---------- */
+function buildEvents(){
+  const host=$('#evHost'); if(!host) return;
+  let filter='ALL';
+  const rows = DATA.events;
+  const render=()=>{
+    const t=document.createElement('table'); t.className='tbl';
+    t.innerHTML='<thead><tr><th>日期</th><th>公司</th><th>所报财季</th><th>指引目标</th>'
+      +'<th>金额</th><th>变动</th><th>原话</th><th>来源</th></tr></thead>';
+    const tb=document.createElement('tbody');
+    rows.filter(r=>filter==='ALL'||r.c===filter).slice().reverse().forEach(r=>{
+      const tr=document.createElement('tr');
+      const amt = r.mid!=null ? (r.lo!=null&&r.hi!=null? `${r.lo}–${r.hi}` : (r.lo!=null? '≥'+r.lo : r.mid))
+                : '<span style="color:var(--muted)">定性</span>';
+      tr.innerHTML = `<td class="num" style="white-space:nowrap">${r.d}</td>`
+        + `<td><b>${r.c}</b></td>`
+        + `<td style="color:var(--muted)">${r.fr}</td>`
+        + `<td>${r.t||'—'}</td>`
+        + `<td class="num" style="white-space:nowrap"><b>${amt}</b></td>`
+        + `<td><span class="pill ${DIRCLS[r.dir]||''}">${DIRTXT[r.dir]||r.dir}</span></td>`
+        + `<td class="q">${(r.v||r.q||'—').replace(/</g,'&lt;')}</td>`
+        + `<td>${r.u?`<a href="${r.u}" target="_blank" rel="noopener">链接</a>`:'—'}</td>`;
+      tb.appendChild(tr);
+    });
+    t.appendChild(tb);
+    host.innerHTML=''; host.appendChild(t);
+  };
+  const chips=$('#evChips');
+  ['ALL'].concat(CO).forEach(c=>{
+    const b=document.createElement('button');
+    b.className='chip'; b.textContent = c==='ALL'?'全部':c;
+    b.setAttribute('aria-pressed', c==='ALL');
+    b.onclick=()=>{ filter=c;
+      [...chips.children].forEach(x=>x.setAttribute('aria-pressed', x===b));
+      render(); };
+    chips.appendChild(b);
+  });
+  render();
+}
+
+/* ---------- 图：合计 capex 柱 + FCF 线（季度 / 年度 两种粒度） ---------- */
+let fcfView = 'q';                       // 'q' 季度 | 'y' 年度
+const MAIN0 = DATA.meta.main;
+const YRS = DATA.meta.years;
+const FCF_COS = MAIN0.concat(['ORCL']);  // 比值图能画的公司（无量纲，ORCL 可同轴）
+let fcfSet = new Set(FCF_COS);           // 显示/隐藏开关的当前状态
+
+function cell(c,q){ return (DATA.fin[c]||{})[q] || null; }
+
+/* 四家单季合计。柱固定含融资租赁（与 ① 节、与页首标题数字同一口径），
+   FCF 线固定现金口径（= 经营现金流 − 现金流量表 capex）。两者不再用开关切换。 */
+function qAgg(q){
+  let cap=0, lease=0, ocf=0, ok=true;
+  MAIN0.forEach(c=>{
+    const r=cell(c,q);
+    if(!r || r.capex_cash==null || r.ocf==null){ ok=false; return; }
+    const incl = (r.capex_incl_fl!=null? r.capex_incl_fl : r.capex_cash);
+    cap += r.capex_cash; lease += incl - r.capex_cash; ocf += r.ocf;
+  });
+  return ok ? {capCash:cap, capIncl:cap+lease, lease:lease, ocf:ocf,
+               fcf:ocf-cap, fcfIncl:ocf-cap-lease} : null;
+}
+/* 年度：该年四个自然季齐备才算。2026 只有三季 → null，图上写「未齐备」，
+   绝不把半截数据画成一根整年的柱子。 */
+function yAgg(y){
+  const qs=Q.filter(q=>q.slice(0,4)===String(y));
+  if(qs.length!==4) return null;
+  const ps=qs.map(qAgg);
+  if(ps.some(p=>!p)) return null;
+  return ps.reduce((a,p)=>({capCash:a.capCash+p.capCash, capIncl:a.capIncl+p.capIncl,
+    lease:a.lease+p.lease, ocf:a.ocf+p.ocf, fcf:a.fcf+p.fcf, fcfIncl:a.fcfIncl+p.fcfIncl}),
+    {capCash:0,capIncl:0,lease:0,ocf:0,fcf:0,fcfIncl:0});
+}
+function aggSeries(){ return fcfView==='y' ? YRS.map(yAgg) : Q.map(qAgg); }
+function aggLabels(){ return fcfView==='y' ? YRS.map(String) : Q.map(q=>q.slice(2)); }
+
+function drawAggFcf(){
+  const host=$('#aggFcfHost'); if(!host) return;
+  host.innerHTML='';
+  const A = aggSeries(), LB = aggLabels();
+  const cap = A.map(a=>a? a.capIncl : null);
+  const fcf = A.map(a=>a? a.fcf : null);
+  const lag = fcfView==='y' ? 1 : 4;
+  const yoy = cap.map((v,i)=> (v==null||i<lag||cap[i-lag]==null||cap[i-lag]===0)
+    ? null : (v/cap[i-lag]-1)*100);
+  const W=1180, H=380, m={t:18,r:24,b:38,l:52};
+  const iw=W-m.l-m.r, ih=H-m.t-m.b;
+  const hi=Math.max(...cap.filter(v=>v!=null), ...fcf.filter(v=>v!=null))*1.16;
+  const lo=Math.min(0, ...fcf.filter(v=>v!=null))-6;
+  const Y=v=> m.t + ih - (v-lo)/(hi-lo)*ih;
+  const slot=iw/LB.length, bw=slot*0.5;
+  const svg=svgEl('svg',{viewBox:'0 0 '+W+' '+H,role:'img'});
+
+  for(let i=0;i<=4;i++){
+    const v=lo+(hi-lo)*i/4;
+    svg.appendChild(svgEl('line',{x1:m.l,y1:Y(v),x2:W-m.r,y2:Y(v),class:'gl'}));
+    svg.appendChild(svgEl('text',{x:m.l-8,y:Y(v)+3.5,'text-anchor':'end'},v.toFixed(0)));
+  }
+  fcf.forEach((v,i)=>{ if(v!=null&&v<0){
+    svg.appendChild(svgEl('rect',{x:m.l+i*slot,y:Y(0),width:slot,height:Y(v)-Y(0),
+      fill:'var(--down)',opacity:.08})); } });
+  svg.appendChild(svgEl('line',{x1:m.l,y1:Y(0),x2:W-m.r,y2:Y(0),
+    style:'stroke:var(--line2);stroke-width:1.4'}));
+
+  cap.forEach((v,i)=>{
+    if(v==null){
+      svg.appendChild(svgEl('text',{x:m.l+i*slot+slot/2,y:Y(0)-12,'text-anchor':'middle',
+        style:'fill:var(--muted);font-size:11px'},'未齐备'));
+      return;
+    }
+    const x=m.l+i*slot+(slot-bw)/2;
+    svg.appendChild(svgEl('rect',{x:x,y:Y(v),width:bw,height:Y(0)-Y(v),rx:2,
+      fill:'#8A93A6',opacity:.9}));
+    svg.appendChild(svgEl('text',{x:x+bw/2,y:Y(v)-6,'text-anchor':'middle',
+      style:'fill:var(--ink);font-size:11px;font-weight:620'},v.toFixed(0)));
+    if(yoy[i]!=null)
+      svg.appendChild(svgEl('text',{x:x+bw/2,y:Y(v)-20,'text-anchor':'middle',
+        style:'fill:'+(yoy[i]>=0?'var(--up)':'var(--down)')+';font-size:10.5px;font-weight:620'},
+        (yoy[i]>0?'+':'')+yoy[i].toFixed(0)+'%'));
+  });
+
+  let d='', started=false;
+  fcf.forEach((v,i)=>{ if(v==null){started=false;return;}
+    const x=m.l+i*slot+slot/2, y=Y(v);
+    d += (started? ' L ':' M ')+x.toFixed(1)+' '+y.toFixed(1);
+    started=true; });
+  if(d) svg.appendChild(svgEl('path',{d:d,fill:'none',
+    style:'stroke:var(--down);stroke-width:2.4','stroke-linejoin':'round'}));
+  fcf.forEach((v,i)=>{ if(v==null) return;
+    const a=A[i], x=m.l+i*slot+slot/2, y=Y(v);
+    const cc=svgEl('circle',{cx:x,cy:y,r:4,fill:'var(--panel)',
+      style:'stroke:var(--down);stroke-width:2.2'});
+    cc.style.cursor='pointer';
+    cc.addEventListener('mousemove',ev=>showTip(ev,'四家合计 · '+LB[i]+' 自由现金流',
+      '<b>'+v.toFixed(1)+' bn</b><br>口径：经营现金流 − 现金 capex'
+      +'<br>同期 capex（含租赁） '+a.capIncl.toFixed(1)+' bn'
+      +'<br>其中融资租赁 '+a.lease.toFixed(1)+' bn'
+      +'（若并入 capex，FCF 为 '+a.fcfIncl.toFixed(1)+'）'
+      +(yoy[i]!=null?'<br>capex 同比 '+(yoy[i]>0?'+':'')+yoy[i].toFixed(0)+'%':'')));
+    cc.addEventListener('mouseleave',hideTip);
+    svg.appendChild(cc);
+    if(i===fcf.length-1 || (i>0 && fcf[i-1]!=null && Math.abs(v-fcf[i-1])>18))
+      svg.appendChild(svgEl('text',{x:x,y:y-11,'text-anchor':'middle',
+        style:'fill:var(--down);font-size:11px;font-weight:700'},v.toFixed(0)));
+  });
+  LB.forEach((l,i)=>svg.appendChild(svgEl('text',{x:m.l+i*slot+slot/2,y:H-14,
+    'text-anchor':'middle'},l)));
+  svg.appendChild(svgEl('text',{x:m.l-8,y:m.t-4,'text-anchor':'end',
+    style:'font-size:9px'},'bn'));
+  host.appendChild(svg);
+}
+
+/* ---------- 图：分家 FCF 线 ---------- */
+/* ---------- 分家：资本开支 ÷ 经营现金流（季度 / 年度） ---------- */
+function cAggYear(c,y){
+  const qs=Q.filter(q=>q.slice(0,4)===String(y));
+  if(qs.length!==4) return null;
+  let cap=0, incl=0, ocf=0, ok=true;
+  qs.forEach(q=>{ const r=cell(c,q);
+    if(!r || r.capex_cash==null || r.ocf==null){ ok=false; return; }
+    cap += r.capex_cash;
+    incl += (r.capex_incl_fl!=null? r.capex_incl_fl : r.capex_cash);
+    ocf += r.ocf; });
+  return ok? {capex_cash:cap, capex_incl_fl:incl, ocf:ocf, fcf:ocf-cap} : null;
+}
+function drawFcfLines(){
+  const host=$('#fcfLineHost'); if(!host) return;
+  host.innerHTML='';
+  const W=1180, H=300, m={t:18,r:112,b:34,l:52};
+  const iw=W-m.l-m.r, ih=H-m.t-m.b;
+  const LB=aggLabels();
+  const rowsFor=c=> fcfView==='y' ? YRS.map(y=>cAggYear(c,y)) : Q.map(q=>cell(c,q));
+  const cov=r=>{ if(!r||!r.ocf) return null;
+    return (r.capex_cash==null||r.ocf<=0)?null:r.capex_cash/r.ocf*100; };
+  const RC = FCF_COS.filter(c=>fcfSet.has(c));   // ORCL 只进比值图：无量纲，可与四家同轴
+  const all=[];
+  RC.forEach(c=>rowsFor(c).forEach(r=>{ const v=cov(r); if(v!=null) all.push(v); }));
+  // 上限封在 250%：ORCL 的 24Q4/25Q4 尖峰到 300–580%，不封会把四家全压成一条平线。
+  // 关掉 ORCL 后上限会自己回落到 150%——刻度跟着可见的公司走，不留空场。
+  const hi=Math.min(250, Math.max(150, Math.ceil(Math.max(...all,10)/50)*50));
+  const Y=v=> m.t+ih-Math.min(v,hi)/hi*ih;
+  const X=i=> LB.length>1 ? m.l+i*(iw/(LB.length-1)) : m.l+iw/2;
+  const svg=svgEl('svg',{viewBox:'0 0 '+W+' '+H,role:'img'});
+  for(let v=0;v<=hi;v+=50){
+    svg.appendChild(svgEl('line',{x1:m.l,y1:Y(v),x2:W-m.r,y2:Y(v),class:'gl'}));
+    svg.appendChild(svgEl('text',{x:m.l-8,y:Y(v)+3.5,'text-anchor':'end'},v+'%'));
+  }
+  // 100% 参考线：资本开支正好等于经营现金流
+  svg.appendChild(svgEl('line',{x1:m.l,y1:Y(100),x2:W-m.r,y2:Y(100),
+    style:'stroke:var(--down);stroke-width:1.4','stroke-dasharray':'5 4',opacity:.75}));
+  svg.appendChild(svgEl('text',{x:m.l+6,y:Y(100)-6,
+    style:'fill:var(--down);font-size:10.5px;font-weight:600'},
+    '100% = 资本开支刚好花光当季经营现金流'));
+  RC.forEach(c=>{
+    const isO = c==='ORCL';
+    const rows=rowsFor(c);
+    const vals=rows.map(cov);
+    let d='', st=false;
+    vals.forEach((v,i)=>{ if(v==null){st=false;return;}
+      d+=(st?' L ':' M ')+X(i).toFixed(1)+' '+Y(Math.min(v,hi)).toFixed(1); st=true; });
+    if(d) svg.appendChild(svgEl('path',{d:d,fill:'none',
+      style:'stroke:'+COL[c]+';stroke-width:'+(isO?2:2.2)
+        +(isO?';stroke-dasharray:6 4':''),'stroke-linejoin':'round',opacity:isO?.95:.92}));
+    vals.forEach((v,i)=>{ if(v==null) return;
+      const r=rows[i];
+      if(v>hi){   // 超出上限：画在顶格，用三角标出「其实更高」，数值在提示框里
+        const tri=svgEl('path',{d:`M ${X(i)-4.5} ${m.t+2} L ${X(i)+4.5} ${m.t+2} L ${X(i)} ${m.t-3} Z`,
+          fill:COL[c],opacity:.9});
+        tri.style.cursor='pointer';
+        tri.addEventListener('mousemove',ev=>showTip(ev,c+' · '+LB[i]+'（超出坐标上限）',
+          '<b>'+v.toFixed(0)+'%</b> = 资本开支 '+r.capex_cash.toFixed(1)+' / 经营现金流 '+r.ocf.toFixed(1)
+          +' bn<br>自由现金流 '+(r.fcf==null?'—':r.fcf.toFixed(1))+' bn<br>本图上限 '+hi+'%，该点画在顶格'));
+        tri.addEventListener('mouseleave',hideTip);
+        svg.appendChild(tri); return;
+      }
+      const dot=svgEl('circle',{cx:X(i),cy:Y(v),r:isO?3:3.4,
+        fill: v>=100?'var(--down)':'var(--panel)',
+        style:'stroke:'+COL[c]+';stroke-width:2'});
+      dot.style.cursor='pointer';
+      dot.addEventListener('mousemove',ev=>showTip(ev,c+' · '+LB[i],
+        '<b>'+v.toFixed(0)+'%</b> = 资本开支 '+r.capex_cash.toFixed(1)+' / 经营现金流 '+r.ocf.toFixed(1)+' bn<br>'
+        +'自由现金流 '+(r.fcf==null?'—':r.fcf.toFixed(1))+' bn（'+(v>=100?'<b>已破 100%</b>':'尚有覆盖')+'）'));
+      dot.addEventListener('mouseleave',hideTip);
+      svg.appendChild(dot);
+    });
+    const lastI=vals.map((v,i)=>v==null?-1:i).filter(i=>i>=0).pop();
+    if(lastI>=0) svg.appendChild(svgEl('text',{x:W-m.r+8,y:Y(Math.min(vals[lastI],hi))+4,
+      style:'fill:'+COL[c]+';font-size:11.5px;font-weight:650'+(isO?';font-style:italic':'')},
+      c+' '+vals[lastI].toFixed(0)+'%'+(isO?' *':'')));
+  });
+  LB.forEach((l,i)=>svg.appendChild(svgEl('text',{x:X(i),y:H-12,
+    'text-anchor':'middle'},l)));
+  host.appendChild(svg);
+}
+
+/* ---------- 图 A：年度合计（实际 → 指引 → 券商外推） ---------- */
+function drawYearTotals(){
+  const host=$('#yearHost'); if(!host) return;
+  const YD=DATA.year; if(!YD) return;
+  host.innerHTML='';
+  const W=1180,H=436,m={t:66,r:26,b:64,l:58};
+  const iw=W-m.l-m.r, ih=H-m.t-m.b;
+  const TOP=1400;
+  const Y=v=>m.t+ih-Math.min(v,TOP)/TOP*ih;
+  const bars=YD.bars, n=bars.length, slot=iw/n;
+  const bw=Math.min(94,slot*0.5);
+  const svg=svgEl('svg',{viewBox:`0 0 ${W} ${H}`,role:'img'});
+  const defs=svgEl('defs');
+  const pat=svgEl('pattern',{id:'hatch-fwd',width:7,height:7,patternUnits:'userSpaceOnUse',
+    patternTransform:'rotate(45)'});
+  pat.appendChild(svgEl('rect',{width:7,height:7,fill:'var(--guide)',opacity:.10}));
+  pat.appendChild(svgEl('line',{x1:0,y1:0,x2:0,y2:7,style:'stroke:var(--guide);stroke-width:2.2',opacity:.5}));
+  defs.appendChild(pat); svg.appendChild(defs);
+  for(let v=0;v<=TOP;v+=200){
+    svg.appendChild(svgEl('line',{x1:m.l,y1:Y(v),x2:W-m.r,y2:Y(v),class:'gl'}));
+    svg.appendChild(svgEl('text',{x:m.l-8,y:Y(v)+3.5,'text-anchor':'end'},v.toLocaleString()));
+  }
+  svg.appendChild(svgEl('line',{x1:m.l,y1:Y(0),x2:W-m.r,y2:Y(0),class:'ax'}));
+  // 图例：四家颜色 + 斜纹
+  let lx=m.l;
+  MAIN.forEach(c=>{
+    svg.appendChild(svgEl('rect',{x:lx,y:14,width:9,height:9,rx:2,fill:COL[c]}));
+    svg.appendChild(svgEl('text',{x:lx+13,y:22.5,style:'fill:var(--ink2);font-size:11px'},c));
+    lx+=64;
+  });
+  svg.appendChild(svgEl('rect',{x:lx,y:14,width:9,height:9,rx:2,fill:'url(#hatch-fwd)',
+    style:'stroke:var(--guide);stroke-width:1'}));
+  svg.appendChild(svgEl('text',{x:lx+13,y:22.5,style:'fill:var(--ink2);font-size:11px'},'本页外推'));
+  const fmt=v=> (v>=100? v.toFixed(0) : v.toFixed(1));
+  bars.forEach((b,i)=>{
+    const cx=m.l+i*slot+slot/2, x0=cx-bw/2;
+    if(b.kind==='act'){
+      let acc=0;
+      b.parts.forEach(p=>{
+        const r=svgEl('rect',{x:x0,y:Y(acc+p.v),width:bw,height:(p.v/TOP)*ih,fill:COL[p.c]});
+        r.style.cursor='pointer';
+        r.addEventListener('mousemove',ev=>showTip(ev,b.y+' · '+p.c,
+          '<b>'+p.v.toFixed(1)+' bn</b>　公司披露口径的全年 capex（四季相加；租赁处理见附录）'));
+        r.addEventListener('mouseleave',hideTip);
+        svg.appendChild(r);
+        svg.appendChild(svgEl('line',{x1:x0,y1:Y(acc+p.v),x2:x0+bw,y2:Y(acc+p.v),
+          style:'stroke:var(--panel);stroke-width:1.2',opacity:.55}));
+        acc+=p.v;
+      });
+    }else if(b.kind==='mix'){
+      let acc=0;
+      // 已披露部分集中在下方，避免“已花”分界线穿过交错的实际/隐含段。
+      ['done','impl'].forEach(kind=>MAIN.forEach(c=>{
+        const p=b.parts.find(q=>q.c===c); if(!p||p.guide==null) return;
+        const v=Math.max(p[kind]||0,0);
+        const r=svgEl('rect',{x:x0,y:Y(acc+v),width:bw,height:(v/TOP)*ih,
+          fill:COL[c],opacity:kind==='done'?1:.28});
+        r.style.cursor='pointer';
+        r.addEventListener('mousemove',ev=>showTip(ev,b.y+' · '+c+' · '+(kind==='done'?'已披露':'指引隐含余量'),
+          '全年指引 <b>'+p.guide+' bn</b> → 已披露 '+p.done.toFixed(1)
+          +'（'+p.nq+' 季） → 隐含余 '+p.impl.toFixed(1)+' bn<br>指引日期 '+p.gd));
+        r.addEventListener('mouseleave',hideTip);
+        svg.appendChild(r); acc+=v;
+      }));
+      // 已花 / 隐含 的分界：把 2026 这一根柱拆成「已经发生」与「还没发生」两段
+      const yd=Y(b.done);
+      svg.appendChild(svgEl('line',{x1:x0-7,y1:yd,x2:x0+bw+7,y2:yd,
+        style:'stroke:var(--ink);stroke-width:1.1','stroke-dasharray':'4 3',opacity:.6}));
+      svg.appendChild(svgEl('text',{x:x0-11,y:yd+3.5,'text-anchor':'end',
+        style:'fill:var(--ink2);font-size:10px'},'已花 '+fmt(b.done)));
+    }else{
+      svg.appendChild(svgEl('rect',{x:x0,y:Y(b.total),width:bw,height:Y(0)-Y(b.total),
+        rx:2,fill:'url(#hatch-fwd)',style:'stroke:var(--guide);stroke-width:1'}));
+      // 各家增速的须线：区间画在柱心
+      svg.appendChild(svgEl('line',{x1:cx,y1:Y(b.lo),x2:cx,y2:Y(b.hi),
+        style:'stroke:var(--ink2);stroke-width:1.2'},null));
+      [b.lo,b.hi].forEach(v=>svg.appendChild(svgEl('line',{x1:cx-5,y1:Y(v),x2:cx+5,y2:Y(v),
+        style:'stroke:var(--ink2);stroke-width:1.2'})));
+      const h=svgEl('rect',{x:x0,y:Y(b.total),width:bw,height:Y(0)-Y(b.total),fill:'transparent'});
+      h.style.cursor='pointer';
+      h.addEventListener('mousemove',ev=>showTip(ev,b.y+'　本页外推',
+        '<b>'+fmt(b.total)+' bn</b> = '+fmt(b.base)+' × (1 + '+b.g+'%)<br>增速样本 '+b.n+' 条预测（非独立机构）：'
+        +b.spread[0]+'% ~ '+b.spread[1]+'%，取中位<br>区间 = 用上/下限乘同一基数：'
+        +fmt(b.lo)+' ~ '+fmt(b.hi)));
+      h.addEventListener('mouseleave',hideTip);
+      svg.appendChild(h);
+    }
+    // 同比 + 合计（外推柱：标在须线上端，避免与须线交叉）
+    const lvTop = b.kind==='fwd'? Math.max(b.total, b.hi) : b.total;
+    if(b.g!=null) svg.appendChild(svgEl('text',{x:cx,y:Y(lvTop)-25,'text-anchor':'middle',
+      style:'fill:'+(b.kind==='fwd'?'var(--guide)':'var(--up)')+';font-size:11px;font-weight:650'},
+      (b.g>0?'+':'')+b.g.toFixed(1)+'%'));
+    svg.appendChild(svgEl('text',{x:cx,y:Y(lvTop)-9,'text-anchor':'middle',
+      style:'font-size:12.5px;font-weight:650;fill:var(--ink)'},fmt(b.total)));
+    // 年份旁直接标示证据性质，不再混入不同公司篮子的共识金额。
+    svg.appendChild(svgEl('text',{x:cx,y:Y(0)+18,'text-anchor':'middle',
+      style:'font-size:11.5px;fill:var(--ink2);font-weight:600'},b.y.replace('E','')));
+    svg.appendChild(svgEl('text',{x:cx,y:Y(0)+34,'text-anchor':'middle',
+      style:'font-size:11px;fill:var(--ink2)'},
+      b.kind==='act'?'实际':b.kind==='mix'?'公司指引':'本页情景外推'));
+    if(b.y==='2028E') svg.appendChild(svgEl('text',{x:cx,y:Y(0)+50,'text-anchor':'middle',
+      style:'font-size:10px;fill:var(--muted)'},'仅一家机构 · 非置信区间'));
+  });
+  svg.appendChild(svgEl('text',{x:m.l-8,y:m.t-26,'text-anchor':'end',
+    style:'font-size:10.5px;fill:var(--muted)'},'bn'));
+  host.appendChild(svg);
+}
+
+/* ---------- 图 B：同一目标年的合计指引被改高了多少（2025 vs 2026） ---------- */
+function drawVintage(){
+  const host=$('#vintageHost'); if(!host) return;
+  const V=DATA.vint; if(!V) return;
+  host.innerHTML='';
+  const W=1180,H=400,m={t:62,r:26,b:62,l:58};
+  const iw=W-m.l-m.r, ih=H-m.t-m.b;
+  const TOP=800;
+  const Y=v=>m.t+ih-Math.min(v,TOP)/TOP*ih;
+  const svg=svgEl('svg',{viewBox:`0 0 ${W} ${H}`,role:'img'});
+  for(let v=0;v<=TOP;v+=200){
+    svg.appendChild(svgEl('line',{x1:m.l,y1:Y(v),x2:W-m.r,y2:Y(v),class:'gl'}));
+    svg.appendChild(svgEl('text',{x:m.l-8,y:Y(v)+3.5,'text-anchor':'end'},v.toLocaleString()));
+  }
+  svg.appendChild(svgEl('line',{x1:m.l,y1:Y(0),x2:W-m.r,y2:Y(0),class:'ax'}));
+  svg.appendChild(svgEl('text',{x:m.l-8,y:m.t-26,'text-anchor':'end',
+    style:'font-size:10.5px;fill:var(--muted)'},'bn'));
+  svg.appendChild(svgEl('text',{x:m.l,y:25,style:'font-size:12px;fill:var(--ink2)'},
+    '空心柱：2025 目标年　 /　实心柱：2026 目标年'));
+  const n=V.snaps.length, slot=iw/n;
+  const bw=Math.min(76,slot*0.32), gap=12;
+  const fmt=v=> v>=100? v.toFixed(0) : v.toFixed(1);
+  V.series.forEach((s,si)=>{
+    const first=si===0;
+    s.same.forEach((v,i)=>{
+      const gx=m.l+i*slot+slot/2;
+      const x0=gx-bw-gap/2+si*(bw+gap);
+      // 2025 = 空心（只剩轮廓，表示「去年的同一条序列」）；2026 = 实心。比降透明度在两个主题下都稳。
+      const r=first
+        ? svgEl('rect',{x:x0,y:Y(v),width:bw,height:Y(0)-Y(v),rx:2,
+            fill:'var(--actual)','fill-opacity':.10,style:'stroke:var(--actual);stroke-width:1.8'})
+        : svgEl('rect',{x:x0,y:Y(v),width:bw,height:Y(0)-Y(v),rx:2,fill:'var(--actual)'});
+      r.style.cursor='pointer';
+      const rows=s.parts[i].filter(p=>V.cohort.includes(p.c)).map(p=>p.c+' '+fmt(p.v)).join(' · ');
+      r.addEventListener('mousemove',ev=>showTip(ev,s.y+' 目标年 · '+V.snaps[i],
+        rows+'<br>可比公司组合计 <b>'+fmt(v)+'</b> bn（固定 '+V.cohort.length+' 家）'
+        +'<br>按各时点已披露的指引计算，不含新增覆盖公司'));
+      r.addEventListener('mouseleave',hideTip);
+      svg.appendChild(r);
+      svg.appendChild(svgEl('text',{x:x0+bw/2,y:Y(v)-6,'text-anchor':'middle',
+        style:'font-size:11px;font-weight:650;fill:var(--ink)'},
+        fmt(v)));
+    });
+    // 尾标：年内上修幅度（末根柱上方）
+    const li=V.snaps.length-1;
+    const lastX=m.l+li*slot+slot/2-bw-gap/2+si*(bw+gap)+bw/2;
+    const rev = s.revSame;
+    svg.appendChild(svgEl('line',{x1:lastX-26,y1:Y(s.same[li])-20,x2:lastX-6,y2:Y(s.same[li])-20,
+      style:'stroke:var(--up);stroke-width:1.2'}));
+    svg.appendChild(svgEl('text',{x:lastX-30,y:Y(s.same[li])-16,'text-anchor':'end',
+      style:'fill:var(--up);font-size:11px;font-weight:650'},'年内 +'+(rev==null?'—':rev.toFixed(1))+'%'));
+  });
+  V.snaps.forEach((sl,i)=>svg.appendChild(svgEl('text',{x:m.l+i*slot+slot/2,y:H-18,
+    'text-anchor':'middle',style:'font-size:11.5px;fill:var(--ink2);font-weight:600'},sl)));
+  svg.appendChild(svgEl('text',{x:m.l,y:H-3,style:'font-size:10px;fill:var(--muted)'},
+    '固定公司组：'+V.cohort.join(' / ')+'；两年各时点口径一致，尾标为各自年内增幅'));
+  host.appendChild(svg);
+}
+
+/* ---------- SVG 导出 ---------- */
+function exportSVG(svg, name){
+  const clone = svg.cloneNode(true);
+  const PROPS=['fill','stroke','stroke-width','stroke-dasharray','stroke-linejoin',
+    'stroke-linecap','font-size','font-family','font-weight','text-anchor','opacity'];
+  const a=[svg].concat([].slice.call(svg.querySelectorAll('*')));
+  const b=[clone].concat([].slice.call(clone.querySelectorAll('*')));
+  a.forEach((el,i)=>{
+    const cs=getComputedStyle(el), d=b[i];
+    // 先丢掉内联 style（里面是 var(--x)，脱离页面后失效且优先级高于属性）
+    d.removeAttribute('style');
+    PROPS.forEach(p=>{ const v=cs.getPropertyValue(p); if(v) d.setAttribute(p,v); });
+  });
+  clone.removeAttribute('class');
+  clone.querySelectorAll('[class]').forEach(el=>el.removeAttribute('class'));
+  const vb=(svg.getAttribute('viewBox')||'0 0 1000 600').split(/\s+/);
+  clone.setAttribute('xmlns','http://www.w3.org/2000/svg');
+  clone.setAttribute('width',vb[2]); clone.setAttribute('height',vb[3]);
+  const dark = document.documentElement.dataset.theme==='dark';
+  const bg=document.createElementNS('http://www.w3.org/2000/svg','rect');
+  bg.setAttribute('width',vb[2]); bg.setAttribute('height',vb[3]);
+  bg.setAttribute('fill', dark?'#121310':'#ffffff');
+  clone.insertBefore(bg, clone.firstChild);
+  const xml='<?xml version="1.0" encoding="UTF-8"?>\n'+new XMLSerializer().serializeToString(clone);
+  const url=URL.createObjectURL(new Blob([xml],{type:'image/svg+xml;charset=utf-8'}));
+  const link=document.createElement('a');
+  link.href=url; link.download=name; document.body.appendChild(link); link.click();
+  link.remove(); setTimeout(()=>URL.revokeObjectURL(url),1500);
+}
+function wireExport(){
+  document.querySelectorAll('.panel').forEach(p=>{
+    const svg=p.querySelector('svg'); if(!svg) return;
+    let head=p.querySelector('.charthead');
+    if(!head){
+      // 轨迹图/偏差图的 charthead 在 panel 外面，补一个轻量工具条
+      head=document.createElement('div');
+      head.className='charthead';
+      const sec=p.closest('section');
+      const h2=sec? sec.querySelector('h2'):null;
+      head.innerHTML='<span class="t"></span><span class="m"></span>';
+      head.querySelector('.t').textContent = h2? h2.textContent.replace(/\s+/g,' ').trim().slice(0,40)
+                                                  : 'chart';
+      p.insertBefore(head, p.firstChild);
+    }
+    if(head.querySelector('.ex')) return;
+    const title=(head.querySelector('.t')||{}).textContent||'chart';
+    const btn=document.createElement('button');
+    btn.className='ex'; btn.textContent='导出 SVG';
+    btn.onclick=()=>exportSVG(p.querySelector('svg')||svg,
+      title.replace(/[^\w\u4e00-\u9fa5-]+/g,'_').slice(0,40)+'.svg');
+    head.appendChild(btn);
+  });
+}
+function wireFcfToggle(){
+  const seg=$('#fcfViewSeg'); if(!seg) return;
+  [].slice.call(seg.children).forEach(btn=>{
+    btn.onclick=()=>{
+      fcfView=btn.dataset.view;
+      [].slice.call(seg.children).forEach(x=>x.setAttribute('aria-pressed', x===btn));
+      drawAggFcf(); drawFcfLines();
+    };
+  });
+}
+
+/* ---------- init ---------- */
+function init(){
+  MAIN.concat(APPX).forEach(c=>{
+    const box=document.createElement('div');
+    box.className='panel';
+    box.innerHTML = `<div class="charthead"><span class="t">${c}</span>
+      <span class="m">柱=季度实际　带=年度指引÷4</span></div>
+      <div id="orbit-${c}"></div>`;
+    $(MAIN.includes(c)?'#orbitGrid':'#appendixGrid').appendChild(box);
+    drawOrbit(c);
+  });
+  wireOrbitToggle();
+  drawAggFcf(); drawFcfLines(); wireFcfToggle();
+  drawYearTotals(); drawVintage();
+  drawTrail(); buildRevisions(); buildEvents();
+  wireExport();
+
+  // 轨迹图的公司开关
+  const tc=$('#trailChips');
+  MAIN.forEach(c=>{
+    const b=document.createElement('button'); b.className='chip'; b.textContent=c;
+    b.setAttribute('aria-pressed', trailSet.has(c));
+    b.onclick=()=>{ if(trailSet.has(c)) trailSet.delete(c); else trailSet.add(c);
+      b.setAttribute('aria-pressed', trailSet.has(c)); drawTrail(); };
+    tc.appendChild(b);
+  });
+  // ORCL 不与四家叠加：独立季度图在公司拆解的附表，比值图仍可切换。
+
+  // 比值图的公司开关（ORCL 也在这张图里：无量纲，可与四家同轴）
+  const fc=$('#fcfChips');
+  if(fc) FCF_COS.forEach(c=>{
+    const b=document.createElement('button'); b.className='chip'; b.textContent=c;
+    b.setAttribute('aria-pressed', fcfSet.has(c));
+    b.onclick=()=>{ if(fcfSet.has(c)) fcfSet.delete(c); else fcfSet.add(c);
+      b.setAttribute('aria-pressed', fcfSet.has(c)); drawFcfLines(); };
+    fc.appendChild(b);
+  });
+
+  // 主题
+  const tb=$('#theme');
+  const setTheme=t=>{ document.documentElement.dataset.theme=t;
+    tb.textContent = t==='dark'?'切换浅色':'切换深色'; localStorage.setItem('ct-theme',t); };
+  tb.onclick=()=>setTheme(document.documentElement.dataset.theme==='dark'?'light':'dark');
+  setTheme(localStorage.getItem('ct-theme')||'light');
+
+  // 简洁/详细：折叠附表
+  document.querySelectorAll('[data-fold]').forEach(h=>{
+    const body=document.querySelector(h.dataset.fold);
+    if(!body) return;
+    h.style.cursor='pointer';
+    h.onclick=()=>{ const off=body.style.display==='none';
+      body.style.display = off?'':'none'; h.dataset.on = off?'1':'0'; };
+  });
+  let _rz=null;
+  window.addEventListener('resize', ()=>{ clearTimeout(_rz); _rz=setTimeout(()=>{
+    drawTrail(); drawAggFcf(); drawFcfLines(); }, 180); });
+}
+document.addEventListener('DOMContentLoaded', init);
+</script>
+
+<script id="site-topbar-script">
+(function () {
+  var bar = document.getElementById('site-topbar');
+  if (!bar) return;
+  function luma(c) {
+    var m = /rgba?\(([^)]+)\)/.exec(c || '');
+    if (!m) return 1;
+    var p = m[1].split(',').map(parseFloat);
+    if (p.length > 3 && p[3] === 0) return 1;
+    var f = function (v) { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); };
+    return 0.2126 * f(p[0]) + 0.7152 * f(p[1]) + 0.0722 * f(p[2]);
+  }
+  function sync() {
+    var b = getComputedStyle(document.body).backgroundColor;
+    if (!b || b === 'rgba(0, 0, 0, 0)' || b === 'transparent') {
+      b = getComputedStyle(document.documentElement).backgroundColor;
+    }
+    bar.setAttribute('data-tone', luma(b) < 0.42 ? 'dark' : 'light');
+  }
+  sync();
+  try {
+    var mo = new MutationObserver(sync);
+    [document.documentElement, document.body].forEach(function (n) {
+      mo.observe(n, { attributes: true, attributeFilter: ['class', 'data-theme', 'style'] });
+    });
+  } catch (e) {}
+})();
+</script>
+</body>
+</html>
