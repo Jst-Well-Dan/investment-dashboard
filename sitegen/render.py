@@ -204,6 +204,7 @@ def index_page(cfg: dict, built_at: str, latest_journal, journal_count: int,
     today_entries = [e for e in entries if e.raw.get("today")]
     tracking = [t for t in theses if t.status in ("跟踪中", "存疑")]
     overdue = [t for t in theses if t.overdue]
+    settled = [t for t in theses if t.status in ("成立", "证伪")]
 
     if latest_journal:
         j_date, j_title, j_sum = latest_journal
@@ -222,6 +223,7 @@ def index_page(cfg: dict, built_at: str, latest_journal, journal_count: int,
         for t in topics
     )
 
+    settled_hint = f" · 另有 {len(settled)} 条已结算" if settled else ""
     overdue_note = ""
     if overdue:
         overdue_note = f'<div class="callout risk"><div class="co-h">需要复盘</div>' \
@@ -250,10 +252,10 @@ def index_page(cfg: dict, built_at: str, latest_journal, journal_count: int,
   </section>
 
   <section class="sect">
-    <div class="sect-head"><h2>在跟踪的判断</h2><span class="hint">{len(tracking)} 条跟踪中 · 按下次检查日期排</span></div>
+    <div class="sect-head"><h2>在跟踪的判断</h2><span class="hint">{len(tracking)} 条跟踪中 · 按下次检查日期排{settled_hint}</span></div>
     <div class="sect-rule"></div>
     {overdue_note}
-    <div class="thesis-list">{"".join(thesis_card(t) for t in theses) or '<div class="empty">还没有登记任何论点。</div>'}</div>
+    <div class="thesis-list">{"".join(thesis_card(t) for t in tracking) or '<div class="empty">没有正在跟踪的判断。</div>'}</div>
   </section>
 
   <section class="sect">
@@ -633,7 +635,7 @@ def theme_page(cfg: dict, built_at: str) -> str:
     <div class="sect-rule"></div>
     <div class="prose">
       <h2>今日市场一句话</h2>
-      <p>AI 链温度回升到 69，但波动率仍在剧烈档；黄金继续走弱。<code>[[300308-consensus]]</code> 的判断没有变化。</p>
+      <p>AI 链温度回升到 69，但波动率仍在剧烈档；黄金继续走弱。<a href="research/300308/consensus.html">共识与估值</a> 的判断没有变化。（日志里写 <code>[[300308-consensus]]</code>，构建时就会变成这样的链接。）</p>
       <blockquote><p>引用块用于摘录原文或自己的旧判断。</p></blockquote>
       <ul><li>支持列表</li><li>支持表格、代码块</li></ul>
     </div>
