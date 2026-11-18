@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import datetime as dt
+import math
 import re
 from html import escape as esc
 from pathlib import Path
@@ -50,9 +51,10 @@ def topbar(site: dict, depth: int, current: str) -> str:
     nav = [
         ("index.html", "今天", "today"),
         ("archive.html", "研究档案", "archive"),
-        ("journal/", "日志", "journal"),
-        ("theme.html", "主题", "theme"),
     ]
+    if site.get("show_journal"):
+        nav.append(("journal/", "日志", "journal"))
+    nav.append(("theme.html", "主题", "theme"))
 
     def href_for(h: str) -> str:
         # journal/ 目录下的页面用 ./ 指向自己这一层，避免变成 journal/journal/
@@ -141,34 +143,111 @@ def thesis_card(t: Thesis, depth: int = 0) -> str:
 
 # --------------------------------------------------------------- 首页
 
-def today_card(e: Entry) -> str:
+def sparkline(values: list[float], uid: str, w: int = 420, h: int = 54,
+              stroke: str = "var(--ink-2)") -> str:
+    """纯 inline SVG 面积走势线：无 JS、无 CDN、无外部依赖。"""
+    vals = [float(v) for v in values if isinstance(v, (int, float))]
+    if len(vals) < 2:
+        return ""
+    lo, hi = min(vals), max(vals)
+    if hi == lo:
+        hi = lo + 1
+    n = len(vals)
+    pts = [(i / (n - 1) * w, h - 3 - (v - lo) / (hi - lo) * (h - 6)) for i, v in enumerate(vals)]
+    line = " ".join(f"{x:.1f},{y:.1f}" for x, y in pts)
+    path = "M" + f"{pts[0][0]:.1f},{h} L" + " L".join(f"{x:.1f},{y:.1f}" for x, y in pts) \
+           + f" L{pts[-1][0]:.1f},{h} Z"
+    return f"""<svg class="spark" viewBox="0 0 {w} {h}" preserveAspectRatio="none" aria-hidden="true">
+  <defs><linearGradient id="sg{uid}" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="{stroke}" stop-opacity=".20"/>
+    <stop offset="1" stop-color="{stroke}" stop-opacity="0"/>
+  </linearGradient></defs>
+  <path d="{path}" fill="url(#sg{uid})"/>
+  <polyline points="{line}" fill="none" stroke="{stroke}" stroke-width="1.6"
+    stroke-linejoin="round" stroke-linecap="round"/>
+  <circle cx="{pts[-1][0]:.1f}" cy="{pts[-1][1]:.1f}" r="2.6" fill="{stroke}"/>
+</svg>"""
+
+
+def today_card(e: Entry, idx: int = 0) -> str:
+    """今日看板卡：结论徽标 + 大数字 + 走势线 + 三列 KPI + 一句话。
+
+    数据来自 research.yaml 里 latest: 的手写字段（date / text）和
+    pull_latest.py 写的 auto 块（asof / verdict / metrics / spark）。
+    auto 块不存在时自动退回旧版纯文字卡，不会崩。
+    """
     latest = e.latest
-    text = latest.get("text") or e.summary
-    d = latest.get("date") or e.data_asof
-    return f"""<div class="today">
+    text = latest.get("text") or latest.get("text_auto") or e.summary
+    metrics = [m for m in (latest.get("metrics") or []) if isinstance(m, dict) and m.get("k")]
+    spark = latest.get("spark") or []
+    verdict = latest.get("verdict") or ""
+    asof = latest.get("asof") or latest.get("date") or e.data_asof
+
+    # 结论徽标颜色：按看板给出的基调猜，猜不到就中性色
+    tone = latest.get("tone") or ""
+    if not tone and metrics:
+        tone = metrics[0].get("tone", "")
+    badge_cls = {"up": "bull", "down": "bear"}.get(tone, "warn")
+    verdict_html = f'<span class="verdict {badge_cls}">{esc(verdict)}</span>' if verdict else \
+        f'<span class="tag">{esc(e.kind_label)}</span>'
+
+    hero = ""
+    if metrics:
+        m0 = metrics[0]
+        hero = f"""<div class="hero-num">
+      <span class="hn-v num">{esc(str(m0.get('v', '')))}</span>
+      <span class="hn-u">{esc(str(m0.get('u', '')))}</span>
+      <span class="hn-d num {esc(str(m0.get('tone', 'flat')))}">{esc(str(m0.get('d', '')))}</span>
+    </div>"""
+
+    # 走势线画的是「绝对值走势」而不是涨跌：用墨色，不占用涨跌语义，
+    # 也不用金色——按规则 3，数据区里的金色只表示指引。
+    spark_html = sparkline(spark, str(idx), stroke="var(--ink-2)")
+    axis = ""
+    if spark_html:
+        axis = (f'<div class="spark-axis"><span class="num">{esc(str(latest.get("spark_from", "")) or "")}</span>'
+                f'<span class="num">{esc(str(asof))}</span></div>')
+
+    rest = metrics[1:]
+    kpi_html = ""
+    if rest:
+        kpi_html = '<div class="kpi3">' + "".join(
+            f'<div class="k3"><div class="k3-k">{esc(str(m.get("k", "")))}</div>'
+            f'<div class="k3-v num">{esc(str(m.get("v", "")))}'
+            f'<span class="k3-u">{esc(str(m.get("u", "")))}</span></div>'
+            f'<div class="k3-d {esc(str(m.get("tone", "flat")))}">{esc(str(m.get("d", "")))}</div></div>'
+            for m in rest) + '</div>'
+
+    tone_cls = {"bull": " tone-bull", "bear": " tone-bear"}.get(badge_cls, "")
+    return f"""<a class="today{tone_cls}" href="{e.url}" target="_blank" rel="noopener">
   <div class="t-top">
     <span class="t-name">{esc(e.short or e.title)}</span>
-    <span class="tag">{esc(e.kind_label)}</span>
-    <span class="t-date num">{esc(str(d))}</span>
+    {verdict_html}
+    <span class="t-date num">{esc(str(asof))}</span>
   </div>
+  {hero}
+  {spark_html}{axis}
+  {kpi_html}
   <div class="t-text">{esc(text)}</div>
-  <a class="t-link" href="{e.url}" target="_blank" rel="noopener">打开看板 →</a>
-</div>"""
+  <span class="t-link">打开看板 →</span>
+</a>"""
 
 
 def research_card(e: Entry, show_group: str | None = None, depth: int = 0) -> str:
+    """整张卡片就是链接。日期只是标注文字，不再单独做按钮（避免嵌套 a）。"""
     asof = f'<span>数据截至 <span class="num">{esc(e.data_asof)}</span></span>' if e.data_asof else ""
     grp = f'<span class="tag accent">{esc(show_group)}</span>' if show_group else ""
     target = ' target="_blank" rel="noopener"' if e.external else ""
-    return f"""<div class="rcard" data-topics="{' '.join(e.topics)}" data-group="{e.group}">
-  <div class="r-top">{esc(e.title)}</div>
+    arrow = " ↗" if e.external else ""
+    return f"""<a class="rcard" href="{href(e.url, depth)}"{target} data-topics="{' '.join(e.topics)}" data-group="{e.group}">
+  <div class="r-title">{esc(e.title)}{arrow}</div>
   <div class="r-sum">{esc(e.summary)}</div>
   <div class="r-foot">
     {grp}{badges_for(e)}
     {asof}
-    <a class="tag-date num" href="{href(e.url, depth)}"{target}>{e.date.isoformat()} →</a>
+    <span class="tag-date num">{e.date.isoformat()}</span>
   </div>
-</div>"""
+</a>"""
 
 
 def group_block(g: Group, depth: int = 0) -> str:
@@ -206,16 +285,24 @@ def index_page(cfg: dict, built_at: str, latest_journal, journal_count: int,
     overdue = [t for t in theses if t.overdue]
     settled = [t for t in theses if t.status in ("成立", "证伪")]
 
-    if latest_journal:
-        j_date, j_title, j_sum = latest_journal
-        journal_block = f"""<a class="jrow" href="{journal_dir_rel}{j_date}.html">
+    if site.get("show_journal"):
+        if latest_journal:
+            j_date, j_title, j_sum = latest_journal
+            journal_block = f"""<a class="jrow" href="{journal_dir_rel}{j_date}.html">
   <span class="j-date">{j_date}</span>
   <span class="j-title">{esc(j_title)}</span>
   <span class="tag">最近一篇</span>
   <span class="j-note">{esc(j_sum)}</span>
 </a>"""
+        else:
+            journal_block = '<div class="empty">还没有复盘记录。运行 <code>new_journal.bat</code> 生成今天的一篇。</div>'
+        journal_sect = f"""<section class="sect">
+    <div class="sect-head"><h2>今日复盘</h2><span class="hint">一天一个文件，写在 journal/ 目录</span></div>
+    <div class="sect-rule"></div>
+    <div class="jlist">{journal_block}</div>
+  </section>"""
     else:
-        journal_block = '<div class="empty">还没有复盘记录。运行 <code>new_journal.bat</code> 生成今天的一篇。</div>'
+        journal_sect = ""
 
     topics = cfg["topics"]
     filters = '<button type="button" data-filter-topic="" aria-pressed="true">全部</button>' + "".join(
@@ -229,6 +316,12 @@ def index_page(cfg: dict, built_at: str, latest_journal, journal_count: int,
         overdue_note = f'<div class="callout risk"><div class="co-h">需要复盘</div>' \
                        f'<p>有 {len(overdue)} 条判断已过检查日期，见下方标红项。</p></div>'
 
+    # lede 只报真实存在的模块，否则会出现「0 篇复盘」这种噪音
+    lede_bits = [f'已收录 <span class="num">{len(entries)}</span> 项研究',
+                 f'<span class="num">{len(theses)}</span> 条可跟踪判断']
+    if site.get("show_journal") and journal_count:
+        lede_bits.append(f'<span class="num">{journal_count}</span> 篇复盘')
+
     return (
         head(site.get("title", "Dan's Investment Dashboard"), 0)
         + topbar(site, 0, "today")
@@ -236,20 +329,16 @@ def index_page(cfg: dict, built_at: str, latest_journal, journal_count: int,
   <header class="pagehead">
     <div class="kicker">研究入口</div>
     <h1>{esc(site.get("title", ""))}</h1>
-    <p class="lede">{esc(site.get("subtitle", ""))} · 已收录 <span class="num">{len(entries)}</span> 项研究、<span class="num">{len(theses)}</span> 条可跟踪判断、<span class="num">{journal_count}</span> 篇复盘。</p>
+    <p class="lede">{esc(site.get("subtitle", ""))} · {'、'.join(lede_bits)}。</p>
   </header>
 
   <section class="sect">
     <div class="sect-head"><h2>今天</h2><span class="hint">每天自动更新的看板，点开是它们的独立站点</span></div>
     <div class="sect-rule"></div>
-    <div class="today-grid">{"".join(today_card(e) for e in today_entries) or '<div class="empty">清单里还没有标 today 的看板。</div>'}</div>
+    <div class="today-grid">{"".join(today_card(e, i) for i, e in enumerate(today_entries)) or '<div class="empty">清单里还没有标 today 的看板。</div>'}</div>
   </section>
 
-  <section class="sect">
-    <div class="sect-head"><h2>今日复盘</h2><span class="hint">一天一个文件，写在 journal/ 目录</span></div>
-    <div class="sect-rule"></div>
-    <div class="jlist">{journal_block}</div>
-  </section>
+  {journal_sect}
 
   <section class="sect">
     <div class="sect-head"><h2>在跟踪的判断</h2><span class="hint">{len(tracking)} 条跟踪中 · 按下次检查日期排{settled_hint}</span></div>
@@ -492,76 +581,141 @@ def journal_index_page(cfg: dict, journals: list[dict], built_at: str) -> str:
 
 def theme_page(cfg: dict, built_at: str) -> str:
     site = cfg["site"]
-    swatches = [
-        ("paper", "--paper", "页面底"), ("paper-2", "--paper-2", "次级底"),
-        ("card", "--card", "卡片"), ("card-2", "--card-2", "卡片次级"),
-        ("ink", "--ink", "主文字"), ("ink-2", "--ink-2", "次文字"),
-        ("muted", "--muted", "弱文字"), ("dim", "--dim", "更弱"),
-        ("line", "--line", "分隔线"), ("line-strong", "--line-strong", "强分隔线"),
-        ("accent", "--accent", "强调"), ("accent-bg", "--accent-bg", "强调底"),
-        ("up", "--up", "涨（红）"), ("down", "--down", "跌（绿）"),
-        ("actual", "--actual", "实际"), ("guide", "--guide", "指引 / 预期"),
-        ("st-track", "--st-track", "跟踪中"), ("st-hold", "--st-hold", "成立"),
-        ("st-doubt", "--st-doubt", "存疑"), ("st-dead", "--st-dead", "证伪"),
-        ("warn", "--warn", "警示"),
+
+    # 色板：OKLCH 固定明度/彩度、只转色相。浅色文字档 L .50、色块档 L .68；
+    # 深色文字档 L .77、色块档 L .62。数值与 theme.css 的令牌一一对应。
+    pal = [
+        ("蜜", "Honey", 74, ("#835a18", "6.0"), ("#bd8f4e", ""), ("#d7ac72", "8.3"), ("#a77e45", ""),
+         "主题色 · 指引 / 预期", "导航高亮、品牌标记、图表里的预期柱"),
+        ("朱", "Cinnabar", 28, ("#924c44", "6.2"), ("#cf8075", ""), ("#e89e94", "8.1"), ("#b67168", ""),
+         "涨 · 风险框 · 已到期", ""),
+        ("石绿", "Jade", 158, ("#29734e", "5.7"), ("#5eab81", ""), ("#82c69e", "8.7"), ("#539771", ""),
+         "跌", ""),
+        ("靛", "Indigo", 250, ("#356697", "5.9"), ("#679dd4", ""), ("#88b9ec", "8.4"), ("#5b8abb", ""),
+         "实际值 · 口径框", ""),
+        ("梅", "Plum", 318, ("#7a5186", "6.2"), ("#b284c0", ""), ("#cda2da", "8.1"), ("#9d75a9", ""),
+         "备用 · 图表第三条系列", "不分配固定含义"),
     ]
-    sw = "".join(
-        f'<div class="kpi" style="padding:0;overflow:hidden">'
-        f'<div style="height:44px;background:var({var});border-bottom:1px solid var(--line)"></div>'
-        f'<div style="padding:8px 10px"><div class="kpi-k">{name}</div>'
-        f'<code style="font-size:10.5px">{var}</code>'
-        f'<div class="card-note" style="margin-top:2px">{label}</div></div></div>'
-        for name, var, label in swatches
+
+    def swatch(c: tuple[str, str], on_dark: bool = False) -> str:
+        note = f"对比 {c[1]}:1" if c[1] else "图形用"
+        cls = "sw on-dark" if on_dark else "sw"
+        return (f'<div class="{cls}"><i style="background:{c[0]}"></i>'
+                f'<span><span class="hex">{c[0]}</span>'
+                f'<span class="cr">{note}</span></span></div>')
+
+    pal_rows = "".join(
+        f'<tr><td class="nm"><b>{n}</b><span>{en} · {h}°</span></td>'
+        f'<td>{swatch(lt)}</td><td>{swatch(lf)}</td>'
+        f'<td>{swatch(dt, True)}</td><td>{swatch(df, True)}</td>'
+        f'<td class="role">{role}' + (f'<br><span class="x">{xref}</span>' if xref else "") + '</td></tr>'
+        for n, en, h, lt, lf, dt, df, role, xref in pal
     )
+
+    # 色相环：OKLCH 的 a 轴朝右、b 轴朝上
+    dots = []
+    for i, (n, _en, h, _lt, lf, *_rest) in enumerate(pal):
+        r = math.radians(h)
+        x, y = math.cos(r) * 92, -math.sin(r) * 92
+        lx, ly = math.cos(r) * 113, -math.sin(r) * 113 + 4
+        stroke = ' stroke="var(--ink)" stroke-width="1.5"' if i == 0 else ""
+        dots.append(
+            f'<line x1="0" y1="0" x2="{x:.1f}" y2="{y:.1f}" stroke="var(--line-soft)"/>'
+            f'<circle cx="{x:.1f}" cy="{y:.1f}" r="{11 if i == 0 else 8}" fill="{lf[0]}"{stroke}/>'
+            f'<text x="{lx:.1f}" y="{ly:.1f}" text-anchor="middle" '
+            f'fill="var(--ink-2)" font-size="12">{n}</text>'
+        )
+    wheel = "".join(dots)
+
     return (
-        head("主题样例 · " + site.get("title", ""), 0)
+        head("主题 · " + site.get("title", ""), 0)
         + topbar(site, 0, "theme")
         + f"""<div class="wrap">
   <header class="pagehead">
     <div class="kicker">Design tokens</div>
-    <h1>主题样例</h1>
-    <p class="lede">这里展示 <code>theme/theme.css</code> 的全部令牌与组件。所有页面（含托管的研究页）都以这套为准；
-       点右上角「主题」切换深色，验证同一套令牌在两种模式下都成立。</p>
+    <h1>主题</h1>
+    <p class="lede">印刷纸本 + 黑金：纸色做正文，暖黑做书脊（顶栏与页脚），金只用细线和字。
+       所有页面都读这一套令牌，点右上角「主题」切深色，验证两种模式都成立。</p>
   </header>
 
   <section class="sect">
-    <div class="sect-head"><h2>颜色令牌</h2><span class="hint">语义色含义固定，不得挪用</span></div>
+    <div class="sect-head"><h2>色板</h2><span class="hint">OKLCH 里固定明度与彩度，只转色相</span></div>
     <div class="sect-rule"></div>
-    <div class="kpi-grid" style="grid-template-columns:repeat(auto-fill,minmax(150px,1fr))">{sw}</div>
-    <div class="callout method" style="margin-top:16px">
-      <div class="co-h">用色规则</div>
-      <p>涨红跌绿只用于价格与收益的变动；<span class="actual">蓝＝实际值</span>、<span class="guide">琥珀＝指引 / 预期</span>，
-      这两组颜色在全站含义不重叠。观点状态（跟踪中 / 成立 / 存疑 / 证伪）用第三组色，避免被读成行情。</p>
+    <div class="wheel-wrap">
+      <svg class="wheel" viewBox="-120 -120 240 240" role="img" aria-label="色相环：五个色板值的位置">
+        <circle r="92" fill="none" stroke="var(--line)" stroke-width="1"/>
+        <circle r="62" fill="none" stroke="var(--line-soft)" stroke-width="1" stroke-dasharray="2 4"/>
+        {wheel}
+        <text x="0" y="-4" text-anchor="middle" fill="var(--ink)" font-size="13" font-weight="600">L .50 · C .095</text>
+        <text x="0" y="14" text-anchor="middle" fill="var(--muted)" font-size="11">只有色相不同</text>
+      </svg>
+      <div class="notes">
+        <p><b>色相来自主题色。</b>蜜金 74° 是起点；朱 28° 与石绿 158° 被「红涨绿跌」固定；
+           靛 250°、梅 318° 把剩下的色环拉开。相邻两色的色差都在 7 以上。</p>
+        <p><b>明度与彩度固定。</b>文字档 L .50、色块档 L .68（深色分别提到 .77 与 .62），彩度 .09–.10。
+           所有颜色一样重、一样艳，所以表格里一列朱一列石绿不会互相抢。</p>
+        <p><b>梅是备用。</b>不分配固定含义，只在图表需要第三条系列时使用。</p>
+      </div>
+    </div>
+    <div style="overflow-x:auto;margin-top:24px">
+      <table class="pal">
+        <thead><tr><th>色板值</th><th>浅色 · 文字</th><th>浅色 · 色块</th>
+          <th>深色 · 文字</th><th>深色 · 色块</th><th>用途</th></tr></thead>
+        <tbody>{pal_rows}</tbody>
+      </table>
     </div>
   </section>
 
   <section class="sect">
-    <div class="sect-head"><h2>字体与数字</h2><span class="hint">数字一律等宽 + tabular-nums</span></div>
+    <div class="sect-head"><h2>三条规则</h2></div>
     <div class="sect-rule"></div>
-    <h1>标题 H1 · 27px</h1><h2>标题 H2 · 21px</h2><h3>标题 H3 · 17px</h3>
-    <p>正文 14.5px，行高 1.72。中文回退栈：PingFang SC / Noto Sans SC / Microsoft YaHei。
-       <span class="num">1,234.56</span> 与 <span class="num">-3.28%</span> 用等宽数字，纵向对齐。</p>
+    <div class="kpi-grid" style="grid-template-columns:repeat(3,minmax(0,1fr))">
+      <div class="card card-tight">
+        <div class="card-h"><h3>数据区里，金只表示指引</h3></div>
+        <p class="card-note">KPI、表格、图表里出现金色，读者就可以默认它是预期或指引。
+          数据区里的链接和强调一律用墨色下划线；金色留给顶栏、页脚、小节标记和图表里的预期柱。</p>
+      </div>
+      <div class="card card-tight">
+        <div class="card-h"><h3>判断状态不占色板</h3></div>
+        <p class="card-note">跟踪中、成立、存疑、证伪用空心、实心、半圆和删除线区分，颜色都是墨色；
+          只有「已到期」借朱，因为它就是警示。这样「成立」不会再和「跌」同为绿色。</p>
+      </div>
+      <div class="card card-tight">
+        <div class="card-h"><h3>浅底在 OKLCH 里混色</h3></div>
+        <p class="card-note">提示框底色用 <code>color-mix(in oklch, 色块档 9%, 卡片)</code>，
+          不再用 rgba 叠在暖纸色上，所以口径框不会变成灰蓝。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="sect">
+    <div class="sect-head"><h2>字体与数字</h2><span class="hint">数字等宽 + 同宽数字；大数字用衬线</span></div>
+    <div class="sect-rule"></div>
+    <h1>标题 H1</h1><h2>标题 H2</h2><h3>标题 H3</h3>
+    <p>正文 14.5px，行高 1.72。中文回退栈 PingFang SC / Noto Sans SC / Microsoft YaHei；
+       大数字用 Cambria / Georgia，报表味道来自字形而不是加粗。
+       <span class="num">1,234.56</span> 与 <span class="num">-3.28%</span> 纵向对齐。</p>
     <p><span class="up num">+2.17pt</span> · <span class="down num">-1.86%</span> ·
        <span class="actual num">730 bn</span> · <span class="guide num">1,051 bn</span></p>
   </section>
 
   <section class="sect">
-    <div class="sect-head"><h2>KPI 卡</h2></div>
+    <div class="sect-head"><h2>KPI 卡</h2><span class="hint">数字用衬线，单位用等宽</span></div>
     <div class="sect-rule"></div>
     <div class="kpi-grid">
       <div class="kpi"><div class="kpi-k">股东总回报</div>
-        <div class="kpi-v up">+2795<span class="u">%</span></div>
+        <div class="kpi-v up">+2,795<span class="u">%</span></div>
         <div class="kpi-d">×28.9 市值 233 → 7,003 亿</div>
         <div class="kpi-asof">2023-01-31 → 2026-10-26</div></div>
       <div class="kpi"><div class="kpi-k">PE_NTM</div>
         <div class="kpi-v">11.71<span class="u">x</span></div>
         <div class="kpi-d">滚动 250 日分位 0.0%</div>
         <div class="kpi-asof">数据截至 2026-10-26</div></div>
-      <div class="kpi"><div class="kpi-k">2026 四家指引合计</div>
+      <div class="kpi"><div class="kpi-k">2026 四家实际</div>
         <div class="kpi-v actual">730<span class="u">bn</span></div>
         <div class="kpi-d">同公司组年内上修 <span class="up num">+10.9%</span></div>
         <div class="kpi-asof">数据截至 2026-10-29</div></div>
-      <div class="kpi"><div class="kpi-k">2027 外推</div>
+      <div class="kpi"><div class="kpi-k">2027 指引外推</div>
         <div class="kpi-v guide">1,051<span class="u">bn</span></div>
         <div class="kpi-d">不是公司指引</div>
         <div class="kpi-asof">仅供情景参考</div></div>
@@ -569,10 +723,10 @@ def theme_page(cfg: dict, built_at: str) -> str:
   </section>
 
   <section class="sect">
-    <div class="sect-head"><h2>表格</h2><span class="hint">表头吸顶 · 数字右对齐</span></div>
+    <div class="sect-head"><h2>表格</h2><span class="hint">账本式：上下墨线，中间发丝线</span></div>
     <div class="sect-rule"></div>
     <div class="table-wrap"><table class="table">
-      <thead><tr><th>年</th><th class="n">市值（亿）</th><th class="n">E_NTM（亿）</th><th class="n">PE_NTM</th><th class="n">盈利贡献 pp</th><th class="n">估值贡献 pp</th><th class="n">总回报</th></tr></thead>
+      <thead><tr><th>年</th><th class="n">市值（亿）</th><th class="n">E_NTM（亿）</th><th class="n">PE_NTM</th><th class="n">盈利 pp</th><th class="n">估值 pp</th><th class="n">总回报</th></tr></thead>
       <tbody>
         <tr><td>2023</td><td class="n">233 → 906</td><td class="n">15.2 → 36.5</td><td class="n">15.3x → 24.8x</td><td class="n up">+87.6</td><td class="n up">+48.2</td><td class="n up">+288.7%</td></tr>
         <tr><td>2024</td><td class="n">888 → 1,385</td><td class="n">36.6 → 89.4</td><td class="n">24.3x → 15.5x</td><td class="n up">+89.3</td><td class="n down">-44.9</td><td class="n up">+56.7%</td></tr>
@@ -582,18 +736,18 @@ def theme_page(cfg: dict, built_at: str) -> str:
   </section>
 
   <section class="sect">
-    <div class="sect-head"><h2>提示框</h2></div>
+    <div class="sect-head"><h2>提示框</h2><span class="hint">细框 + 小标签；只有风险铺一层极淡底</span></div>
     <div class="sect-rule"></div>
     <div class="stack">
-      <div class="callout"><div class="co-h">结论</div><p>默认样式用于普通结论。</p></div>
-      <div class="callout info"><div class="co-h">口径</div><p>蓝框用于说明数据口径与算法假设。</p></div>
-      <div class="callout risk"><div class="co-h">风险</div><p>红框用于风险与失效条件。</p></div>
-      <div class="callout method"><div class="co-h">方法</div><p>琥珀框用于方法说明。</p></div>
+      <div class="callout"><div class="co-h">结论</div><p>默认样式：细框，无底色。用于普通结论。</p></div>
+      <div class="callout info"><div class="co-h">口径</div><p>靛色框说明数据口径与算法假设；底色是在 OKLCH 里混出来的，不会发灰。</p></div>
+      <div class="callout risk"><div class="co-h">风险</div><p>朱色框用于风险与失效条件，是唯一允许铺底的提示框。</p></div>
+      <div class="callout method"><div class="co-h">方法</div><p>方法说明用次级纸底，不占用色板。</p></div>
     </div>
   </section>
 
   <section class="sect">
-    <div class="sect-head"><h2>标签与状态徽标</h2></div>
+    <div class="sect-head"><h2>标签与判断状态</h2><span class="hint">形状区分，不借行情色</span></div>
     <div class="sect-rule"></div>
     <div class="row" style="margin-bottom:12px">
       <span class="tag">标签</span><span class="tag accent">强调标签</span>
@@ -623,10 +777,27 @@ def theme_page(cfg: dict, built_at: str) -> str:
     <div class="sect-head"><h2>图表容器</h2><span class="hint">标题 + 副标题 + 正文 + 来源脚注</span></div>
     <div class="sect-rule"></div>
     <div class="chart-card">
-      <div class="chart-title">图一 · NTM 共识净利</div>
-      <div class="chart-sub">未来 12 个月净利预测；变化来自预测修订、日历滚动与机构进出。</div>
-      <div class="chart-body"><div class="empty" style="padding:48px">（图表放这里）</div></div>
-      <div class="chart-foot"><span>单位：亿元</span><span class="src">来源：tushare report_rc · 数据截至 2026-10-26</span></div>
+      <div class="chart-title">图一 · 北美四家 capex（十亿美元）</div>
+      <div class="chart-sub">实际值用靛，指引与外推用蜜金虚线框。</div>
+      <div class="chart-body">
+        <svg viewBox="0 0 320 150" style="width:100%;height:auto" role="img" aria-label="capex 实际与指引">
+          <line x1="0" y1="124" x2="320" y2="124" stroke="var(--line)"/>
+          <rect x="18"  y="99" width="44" height="25"  rx="2" fill="var(--actual-f)"/>
+          <rect x="96"  y="78" width="44" height="46"  rx="2" fill="var(--actual-f)"/>
+          <rect x="174" y="49" width="44" height="75"  rx="2" fill="var(--actual-f)"/>
+          <rect x="174" y="43" width="44" height="6"   rx="1" fill="var(--guide-f)"/>
+          <rect x="252" y="16" width="44" height="108" rx="2" fill="none" stroke="var(--guide-f)" stroke-width="1.5" stroke-dasharray="3 2"/>
+          <text x="40"  y="93" text-anchor="middle" fill="var(--actual)" font-size="11" font-weight="600">243</text>
+          <text x="118" y="72" text-anchor="middle" fill="var(--actual)" font-size="11" font-weight="600">447</text>
+          <text x="196" y="37" text-anchor="middle" fill="var(--actual)" font-size="11" font-weight="600">730</text>
+          <text x="274" y="10" text-anchor="middle" fill="var(--guide)"  font-size="11" font-weight="600">1,051</text>
+          <text x="40"  y="141" text-anchor="middle" fill="var(--muted)" font-size="11">2024</text>
+          <text x="118" y="141" text-anchor="middle" fill="var(--muted)" font-size="11">2025</text>
+          <text x="196" y="141" text-anchor="middle" fill="var(--muted)" font-size="11">2026</text>
+          <text x="274" y="141" text-anchor="middle" fill="var(--muted)" font-size="11">2027E</text>
+        </svg>
+      </div>
+      <div class="chart-foot"><span>单位：十亿美元</span><span class="src">来源：公司指引汇总 · 数据截至 2026-10-29</span></div>
     </div>
   </section>
 
@@ -635,7 +806,8 @@ def theme_page(cfg: dict, built_at: str) -> str:
     <div class="sect-rule"></div>
     <div class="prose">
       <h2>今日市场一句话</h2>
-      <p>AI 链温度回升到 69，但波动率仍在剧烈档；黄金继续走弱。<a href="research/300308/consensus.html">共识与估值</a> 的判断没有变化。（日志里写 <code>[[300308-consensus]]</code>，构建时就会变成这样的链接。）</p>
+      <p>AI 链温度回升到 69，但波动率仍在剧烈档；黄金继续走弱。<a href="research/300308/consensus.html">共识与估值</a>
+         的判断没有变化。（日志里写 <code>[[300308-consensus]]</code>，构建时就会变成这样的链接。）</p>
       <blockquote><p>引用块用于摘录原文或自己的旧判断。</p></blockquote>
       <ul><li>支持列表</li><li>支持表格、代码块</li></ul>
     </div>

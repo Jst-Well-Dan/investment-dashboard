@@ -1,67 +1,57 @@
 /* =============================================================================
    Dan's Investment Dashboard · 统一主题
    -----------------------------------------------------------------------------
+   形态：印刷纸本 + 黑金（浅色模式取「中」档：顶栏与页脚为暖黑带）
    用法：<link rel="stylesheet" href="assets/theme.css">
         深色：<html data-theme="dark"> 或系统偏好自动切换
-   规则：
-     1) 涨=红、跌=绿（A 股习惯）；实际=蓝、指引/预期=琥珀；这五种含义全站固定。
-     2) 所有数字用 .num 或表格里的数字列：等宽 + tabular-nums。
-     3) 只用这里的令牌，页面里不写死色值。
+
+   规则
+     1) 色板在 OKLCH 里生成：固定明度与彩度，只转色相，所以每个颜色一样重。
+     2) 用途 → 色板值只有一层映射（见「用途映射」），页面不写死色值。
+     3) 数据区（KPI/表格/图表）里，蜜金只表示指引 / 预期；链接与强调用墨色。
+     4) 判断状态不占色板：用形状区分，颜色是墨色，只有「已到期」借朱。
+     5) 数字：等宽 + tabular-nums；大数字用衬线数字。
    ========================================================================== */
 
-/* ------------------------------------------------------------------ 令牌：浅色 */
+/* ------------------------------------------------------ 色板 · 浅色
+   文字档 L .50 C .095   色块档 L .68 C .10   色相：蜜 74 / 朱 28 / 石绿 158 / 靛 250 / 梅 318 */
 :root {
   color-scheme: light;
 
-  /* 底色与层次 */
+  --honey-t: #835a18;  --honey-f: #bd8f4e;
+  --cin-t:   #924c44;  --cin-f:   #cf8075;
+  --jade-t:  #29734e;  --jade-f:  #5eab81;
+  --ind-t:   #356697;  --ind-f:   #679dd4;
+  --plum-t:  #7a5186;  --plum-f:  #b284c0;
+
+  /* 纸与墨：墨是蜜色相的极低彩度暖黑，和金色放在一起不发青 */
   --paper:        #f7f5f0;
-  --paper-2:      #efeade;
-  --card:         #ffffff;
-  --card-2:       #fbf9f4;
+  --paper-2:      #efebe2;
+  --card:         #fffdf8;
+  --card-2:       #faf6ec;
 
-  /* 文字 */
-  --ink:          #1f1a12;
-  --ink-2:        #4b4437;
-  --muted:        #8a8375;
-  --dim:          #a9a294;
+  --ink:          #1c1712;
+  --ink-2:        #4a433a;
+  --muted:        #6f685c;
+  --dim:          #a39b8e;
 
-  /* 线 */
-  --line:         #e6ddc9;
-  --line-soft:    #f0ebdd;
-  --line-strong:  #d8cdb4;
+  --line:         #e4ddcf;
+  --line-soft:    #ece6da;
+  --line-strong:  #cfc3ab;
 
-  /* 强调（品牌色，不承载语义） */
-  --accent:       #a8892a;
-  --accent-ink:   #7d6619;
-  --accent-bg:    rgba(168, 137, 42, .11);
-  --accent-line:  rgba(168, 137, 42, .34);
-
-  /* 语义色：涨跌（A 股：红涨绿跌）——只用于价格/收益的变动 */
-  --up:           #b8402f;
-  --up-bg:        rgba(184, 64, 47, .10);
-  --down:         #1f7a5a;
-  --down-bg:      rgba(31, 122, 90, .10);
-  --flat:         #8a8375;
-
-  /* 语义色：实际 vs 指引（capex 等领域） */
-  --actual:       #2f6fb3;
-  --actual-bg:    rgba(47, 111, 179, .12);
-  --guide:        #b8791a;
-  --guide-bg:     rgba(184, 121, 26, .14);
-
-  /* 语义色：观点状态（与涨跌色刻意区分，避免误读为行情） */
-  --st-track:     #2f6fb3;   /* 跟踪中 */
-  --st-hold:      #1f7a5a;   /* 成立 */
-  --st-doubt:     #b8791a;   /* 存疑 */
-  --st-dead:      #8a8375;   /* 证伪 */
-  --warn:         #b3261e;
-  --warn-bg:      rgba(179, 38, 30, .09);
+  /* 黑金带：顶栏、页脚（浅色模式「中」档） */
+  --band:         #17130e;
+  --band-ink:     #ece6da;
+  --band-muted:   #a39b8e;
+  --band-line:    color-mix(in oklch, #bd8f4e 55%, #17130e);
 
   /* 字体 */
   --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
                "Hiragino Sans GB", "Noto Sans SC", "Microsoft YaHei", sans-serif;
-  --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas,
+  --font-mono: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas,
                "Liberation Mono", monospace;
+  /* 只用于大数字与报表味道的地方，不用于中文 */
+  --font-serif: Cambria, "Iowan Old Style", Georgia, "Times New Roman", serif;
 
   /* 字号阶梯 */
   --fs-xs:  11.5px;
@@ -76,87 +66,127 @@
   --s1: 4px;  --s2: 8px;  --s3: 12px; --s4: 16px;
   --s5: 24px; --s6: 32px; --s7: 48px; --s8: 64px;
 
-  /* 形状 */
-  --r-sm: 5px;  --r-md: 9px;  --r-lg: 13px;  --r-pill: 999px;
-  --shadow-1: 0 1px 2px rgba(31, 26, 18, .05);
-  --shadow-2: 0 2px 10px rgba(31, 26, 18, .07);
+  /* 形状：印刷纸本少用圆角与阴影 */
+  --r-sm: 4px;  --r-md: 7px;  --r-lg: 10px;  --r-pill: 999px;
+  --shadow-1: none;
+  --shadow-2: 0 10px 28px -18px rgba(28, 23, 18, .38);
 
   /* 版心 */
   --wrap: 1080px;
   --wrap-wide: 1280px;
+  --topbar-h: 44px;
 
-  /* 站点顶栏高度（注入到旧页面的顶栏也用它） */
-  --topbar-h: 42px;
+  /* 浏览器自绘部分也归这套色 */
+  --sel-bg: color-mix(in oklch, var(--honey-f) 32%, var(--card));
 }
 
-/* ------------------------------------------------------------------ 令牌：深色 */
+/* ------------------------------------------------------ 色板 · 深色
+   文字档 L .77 C .09   色块档 L .62 C .09（彩度不升，所以不发光） */
 :root[data-theme="dark"] {
   color-scheme: dark;
 
-  --paper:        #0f1216;
-  --paper-2:      #141922;
-  --card:         #161b22;
-  --card-2:       #1a212b;
+  --honey-t: #d7ac72;  --honey-f: #a77e45;
+  --cin-t:   #e89e94;  --cin-f:   #b67168;
+  --jade-t:  #82c69e;  --jade-f:  #539771;
+  --ind-t:   #88b9ec;  --ind-f:   #5b8abb;
+  --plum-t:  #cda2da;  --plum-f:  #9d75a9;
 
-  --ink:          #e6edf3;
-  --ink-2:        #c3cedb;
-  --muted:        #8b98a8;
-  --dim:          #63707f;
+  --paper:        #130f0a;
+  --paper-2:      #17130e;
+  --card:         #1c1712;
+  --card-2:       #211c17;
 
-  --line:         #232b36;
-  --line-soft:    #1b222b;
-  --line-strong:  #33404f;
+  --ink:          #efe6d4;
+  --ink-2:        #cfc4b0;
+  --muted:        #9a9285;
+  --dim:          #6d6659;
 
-  --accent:       #d4a853;
-  --accent-ink:   #e3bd74;
-  --accent-bg:    rgba(212, 168, 83, .13);
-  --accent-line:  rgba(212, 168, 83, .34);
+  /* 深色：分隔线里混一点金，所以是暗金光而不是灰线 */
+  --line:         color-mix(in oklch, #bd8f4e 22%, #1c1712);
+  --line-soft:    color-mix(in oklch, #bd8f4e 12%, #1c1712);
+  --line-strong:  color-mix(in oklch, #bd8f4e 36%, #1c1712);
 
-  --up:           #f85149;
-  --up-bg:        rgba(248, 81, 73, .13);
-  --down:         #3fb950;
-  --down-bg:      rgba(63, 185, 80, .13);
-  --flat:         #8b98a8;
+  --band:         #0d0a07;
+  --band-ink:     #efe6d4;
+  --band-muted:   #a39b8e;
+  --band-line:    color-mix(in oklch, #d7ac72 45%, #0d0a07);
 
-  --actual:       #6fa8dc;
-  --actual-bg:    rgba(111, 168, 220, .15);
-  --guide:        #e0af68;
-  --guide-bg:     rgba(224, 175, 104, .15);
+  --shadow-2: 0 12px 32px -18px #000;
 
-  --st-track:     #6fa8dc;
-  --st-hold:      #3fb950;
-  --st-doubt:     #e0af68;
-  --st-dead:      #8b98a8;
-  --warn:         #f85149;
-  --warn-bg:      rgba(248, 81, 73, .12);
-
-  --shadow-1: 0 1px 2px rgba(0, 0, 0, .4);
-  --shadow-2: 0 2px 12px rgba(0, 0, 0, .45);
+  --sel-bg: color-mix(in oklch, var(--honey-f) 38%, #1c1712);
 }
 
 /* 跟随系统（未手动指定时） */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     color-scheme: dark;
-    --paper: #0f1216; --paper-2: #141922; --card: #161b22; --card-2: #1a212b;
-    --ink: #e6edf3; --ink-2: #c3cedb; --muted: #8b98a8; --dim: #63707f;
-    --line: #232b36; --line-soft: #1b222b; --line-strong: #33404f;
-    --accent: #d4a853; --accent-ink: #e3bd74;
-    --accent-bg: rgba(212, 168, 83, .13); --accent-line: rgba(212, 168, 83, .34);
-    --up: #f85149; --up-bg: rgba(248, 81, 73, .13);
-    --down: #3fb950; --down-bg: rgba(63, 185, 80, .13); --flat: #8b98a8;
-    --actual: #6fa8dc; --actual-bg: rgba(111, 168, 220, .15);
-    --guide: #e0af68; --guide-bg: rgba(224, 175, 104, .15);
-    --st-track: #6fa8dc; --st-hold: #3fb950; --st-doubt: #e0af68; --st-dead: #8b98a8;
-    --warn: #f85149; --warn-bg: rgba(248, 81, 73, .12);
-    --shadow-1: 0 1px 2px rgba(0,0,0,.4); --shadow-2: 0 2px 12px rgba(0,0,0,.45);
+
+    --honey-t: #d7ac72;  --honey-f: #a77e45;
+    --cin-t:   #e89e94;  --cin-f:   #b67168;
+    --jade-t:  #82c69e;  --jade-f:  #539771;
+    --ind-t:   #88b9ec;  --ind-f:  #5b8abb;
+    --plum-t:  #cda2da;  --plum-f:  #9d75a9;
+
+    --paper: #130f0a; --paper-2: #17130e; --card: #1c1712; --card-2: #211c17;
+    --ink: #efe6d4; --ink-2: #cfc4b0; --muted: #9a9285; --dim: #6d6659;
+    --line: color-mix(in oklch, #bd8f4e 22%, #1c1712);
+    --line-soft: color-mix(in oklch, #bd8f4e 12%, #1c1712);
+    --line-strong: color-mix(in oklch, #bd8f4e 36%, #1c1712);
+    --band: #0d0a07; --band-ink: #efe6d4; --band-muted: #a39b8e;
+    --band-line: color-mix(in oklch, #d7ac72 45%, #0d0a07);
+    --shadow-2: 0 12px 32px -18px #000;
+    --sel-bg: color-mix(in oklch, var(--honey-f) 38%, #1c1712);
   }
+}
+
+/* ------------------------------------------------------ 用途映射（唯一一层） */
+:root {
+  /* 品牌 / 指引 = 蜜。数据区里金色只表示指引，见规则 3 */
+  --brand:       var(--honey-t);
+  --brand-f:     var(--honey-f);
+  --guide:       var(--honey-t);
+  --guide-f:     var(--honey-f);
+
+  --actual:      var(--ind-t);
+  --actual-f:    var(--ind-f);
+
+  --up:          var(--cin-t);      /* 涨 · 风险 · 已到期 */
+  --down:        var(--jade-t);     /* 跌 */
+  --flat:        var(--muted);
+  --series-3:    var(--plum-t);     /* 备用：图表第三条系列 */
+  --series-3-f:  var(--plum-f);
+  --warn:        var(--cin-t);
+
+  /* 浅底：在 OKLCH 里朝卡片混，不会像 rgba 叠暖底那样发灰 */
+  --brand-bg:    color-mix(in oklch, var(--honey-f) 14%, var(--card));
+  --actual-bg:   color-mix(in oklch, var(--ind-f) 8%, var(--card));
+  --guide-bg:    color-mix(in oklch, var(--honey-f) 12%, var(--card));
+  --up-bg:       color-mix(in oklch, var(--cin-f) 10%, var(--card));
+  --down-bg:     color-mix(in oklch, var(--jade-f) 10%, var(--card));
+  --warn-bg:     color-mix(in oklch, var(--cin-f) 9%, var(--card));
+
+  /* 旧令牌名保留，供已有页面使用 */
+  --accent:      var(--brand);
+  --accent-ink:  var(--brand);
+  --accent-bg:   var(--brand-bg);
+  --accent-line: color-mix(in oklch, var(--honey-f) 52%, var(--card));
+
+  /* 判断状态：不占色板 */
+  --st-track:    var(--ink-2);
+  --st-hold:     var(--ink);
+  --st-doubt:    var(--muted);
+  --st-dead:     var(--dim);
+  --st-due:      var(--up);
 }
 
 /* ---------------------------------------------------------------- 基础排版 */
 *, *::before, *::after { box-sizing: border-box; }
 
-html { -webkit-text-size-adjust: 100%; scroll-padding-top: calc(var(--topbar-h) + 12px); }
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-padding-top: calc(var(--topbar-h) + 12px);
+  background: var(--paper);
+}
 
 body {
   margin: 0;
@@ -166,10 +196,27 @@ body {
   font-size: var(--fs-md);
   line-height: 1.72;
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
-a { color: var(--accent-ink); text-decoration: none; }
-a:hover { text-decoration: underline; text-underline-offset: 3px; }
+/* 非数据区的链接：墨色下划线。金色留给品牌与指引 */
+a {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: var(--line-strong);
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+}
+a:hover { text-decoration-color: var(--brand-f); }
+
+::selection { background: var(--sel-bg); color: var(--ink); }
+:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; border-radius: 2px; }
+
+* { scrollbar-color: var(--line-strong) transparent; scrollbar-width: thin; }
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--line-strong); border-radius: 999px;
+                            border: 3px solid var(--paper); }
 
 h1, h2, h3, h4 { margin: 0; line-height: 1.3; font-weight: 650; letter-spacing: -.01em; }
 h1 { font-size: var(--fs-2xl); }
@@ -190,70 +237,88 @@ strong, b { font-weight: 650; color: var(--ink); }
 small { font-size: var(--fs-xs); }
 img, svg { max-width: 100%; }
 
-/* 数字：等宽 + 同宽数字，所有数值都该带 .num */
-.num, .kpi-v, td.n, .table td:not(:first-child), time, .tag-date {
+/* 数字：等宽 + 同宽数字 */
+.num, td.n, .table td:not(:first-child), time, .tag-date,
+.chart-foot, .kpi-asof, .stb-asof {
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum" 1;
 }
 
+/* 大数字用衬线，报表味道来自字形而不是加粗 */
+.kpi-v, .hero-num .hn-v, .k3-v {
+  font-family: var(--font-serif);
+  font-variant-numeric: tabular-nums lining-nums;
+  font-weight: 600;
+  letter-spacing: -.005em;
+}
+
 /* 布局 */
-.wrap { max-width: var(--wrap); margin: 0 auto; padding: var(--s6) var(--s5) var(--s8); }
+.wrap { max-width: var(--wrap); margin: 0 auto; padding: var(--s6) var(--s5) 0; }
 .wrap-wide { max-width: var(--wrap-wide); }
 .stack > * + * { margin-top: var(--s4); }
 .row { display: flex; gap: var(--s3); flex-wrap: wrap; align-items: center; }
 .spacer { flex: 1 1 auto; }
 
-/* ------------------------------------------------------------------ 站点顶栏 */
+/* ------------------------------------------------- 站点顶栏（黑金带） */
 .topbar {
   position: sticky; top: 0; z-index: 60;
   height: var(--topbar-h);
   display: flex; align-items: center; gap: var(--s3);
   padding: 0 var(--s4);
-  background: color-mix(in srgb, var(--paper) 88%, transparent);
-  backdrop-filter: saturate(150%) blur(8px);
-  border-bottom: 1px solid var(--line);
+  background: var(--band);
+  border-bottom: 1px solid var(--band-line);
   font-size: var(--fs-sm);
+  color: var(--band-muted);
 }
-.topbar .brand { font-weight: 650; color: var(--ink); letter-spacing: -.01em; white-space: nowrap; }
+.topbar .brand {
+  font-weight: 700; color: var(--brand-f); letter-spacing: .01em; white-space: nowrap;
+  text-decoration: none; font-size: 13.5px;
+}
+.topbar .brand:hover { text-decoration: none; color: var(--band-ink); }
 .topbar nav { display: flex; gap: var(--s1); min-width: 0; }
 .topbar nav a {
-  color: var(--ink-2); padding: 4px 9px; border-radius: var(--r-sm); white-space: nowrap;
+  color: var(--band-muted); padding: 11px 0; margin: 0 8px;
+  text-decoration: none; white-space: nowrap;
+  border-bottom: 2px solid transparent;
 }
-.topbar nav a:hover { background: var(--accent-bg); color: var(--ink); text-decoration: none; }
-.topbar nav a[aria-current="page"] { color: var(--ink); background: var(--accent-bg); font-weight: 600; }
-.topbar .tb-meta { color: var(--muted); font-size: var(--fs-xs); }
+.topbar nav a:hover { color: var(--band-ink); border-bottom-color: color-mix(in oklch, var(--honey-f) 45%, var(--band)); }
+.topbar nav a[aria-current="page"] { color: var(--band-ink); border-bottom-color: var(--brand-f); }
+.topbar .tb-meta { color: var(--band-muted); font-size: var(--fs-xs); }
 
 .iconbtn {
-  border: 1px solid var(--line); background: var(--card); color: var(--ink-2);
+  border: 1px solid color-mix(in oklch, var(--honey-f) 40%, var(--band));
+  background: transparent; color: var(--band-muted);
   border-radius: var(--r-sm); cursor: pointer; font: inherit; font-size: var(--fs-xs);
-  padding: 3px 9px; line-height: 1.5;
+  padding: 3px 10px; line-height: 1.5;
 }
-.iconbtn:hover { border-color: var(--accent-line); color: var(--ink); }
+.iconbtn:hover { color: var(--band-ink); border-color: var(--brand-f); }
 
 /* 页头 */
 .pagehead { margin-bottom: var(--s5); }
 .pagehead .kicker {
   font-size: var(--fs-xs); letter-spacing: .13em; text-transform: uppercase;
-  color: var(--accent); font-weight: 700; margin-bottom: var(--s2);
+  color: var(--muted); font-weight: 600; margin-bottom: var(--s2);
+  display: flex; align-items: center; gap: var(--s2);
 }
+.pagehead .kicker::before { content: ""; width: 16px; height: 1px; background: var(--brand-f); }
 .pagehead h1 { margin-bottom: var(--s2); }
 .pagehead .lede { color: var(--ink-2); font-size: var(--fs-md); max-width: 68ch; margin: 0; }
 .pagehead .meta { color: var(--muted); font-size: var(--fs-xs); margin-top: var(--s3); }
 
-/* 区块标题 */
+/* 区块标题：标题前一条金色短线 */
 .sect { margin-top: var(--s7); }
 .sect:first-of-type { margin-top: var(--s5); }
-.sect-head { display: flex; align-items: baseline; gap: var(--s3); margin-bottom: var(--s3); flex-wrap: wrap; }
-.sect-head h2 { white-space: nowrap; }
-.sect-head h2 { font-size: var(--fs-lg); }
+.sect-head { display: flex; align-items: baseline; gap: var(--s3); margin-bottom: var(--s2); flex-wrap: wrap; }
+.sect-head h2 { white-space: nowrap; font-size: var(--fs-lg); display: flex; align-items: center; gap: var(--s2); }
+.sect-head h2::before { content: ""; width: 14px; height: 1px; background: var(--brand-f); flex: none; }
 .sect-head .hint { color: var(--muted); font-size: var(--fs-xs); }
 .sect-rule { border-top: 1px solid var(--line); margin-bottom: var(--s4); }
 
 /* --------------------------------------------------------------------- 卡片 */
 .card {
   background: var(--card); border: 1px solid var(--line); border-radius: var(--r-lg);
-  padding: var(--s4) var(--s5); box-shadow: var(--shadow-1);
+  padding: var(--s4) var(--s5);
 }
 .card-tight { padding: var(--s4); }
 .card-h { display: flex; align-items: baseline; gap: var(--s2); margin-bottom: var(--s2); }
@@ -262,46 +327,86 @@ img, svg { max-width: 100%; }
 .card p:last-child { margin-bottom: 0; }
 .card-note { color: var(--muted); font-size: var(--fs-xs); line-height: 1.65; }
 
-/* 今日概览卡 */
+/* 今日看板卡：整卡是链接 */
 .today-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s4); }
 .today {
   display: flex; flex-direction: column; gap: var(--s2);
   background: var(--card); border: 1px solid var(--line); border-radius: var(--r-lg);
-  padding: var(--s4) var(--s5); box-shadow: var(--shadow-1);
-  border-left: 3px solid var(--accent-line);
+  padding: var(--s4) var(--s5);
+  color: inherit; text-decoration: none;
+  transition: border-color .15s, box-shadow .15s;
 }
-.today .t-top { display: flex; align-items: baseline; gap: var(--s2); }
+.today:hover, .today:focus-visible {
+  border-color: var(--accent-line); box-shadow: var(--shadow-2);
+  text-decoration: none; color: inherit;
+}
+.today:hover .t-name { color: var(--ink); text-decoration: underline;
+                       text-decoration-color: var(--brand-f); text-underline-offset: 4px; }
+.today:hover .t-link { text-decoration: underline; }
+.today .t-top { display: flex; align-items: baseline; gap: var(--s2); flex-wrap: wrap; }
 .today .t-name { font-weight: 650; font-size: var(--fs-md); }
 .today .t-date { color: var(--muted); font-size: var(--fs-xs); margin-left: auto; }
 .today .t-text { color: var(--ink-2); font-size: var(--fs-sm); line-height: 1.7; }
-.today .t-link { font-size: var(--fs-xs); color: var(--accent-ink); margin-top: auto; }
+.today .t-link { font-size: var(--fs-xs); color: var(--ink-2); margin-top: auto; }
+
+/* 结论徽标：利多=朱（涨）、利空=石绿（跌）、观察=墨 */
+.verdict {
+  font-size: var(--fs-xs); font-weight: 600; line-height: 1.6;
+  padding: 1px 8px; border-radius: var(--r-sm); border: 1px solid currentColor;
+}
+.verdict.bull { color: var(--up); }
+.verdict.bear { color: var(--down); }
+.verdict.warn { color: var(--muted); }
+
+.hero-num { display: flex; align-items: baseline; gap: 6px; }
+.hero-num .hn-v { font-size: var(--fs-2xl); line-height: 1.15; }
+.hero-num .hn-u { font-size: var(--fs-xs); color: var(--muted); }
+.hero-num .hn-d { font-size: var(--fs-sm); font-weight: 600; margin-left: auto; }
+
+/* 迷你走势线 */
+.spark { width: 100%; height: 54px; display: block; }
+.spark-axis { display: flex; justify-content: space-between;
+              font-size: 10.5px; color: var(--dim); margin-top: -6px; }
+
+/* 三列 KPI */
+.kpi3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s2);
+        border-top: 1px solid var(--line-soft); padding-top: var(--s2); }
+.k3-k { font-size: var(--fs-xs); color: var(--muted); }
+.k3-v { font-size: var(--fs-lg); line-height: 1.3; }
+.k3-u { font-size: 10.5px; color: var(--muted); font-weight: 400; margin-left: 3px; font-family: var(--font-sans); }
+.k3-d { font-size: var(--fs-xs); color: var(--muted); }
+
+/* 涨跌色：只能用在数字上 */
+.up,   .k3-d.up   { color: var(--up); }
+.down, .k3-d.down { color: var(--down); }
+.flat, .k3-d.flat { color: var(--flat); }
+.actual { color: var(--actual); }
+.guide  { color: var(--guide); }
 
 /* ------------------------------------------------------------------- KPI 卡 */
 .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: var(--s3); }
 .kpi {
   background: var(--card); border: 1px solid var(--line); border-radius: var(--r-md);
-  padding: var(--s3) var(--s4); box-shadow: var(--shadow-1);
+  padding: var(--s3) var(--s4);
 }
 .kpi-k { font-size: var(--fs-xs); color: var(--muted); margin-bottom: var(--s1); letter-spacing: .01em; }
-.kpi-v { font-size: var(--fs-xl); font-weight: 650; letter-spacing: -.015em; line-height: 1.25; }
+.kpi-v { font-size: 25px; line-height: 1.25; }
 .kpi-v .u { font-size: var(--fs-sm); color: var(--muted); font-weight: 400; margin-left: 3px; font-family: var(--font-sans); }
 .kpi-d { font-size: var(--fs-xs); margin-top: var(--s1); color: var(--muted); }
 .kpi-asof { font-size: var(--fs-xs); color: var(--dim); margin-top: var(--s2); }
 
-/* 涨跌语义：只加在数值上 */
-.up   { color: var(--up); }
-.down { color: var(--down); }
-.flat { color: var(--flat); }
-.actual { color: var(--actual); }
-.guide  { color: var(--guide); }
-
-/* --------------------------------------------------------------------- 表格 */
-.table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--r-md); background: var(--card); }
-table.table { width: 100%; border-collapse: collapse; font-size: var(--fs-sm); }
+/* --------------------------------------------------------------------- 表格
+   账本式：上下墨线，中间只用发丝线；没有外框和圆角 */
+.table-wrap { overflow-x: auto; }
+table.table {
+  width: 100%; border-collapse: collapse; font-size: var(--fs-sm);
+  border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink);
+  background: transparent;
+}
 table.table th, table.table td { padding: 8px 12px; text-align: left; vertical-align: top; }
 table.table thead th {
   position: sticky; top: 0; z-index: 1;
-  background: var(--paper-2); color: var(--muted);
+  background: var(--paper); color: var(--muted);
   font-size: var(--fs-xs); font-weight: 600; letter-spacing: .03em;
   border-bottom: 1px solid var(--line); white-space: nowrap;
 }
@@ -310,23 +415,28 @@ table.table tbody tr:hover td { background: var(--card-2); }
 table.table td.n, table.table th.n { text-align: right; white-space: nowrap; }
 table.table td.date { white-space: nowrap; font-variant-numeric: tabular-nums; }
 
-/* ------------------------------------------------------------------- 提示框 */
+/* ------------------------------------------------------------------- 提示框
+   细框 + 小标签；只有「风险」铺一层极淡底 */
 .callout {
-  border: 1px solid var(--line); border-left: 3px solid var(--accent);
-  background: var(--card-2); border-radius: var(--r-sm);
+  border: 1px solid var(--line); border-radius: var(--r-md);
+  background: var(--card);
   padding: var(--s3) var(--s4); font-size: var(--fs-sm); color: var(--ink-2);
 }
 .callout > :last-child { margin-bottom: 0; }
-.callout .co-h { font-weight: 650; color: var(--ink); font-size: var(--fs-xs);
-                 letter-spacing: .06em; text-transform: uppercase; margin-bottom: var(--s1); }
-.callout.info  { border-left-color: var(--actual); background: var(--actual-bg); }
-.callout.risk  { border-left-color: var(--warn);   background: var(--warn-bg); }
-.callout.method{ border-left-color: var(--accent); background: var(--accent-bg); }
+.callout .co-h {
+  display: block; font-weight: 600; color: var(--muted); font-size: 11.5px;
+  letter-spacing: .06em; margin-bottom: 3px; text-transform: none;
+}
+.callout.info  { border-color: color-mix(in oklch, var(--ind-f) 34%, var(--line)); background: var(--actual-bg); }
+.callout.info  .co-h { color: var(--actual); }
+.callout.risk  { border-color: color-mix(in oklch, var(--cin-f) 34%, var(--line)); background: var(--warn-bg); }
+.callout.risk  .co-h { color: var(--up); }
+.callout.method { background: var(--paper-2); }
 
 /* --------------------------------------------------------------- 图表容器约定 */
 .chart-card {
   background: var(--card); border: 1px solid var(--line); border-radius: var(--r-lg);
-  padding: var(--s4) var(--s4) var(--s3); box-shadow: var(--shadow-1);
+  padding: var(--s4) var(--s4) var(--s3);
 }
 .chart-title { font-size: var(--fs-md); font-weight: 650; }
 .chart-sub { font-size: var(--fs-xs); color: var(--muted); margin-top: 2px; }
@@ -340,42 +450,51 @@ table.table td.date { white-space: nowrap; font-variant-numeric: tabular-nums; }
 /* ------------------------------------------------------------- 标签 / 徽标 */
 .tag {
   display: inline-block; font-size: var(--fs-xs); line-height: 1.6;
-  padding: 1px 8px; border-radius: var(--r-pill);
+  padding: 1px 8px; border-radius: var(--r-sm);
   background: var(--paper-2); border: 1px solid var(--line);
   color: var(--ink-2); white-space: nowrap;
 }
-.tag.accent { background: var(--accent-bg); border-color: var(--accent-line); color: var(--accent-ink); }
+.tag.accent { background: var(--brand-bg); border-color: var(--accent-line); color: var(--brand); }
 .tag-date { color: var(--muted); font-size: var(--fs-xs); }
 
+/* 状态：形状区分，颜色是墨色。成立=实心，跟踪中=空心，存疑=半圆，证伪=删除线 */
 .badge {
-  display: inline-flex; align-items: center; gap: 5px;
-  font-size: var(--fs-xs); line-height: 1.6; font-weight: 600;
-  padding: 1px 9px; border-radius: var(--r-pill);
-  border: 1px solid currentColor; background: transparent;
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: var(--fs-xs); line-height: 1.7; font-weight: 500;
+  padding: 0 9px; border-radius: var(--r-sm);
+  border: 1px solid var(--line-strong); background: transparent;
+  color: var(--st-track); white-space: nowrap;
 }
-.badge::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
-.badge.track { color: var(--st-track); }
-.badge.hold  { color: var(--st-hold); }
+.badge::before {
+  content: ""; width: 8px; height: 8px; border-radius: 50%;
+  border: 1.5px solid currentColor; flex: none;
+}
+.badge.hold  { color: var(--st-hold); border-color: color-mix(in oklch, var(--ink) 30%, var(--line)); }
+.badge.hold::before  { background: currentColor; }
 .badge.doubt { color: var(--st-doubt); }
+.badge.doubt::before { background: linear-gradient(90deg, currentColor 50%, transparent 50%); }
 .badge.dead  { color: var(--st-dead); }
-.badge.overdue { color: var(--warn); background: var(--warn-bg); }
+.badge.dead::before { border-radius: 1px; }
+.badge.dead  { text-decoration: line-through; text-decoration-thickness: 1px; }
+.badge.overdue {
+  color: var(--st-due); border-color: color-mix(in oklch, var(--cin-f) 45%, var(--line));
+  background: var(--warn-bg); text-decoration: none;
+}
+.badge.overdue::before { border-radius: 1px; background: currentColor; }
 
 /* --------------------------------------------------------------- 论点列表 */
 .thesis-list { display: grid; gap: var(--s3); }
 .thesis {
   display: grid; grid-template-columns: 1fr auto; gap: var(--s2) var(--s4);
-  background: var(--card); border: 1px solid var(--line); border-left: 3px solid var(--st-track);
-  border-radius: var(--r-md); padding: var(--s3) var(--s4); box-shadow: var(--shadow-1);
+  background: var(--card); border: 1px solid var(--line); border-radius: var(--r-md);
+  padding: var(--s3) var(--s4);
 }
-.thesis.st-hold  { border-left-color: var(--st-hold); }
-.thesis.st-doubt { border-left-color: var(--st-doubt); }
-.thesis.st-dead  { border-left-color: var(--st-dead); }
-.thesis.st-overdue { border-left-color: var(--warn); }
+.thesis.st-overdue { border-color: color-mix(in oklch, var(--cin-f) 38%, var(--line)); }
 .thesis .th-claim { font-size: var(--fs-sm); color: var(--ink); line-height: 1.75; }
 .thesis .th-badges { display: flex; gap: var(--s2); align-items: center; flex-wrap: wrap; justify-content: flex-end; }
 .thesis .th-foot {
   grid-column: 1 / -1; display: flex; gap: var(--s3); flex-wrap: wrap;
-  font-size: var(--fs-xs); color: var(--muted); border-top: 1px dashed var(--line);
+  font-size: var(--fs-xs); color: var(--muted); border-top: 1px solid var(--line-soft);
   padding-top: var(--s2); margin-top: 2px;
 }
 .thesis .th-note { color: var(--ink-2); }
@@ -385,13 +504,15 @@ table.table td.date { white-space: nowrap; font-variant-numeric: tabular-nums; }
 .rcard {
   display: flex; flex-direction: column; gap: var(--s2);
   background: var(--card); border: 1px solid var(--line); border-radius: var(--r-lg);
-  padding: var(--s4); box-shadow: var(--shadow-1);
-  transition: border-color .15s, transform .15s;
+  padding: var(--s4); color: inherit; text-decoration: none;
+  transition: border-color .15s, box-shadow .15s;
 }
-.rcard:hover { border-color: var(--accent-line); }
-.rcard .r-top { display: flex; align-items: baseline; gap: var(--s2); }
-.rcard .r-title { font-weight: 650; font-size: var(--fs-md); line-height: 1.45; }
-.rcard .r-title a { color: var(--ink); }
+.rcard:hover, .rcard:focus-visible {
+  border-color: var(--accent-line); box-shadow: var(--shadow-2);
+  text-decoration: none; color: inherit;
+}
+.rcard:hover .r-title { text-decoration: underline; text-decoration-color: var(--brand-f); text-underline-offset: 4px; }
+.rcard .r-title { font-weight: 650; font-size: var(--fs-md); line-height: 1.45; color: var(--ink); }
 .rcard .r-sum { font-size: var(--fs-sm); color: var(--ink-2); line-height: 1.7; }
 .rcard .r-foot {
   margin-top: auto; padding-top: var(--s2);
@@ -402,20 +523,19 @@ table.table td.date { white-space: nowrap; font-variant-numeric: tabular-nums; }
 
 .group-head { display: flex; align-items: baseline; gap: var(--s3); flex-wrap: wrap; margin-bottom: var(--s2); }
 .group-head h3 { font-size: var(--fs-lg); }
-.group-head .code { font-family: var(--font-mono); font-size: var(--fs-xs); color: var(--accent-ink); }
+.group-head .code { font-family: var(--font-mono); font-size: var(--fs-xs); color: var(--muted); }
 .group-intro { color: var(--ink-2); font-size: var(--fs-sm); margin-bottom: var(--s4); max-width: 76ch; }
 
-/* 筛选按钮 */
+/* 筛选按钮：选中的用墨底，金色只做细边 */
 .filters { display: flex; gap: var(--s2); flex-wrap: wrap; margin-bottom: var(--s4); }
 .filters button {
   font: inherit; font-size: var(--fs-xs); cursor: pointer;
-  padding: 4px 12px; border-radius: var(--r-pill);
+  padding: 4px 12px; border-radius: var(--r-sm);
   border: 1px solid var(--line); background: var(--card); color: var(--ink-2);
 }
-.filters button:hover { border-color: var(--accent-line); color: var(--ink); }
+.filters button:hover { border-color: var(--line-strong); color: var(--ink); }
 .filters button[aria-pressed="true"] {
-  background: var(--accent-bg); border-color: var(--accent-line);
-  color: var(--accent-ink); font-weight: 600;
+  background: var(--ink); border-color: var(--ink); color: var(--card); font-weight: 600;
 }
 
 /* ------------------------------------------------------------------ 日志 */
@@ -427,7 +547,7 @@ table.table td.date { white-space: nowrap; font-variant-numeric: tabular-nums; }
 }
 .jrow:hover { border-color: var(--accent-line); }
 .jrow .j-date { font-family: var(--font-mono); font-variant-numeric: tabular-nums;
-                color: var(--accent-ink); font-size: var(--fs-sm); white-space: nowrap; }
+                color: var(--ink); font-size: var(--fs-sm); white-space: nowrap; font-weight: 600; }
 .jrow .j-title { color: var(--ink); font-size: var(--fs-sm); }
 .jrow .j-note { color: var(--muted); font-size: var(--fs-xs); grid-column: 2 / -1; }
 
@@ -439,20 +559,22 @@ table.table td.date { white-space: nowrap; font-variant-numeric: tabular-nums; }
 .prose p, .prose li { font-size: var(--fs-md); color: var(--ink-2); }
 .prose blockquote {
   margin: var(--s3) 0; padding: var(--s2) var(--s4);
-  border-left: 3px solid var(--accent-line); background: var(--card-2); color: var(--ink-2);
+  border-left: 2px solid var(--line-strong); background: var(--card-2); color: var(--ink-2);
 }
 .prose blockquote > :last-child { margin-bottom: 0; }
-.prose table { width: 100%; border-collapse: collapse; font-size: var(--fs-sm); margin: var(--s3) 0; }
-.prose th, .prose td { border: 1px solid var(--line); padding: 6px 10px; text-align: left; }
-.prose th { background: var(--paper-2); font-size: var(--fs-xs); color: var(--muted); }
+.prose table { width: 100%; border-collapse: collapse; font-size: var(--fs-sm); margin: var(--s3) 0;
+               border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink); }
+.prose th, .prose td { padding: 6px 10px; text-align: left; }
+.prose th { border-bottom: 1px solid var(--line); font-size: var(--fs-xs); color: var(--muted); }
+.prose tbody tr + tr td { border-top: 1px solid var(--line-soft); }
 .prose td { font-variant-numeric: tabular-nums; }
-.prose .task { color: var(--accent); margin-right: 5px; font-size: 1.05em; }
+.prose .task { color: var(--muted); margin-right: 5px; font-size: 1.05em; }
 
 /* 前后篇 */
 .pager { display: flex; gap: var(--s3); margin-top: var(--s6); padding-top: var(--s4); border-top: 1px solid var(--line); }
 .pager a { flex: 1 1 0; padding: var(--s3); border: 1px solid var(--line); border-radius: var(--r-md);
-           background: var(--card); font-size: var(--fs-sm); color: var(--ink-2); }
-.pager a:hover { border-color: var(--accent-line); text-decoration: none; }
+           background: var(--card); font-size: var(--fs-sm); color: var(--ink-2); text-decoration: none; }
+.pager a:hover { border-color: var(--accent-line); color: var(--ink); }
 .pager a span { display: block; font-size: var(--fs-xs); color: var(--muted); }
 .pager a.next { text-align: right; }
 
@@ -463,33 +585,78 @@ table.table td.date { white-space: nowrap; font-variant-numeric: tabular-nums; }
   background: var(--card-2);
 }
 
-/* ------------------------------------------------------------------ 页脚 */
+/* ------------------------------------------------- 页脚（黑金带收尾） */
 .foot {
-  margin-top: var(--s8); padding-top: var(--s4);
-  border-top: 1px solid var(--line); color: var(--muted); font-size: var(--fs-xs);
-  display: flex; gap: var(--s3); flex-wrap: wrap;
+  margin: var(--s8) 0 0; padding: var(--s4) var(--s5);
+  background: var(--band); border-top: 1px solid var(--band-line);
+  color: var(--band-muted); font-size: var(--fs-xs);
+  display: flex; gap: var(--s3); flex-wrap: wrap; align-items: baseline;
+  border-radius: var(--r-lg) var(--r-lg) 0 0;
 }
 .foot .spacer { flex: 1 1 auto; }
+.foot .mark { color: var(--brand-f); font-weight: 600; }
+.foot a { color: var(--band-ink); text-decoration-color: color-mix(in oklch, var(--honey-f) 50%, var(--band)); }
+
+/* 页脚之后留白由 body 负责，避免黑色贴到底 */
+.foot + * { margin-top: 0; }
+
+/* ---------------------------------------------------- 主题样例页用的小件 */
+.pal { width: 100%; border-collapse: collapse; font-size: var(--fs-sm); }
+.pal th {
+  font-size: var(--fs-xs); font-weight: 600; color: var(--muted); text-align: left;
+  padding: 0 10px 8px; white-space: nowrap;
+}
+.pal td { padding: 10px; border-top: 1px solid var(--line); vertical-align: middle; }
+.pal .nm b { display: block; font-size: var(--fs-md); }
+.pal .nm span { font-size: var(--fs-xs); color: var(--muted); font-family: var(--font-mono); }
+.sw { display: flex; align-items: center; gap: 9px; }
+.sw i { width: 42px; height: 28px; border-radius: var(--r-sm); flex: none;
+        box-shadow: inset 0 0 0 1px rgba(0,0,0,.07); }
+.sw .hex { font-size: var(--fs-xs); color: var(--ink-2); font-family: var(--font-mono); }
+.sw .cr { display: block; font-size: 11px; color: var(--muted); }
+.sw.on-dark { background: var(--band); border-radius: var(--r-sm); padding: 5px 8px; }
+.sw.on-dark .hex { color: var(--band-ink); }
+.sw.on-dark .cr { color: var(--band-muted); }
+.pal .role { font-size: var(--fs-sm); color: var(--ink-2); }
+.pal .role .x { color: var(--muted); font-size: var(--fs-xs); }
+
+/* 色相环 */
+.wheel-wrap { display: grid; grid-template-columns: 240px 1fr; gap: var(--s6); align-items: center; }
+.wheel { width: 220px; height: 220px; }
+.wheel text { font-family: var(--font-sans); }
+.notes { color: var(--ink-2); font-size: var(--fs-sm); max-width: 68ch; }
+.notes p { margin: 0 0 var(--s2); }
+.notes b { color: var(--ink); }
+
+/* 分隔用的粗墨线 */
+.rule-ink { border: 0; border-top: 1px solid var(--ink); margin: var(--s4) 0 var(--s3); }
 
 /* --------------------------------------------------------------- 响应式 */
 @media (max-width: 760px) {
   :root { --fs-2xl: 23px; --fs-xl: 18px; --fs-3xl: 27px; }
-  .wrap { padding: var(--s4) var(--s4) var(--s7); }
+  .wrap { padding: var(--s4) var(--s4) 0; }
   .today-grid { grid-template-columns: 1fr; }
+  .today { padding: var(--s4); }
   .thesis { grid-template-columns: 1fr; }
   .thesis .th-badges { justify-content: flex-start; }
   .jrow { grid-template-columns: auto 1fr; }
+  .wheel-wrap { grid-template-columns: 1fr; }
   /* 窄屏放不下站名 + 导航：藏掉站名，导航横滑，单行不折 */
   .topbar { gap: var(--s2); padding: 0 var(--s3); }
   .topbar .brand { display: none; }
   .topbar nav { flex: 1 1 auto; overflow-x: auto; scrollbar-width: none; }
   .topbar nav::-webkit-scrollbar { display: none; }
+  .topbar nav a { margin: 0 6px; }
   .topbar .iconbtn { flex: 0 0 auto; }
+  .foot { padding: var(--s4); }
 }
 
 /* ------------------------------------------------------------- 打印 */
 @media print {
-  .topbar, .filters, .pager, .foot { display: none; }
+  .topbar, .filters, .pager { display: none; }
   body { background: #fff; color: #000; }
-  .card, .kpi, .rcard, .thesis, .today { box-shadow: none; break-inside: avoid; }
+  .foot { background: none; color: #000; border-top: 1px solid #000; padding-left: 0; padding-right: 0; }
+  .foot .mark { color: #000; }
+  .card, .kpi, .rcard, .thesis, .today, .callout { box-shadow: none; break-inside: avoid; }
+  .badge { border-color: #000; color: #000; }
 }

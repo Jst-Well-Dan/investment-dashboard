@@ -1,6 +1,6 @@
 # Dan's Investment Dashboard
 
-个人投资研究入口：**一个首页看到全部研究，一天一个文件做复盘，所有新页面共用一套主题。**
+个人投资研究入口：**一个首页看到全部研究、今天两个看板的实时结论、所有在跟踪的判断。**
 
 - 线上：https://jst-well-dan.github.io/investment-dashboard/
 - 目标与验收标准：见 `GOALS.md`
@@ -8,26 +8,20 @@
 
 ---
 
-## 日常三件事
+## 日常两件事
 
-### 1. 写今天的复盘
+### 1. 刷新今天的数据
 
 ```bat
-new_journal.bat              :: 生成 journal\2026-11-18.md 并打开
-new_journal.bat 2026-11-10   :: 补写某天
-build.bat                    :: 重建 + 自动打开首页
+pull_latest.bat      :: 从黄金 / GS50 的数据里抓今天的数字，写回 research.yaml
+build.bat            :: 重建 + 自动打开首页
 ```
 
-日志是纯 Markdown，一天一个文件。可用的引用语法：
+`pull_latest.py` 只替换 `research.yaml` 里每条研究 `latest:` 下 `# >>> auto` 到 `# <<< auto`
+之间的内容；你手写的 `text:` / `summary:` 一个字都不动。源文件找不到时会跳过并提示，
+不会把 `research.yaml` 写成半截。
 
-| 写法 | 效果 |
-|---|---|
-| `[[300308-consensus]]` | 链接到该研究的页面，显示它的短标题 |
-| `[[ai-capex]]` | 同上（研究清单里的任意 `id`） |
-| `[[300308]]` | 链接到分组页（分组 `id`） |
-| `[[journal:2026-11-17]]` | 链到另一篇日志 |
-
-`id` 就是 `research.yaml` 里每条研究的 `id`，日志里写错会原样保留 `[[xxx]]`，方便你发现。
+**写不写日志都不影响这一套。** 复盘日志模块现在是关闭的，见下方「复盘日志（暂时关闭）」。
 
 ### 2. 加一项新研究
 
@@ -67,20 +61,63 @@ deploy.bat     :: 构建 → 检查通过 → commit → push
 
 ---
 
+## 首页「今天」卡片
+
+显示什么由 `research.yaml` 里两条看板条目的 `latest:` 决定：
+
+```yaml
+    latest:
+      date: 2026-11-11                       # 手写：一句话对应的日期
+      text: 升温 69 分，名单跑赢沪深 300 …    # 手写：你自己的一句话结论
+      # >>> auto（由 pull_latest.py 写入，不要手改）
+      asof: 2026-11-11                       # 数据实际截止日
+      verdict: "升温 · 69 分"                 # 右上角徽标
+      tone: up                               # 卡片左边框色：up=红 / down=绿
+      metrics:                               # 第 1 个是大数字，后 3 个是 KPI 列
+        - {k: 温度指数, v: "68.9", u: "分", d: "+8.7 较昨日", tone: up}
+        …
+      spark: [46.9, 37.5, …]                 # 40 个点，画成 inline SVG 走势线
+      # <<< auto
+```
+
+- 手写的 `text:` **优先**；没写时退回 auto 块里的 `text_auto:`，再退回条目的 `summary:`。
+- `auto` 块缺失也能构建，会自动退回旧的纯文字卡（不会报错）。
+- `tone` 决定颜色：`up`=涨/利多（红）、`down`=跌/利空（绿）、留空=中性。
+- 想换卡片版式，改 `sitegen/render.py` 的 `today_card()` 和 `theme/theme.css` 的 `.today` 段。
+  备选方案（5 种）在 `design/today-cards.html`，跑 `python design/_gen_today.py` 可以重生成。
+
+---
+
+## 复盘日志（暂时关闭）
+
+`site.show_journal: false`（在 `research.yaml` 顶部）。关闭时：
+
+- 不渲染任何日志页，`docs/journal/` 不会生成
+- 首页不显示「今日复盘」区块，顶栏没有「日志」入口
+- `journal/` 目录、`_template.md`、`new_journal.py/.bat` 全部原样保留
+
+哪天想重新启用：把 `show_journal` 改成 `true`，`new_journal.bat` → 写 → `build.bat`。
+日志里可用的引用语法（`[[300308-consensus]]`、`[[journal:2026-11-17]]`）都还在。
+
+---
+
 ## 目录
 
 ```
 Dan's Investment Dashboard/
-├─ research.yaml          ★ 唯一事实源：所有研究条目 + 可跟踪判断
-├─ journal/               复盘日志（YYYY-MM-DD.md，_template.md 是模板）
+├─ research.yaml          ★ 唯一事实源：所有研究条目 + 可跟踪判断 + 今日卡片数据
+├─ pull_latest.py         从两个看板抓数，写回 research.yaml 的 auto 块
+├─ journal/               复盘日志（当前关闭，文件保留）
 ├─ theme/                 theme.css（设计令牌 + 组件）、site.js（主题切换 / 筛选）
 ├─ sitegen/               构建脚本
 │   ├─ model.py           读 research.yaml、校验、派生 URL 与论点状态
 │   ├─ sync.py            复制研究页：清洗本机路径 → 注入顶栏 → 扫描敏感串
 │   ├─ render.py          首页 / 档案 / 分组页 / 日志页 / 主题样例页
 │   └─ build.py           一条命令跑完整站 + 死链检查
+├─ design/                设计稿（不进构建）：today-cards.html 是今日卡片备选方案
 ├─ build.bat              构建（失败会停下并列出问题）
-├─ new_journal.bat        新建今天的日志
+├─ pull_latest.bat        拉今日数据
+├─ new_journal.bat        新建今天的日志（日志模块关闭时不使用）
 ├─ preview.bat            本地预览 http://127.0.0.1:8080/
 ├─ deploy.bat             构建 + 发布
 ├─ GOALS.md               目标、约束、验收标准
@@ -88,7 +125,8 @@ Dan's Investment Dashboard/
 └─ docs/                  ← 发布产物（GitHub Pages 源）
 ```
 
-`docs/` 是生成的，**不要手改**，改完下次构建就被覆盖。内容永远只有 `research.yaml` + `journal/` + `theme/` 三处是真源。
+`docs/` 是生成的，**不要手改**，改完下次构建就被覆盖。内容永远只有 `research.yaml` + `theme/` 两处是真源
+（日志模块打开时再加 `journal/`）。
 
 ## 托管研究页是怎么处理的
 
@@ -120,6 +158,8 @@ pip install -r requirements.txt
 
 ## 已知限制
 
-- **首页「今天」是静态卡片**：黄金 / GS50 的最新一句话写在 `research.yaml` 的 `latest:` 里，需要你手动更新。要让它们自动同步，得在那两个仓库的构建脚本里各加一个 `summary.json` 输出（本期没做，避免碰其他项目）。
+- **「今天」的数字要手动刷一次**：跑 `pull_latest.bat` 才会更新，构建本身不联网、不读别的仓库。
+  这是刻意的——`research.yaml` 是唯一事实源，构建必须离线可复现。
 - **高盛研报那页没上线**：`report_300308_goldman.html` 含第三方研报原文摘录，公开前需要确认引用范围。加进 `research.yaml` 一行即可上线。
 - **旧页面不迁主题**：黄金、GS50、300308 现有页面保留各自风格，只加了顶栏。新页面请用 `theme.css`。
+- **复盘日志模块关闭**：见上方「复盘日志（暂时关闭）」。

@@ -1,0 +1,408 @@
+<!doctype html>
+<html lang="zh-CN" data-bk="2">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>主题对比 v3 · 印刷纸本 × 黑金 · Dan's Investment Dashboard</title>
+<style>
+/* ============================================================================
+   对比页 v3：形态定为印刷纸本，主题色蜜金，指引 = 蜜。
+   新问题：25 色金渐层的“黑金”感能否加进来，加多少。
+   左右两栏同时展示浅色与深色；上方切换浅色模式下的黑金程度。
+   自包含，离线双击可开。
+   ========================================================================== */
+
+/* ---------- 页面本身（外壳）用中性浅色 ---------- */
+:root {
+  --o-paper: #f7f5f0; --o-ink: #1c1712; --o-ink-2: #4a453d; --o-muted: #6f685c; --o-line: #e4ddcf;
+  --serif-num: Cambria, "Iowan Old Style", Georgia, serif;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+          "Hiragino Sans GB", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  --mono: ui-monospace, "SF Mono", "Cascadia Mono", Consolas, monospace;
+}
+
+/* ---------- 方案令牌：浅色 ---------- */
+.s-light {
+  /* 色板（同 v2）：文字档 L .50、色块档 L .68，C ≈ .095 */
+  --honey-t:#835a18; --cin-t:#924c44; --jade-t:#29734e; --ind-t:#356697;
+  --honey-f:#bd8f4e; --cin-f:#cf8075; --jade-f:#5eab81; --ind-f:#679dd4;
+
+  --paper:#f7f5f0; --paper-2:#efebe2; --card:#fffdf8;
+  /* 墨：从中性黑改为蜜色相的极低彩度暖黑（OKLCH L .21 C .012 H 70），黑金的“黑” */
+  --ink:#1c1712; --ink-2:#4a433a; --muted:#6f685c;
+  --line:#e4ddcf; --hair:#ece6da;
+
+  /* 黑金带：顶栏、页首、页脚使用 */
+  --band:#17130e; --band-ink:#ece6da; --band-muted:#a39b8e;
+  --gold:#bd8f4e;          /* 浅色模式里的金：只用在黑带上和小节标记上 */
+  --gold-line: color-mix(in oklch, var(--gold) 55%, var(--band));
+}
+/* ---------- 方案令牌：深色 = 完整黑金 ---------- */
+.s-dark {
+  --honey-t:#d7ac72; --cin-t:#e89e94; --jade-t:#82c69e; --ind-t:#88b9ec;
+  --honey-f:#a77e45; --cin-f:#b67168; --jade-f:#539771; --ind-f:#5b8abb;
+
+  /* 暖黑底：同样是蜜色相，L .17 / .19 / .21 */
+  --paper:#130f0a; --paper-2:#17130e; --card:#1c1712;
+  --ink:#efe6d4; --ink-2:#cfc4b0; --muted:#9a9285;
+  /* 分隔线带一点金，而不是灰 */
+  --line: color-mix(in oklch, #bd8f4e 22%, #1c1712);
+  --hair: color-mix(in oklch, #bd8f4e 12%, #1c1712);
+
+  --band:#0d0a07; --band-ink:#efe6d4; --band-muted:#a39b8e;
+  --gold:#d7ac72;
+  --gold-line: color-mix(in oklch, var(--gold) 45%, var(--band));
+}
+/* 用途映射 */
+.s-light, .s-dark {
+  --brand: var(--honey-t); --guide: var(--honey-t); --guide-f: var(--honey-f);
+  --actual: var(--ind-t); --actual-f: var(--ind-f);
+  --up: var(--cin-t); --down: var(--jade-t);
+  --risk-wash: color-mix(in oklch, var(--cin-f) 9%, var(--card));
+  background: var(--paper); color: var(--ink);
+}
+
+/* ---------- 外壳 ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+html { background: var(--o-paper); color: var(--o-ink); }
+body { margin: 0; font: 14.5px/1.7 var(--sans); -webkit-font-smoothing: antialiased; }
+::selection { background: color-mix(in oklch, #bd8f4e 32%, #fffdf8); color: #1c1712; }
+:focus-visible { outline: 2px solid #835a18; outline-offset: 2px; border-radius: 3px; }
+a { color: inherit; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+.num, .hex { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+
+.page { max-width: 1380px; margin: 0 auto; padding: 56px 32px 96px; }
+.intro { max-width: 70ch; }
+.intro h1 { font-size: 30px; line-height: 1.25; letter-spacing: -.01em; margin: 0 0 12px; }
+.intro p { color: var(--o-ink-2); margin: 0 0 8px; }
+h2.sec { font-size: 19px; margin: 64px 0 6px; letter-spacing: -.005em; }
+.sec-sub { color: var(--o-muted); margin: 0 0 24px; max-width: 74ch; }
+
+/* 25 色毛发示意：底绒金 → 中段蜜 → 毛尖黑 */
+.coat { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; }
+.hair-strip {
+  height: 64px; border-radius: 10px; position: relative;
+  background: linear-gradient(90deg, #ead2a2 0%, #d8b071 24%, #bd8f4e 46%, #8a6431 64%, #3a2c1c 80%, #17130e 92%, #0d0a07 100%);
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,.06);
+}
+.hair-cap { display: flex; justify-content: space-between; font-size: 12px; color: var(--o-muted); margin-top: 6px; }
+.coat p { margin: 0 0 10px; color: var(--o-ink-2); }
+.coat b { color: var(--o-ink); }
+
+.controls {
+  position: sticky; top: 0; z-index: 5; display: flex; gap: 10px 24px; align-items: center; flex-wrap: wrap;
+  margin: 28px -32px 0; padding: 12px 32px;
+  background: color-mix(in srgb, var(--o-paper) 92%, transparent);
+  backdrop-filter: saturate(1.2) blur(8px); border-bottom: 1px solid var(--o-line);
+}
+.ctl-k { font-size: 12.5px; color: var(--o-muted); }
+.seg { display: inline-flex; border: 1px solid var(--o-line); border-radius: 7px; overflow: hidden; background: #fffdf8; }
+.seg button { font: inherit; font-size: 13px; padding: 4px 12px; border: 0; background: transparent; color: var(--o-ink-2); cursor: pointer; }
+.seg button + button { border-left: 1px solid var(--o-line); }
+.seg button[aria-pressed="true"] { background: #1c1712; color: #ece6da; }
+.seg button:hover:not([aria-pressed="true"]) { background: #efebe2; }
+.lv-note { font-size: 13px; color: var(--o-ink-2); }
+
+/* 三档说明 */
+.levels { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; border-top: 1px solid var(--o-ink); padding-top: 18px; }
+.levels h3 { margin: 0 0 6px; font-size: 14.5px; }
+.levels p { margin: 0; color: var(--o-ink-2); font-size: 13.5px; }
+.levels .rec { font-size: 12px; font-weight: 600; color: #835a18; margin-left: 6px; }
+
+/* ---------- 双栏：浅色 / 深色 ---------- */
+.duo { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 28px; align-items: start; }
+.duo-k { font-size: 13px; color: var(--o-muted); margin: 0 0 10px; }
+.pane {
+  border-radius: 12px; overflow: hidden; font-size: 13.5px;
+  border: 1px solid var(--line);
+  box-shadow: 0 1px 2px rgba(28,23,18,.05), 0 12px 32px -16px rgba(28,23,18,.22);
+}
+.pane-in { padding: 24px 26px 28px; display: grid; gap: 24px; }
+
+/* 顶栏 */
+.mbar { display: flex; align-items: center; gap: 16px; height: 44px; padding: 0 20px; font-size: 12.5px;
+        background: var(--card); border-bottom: 1px solid var(--line); }
+.mbar b { font-size: 13.5px; margin-right: 6px; white-space: nowrap; letter-spacing: .01em; }
+.mbar a { text-decoration: none; color: var(--ink-2); white-space: nowrap; padding: 12px 0; }
+.mbar a.on { color: var(--ink); box-shadow: inset 0 -2px 0 var(--honey-f); }
+.mbar .sp { flex: 1; }
+.mbar .asof { color: var(--muted); font-family: var(--mono); font-size: 11.5px; }
+
+/* 页首 */
+.mast { padding: 26px 26px 20px; border-bottom: 1px solid var(--line); }
+.mast h1 { margin: 0; font-size: 26px; line-height: 1.25; letter-spacing: -.01em; font-weight: 700; }
+.mast .code { font-family: var(--mono); font-size: 14px; color: var(--muted); margin-left: 10px; font-weight: 400; }
+.mast p { margin: 6px 0 0; color: var(--muted); font-size: 13px; }
+
+/* 小节标记：短金线（只在数据区之外） */
+.blk-k { font-size: 12px; color: var(--muted); margin: 0 0 8px; display: flex; align-items: center; gap: 8px; }
+.blk-k::before { content: ""; width: 14px; height: 1px; background: var(--honey-f); }
+
+/* KPI：衬线数字 */
+.kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.kpi { background: var(--card); padding: 12px 14px; }
+.kpi-k { font-size: 12px; color: var(--muted); }
+.kpi-v { font-family: var(--serif-num); font-weight: 600; font-size: 24px; line-height: 1.25; font-variant-numeric: tabular-nums lining-nums; letter-spacing: -.01em; margin: 2px 0; }
+.kpi-v small { font-size: 12px; color: var(--muted); margin-left: 3px; font-family: var(--sans); font-weight: 400; letter-spacing: 0; }
+.kpi-d { font-size: 12px; color: var(--muted); }
+.up { color: var(--up); } .down { color: var(--down); } .actual { color: var(--actual); } .guide { color: var(--guide); }
+
+.two { display: grid; grid-template-columns: 1.05fr 1fr; gap: 24px; align-items: start; }
+
+.chart { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px 10px; }
+.chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+.chart .ax { stroke: var(--line); }
+.chart .lbl { fill: var(--muted); font: 11px var(--mono); }
+.chart .val { font: 600 11px var(--mono); }
+.legend { display: flex; gap: 14px; font-size: 12px; color: var(--muted); margin-top: 6px; }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
+
+table.t { width: 100%; border-collapse: collapse; font-size: 12.5px; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink); }
+.t th { font-weight: 600; color: var(--muted); text-align: right; padding: 7px 8px; font-size: 12px; border-bottom: 1px solid var(--line); }
+.t th:first-child, .t td:first-child { text-align: left; }
+.t td { padding: 7px 8px; text-align: right; font-family: var(--mono); font-variant-numeric: tabular-nums; border-top: 1px solid var(--hair); }
+.t td:first-child { font-family: var(--sans); color: var(--ink-2); }
+
+.cos { display: grid; gap: 10px; }
+.co { border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px 12px; background: var(--card); }
+.co-k { display: block; font-size: 11.5px; font-weight: 600; letter-spacing: .04em; margin-bottom: 2px; color: var(--muted); }
+.co.actual .co-k { color: var(--actual); }
+.co.risk { background: var(--risk-wash); border-color: color-mix(in oklch, var(--cin-f) 30%, var(--line)); }
+.co.risk .co-k { color: var(--up); }
+.co p { margin: 0; color: var(--ink-2); }
+
+.st { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--ink-2); white-space: nowrap; }
+.st i { width: 9px; height: 9px; border-radius: 50%; border: 1.5px solid currentColor; flex: none; }
+.st.hold i  { background: currentColor; }
+.st.doubt i { background: linear-gradient(90deg, currentColor 50%, transparent 50%); }
+.st.dead    { color: var(--muted); }
+.st.dead span { text-decoration: line-through; text-decoration-thickness: 1px; }
+.st.due     { color: var(--up); }
+.st.due i   { background: currentColor; border-radius: 2px; }
+.sts { display: flex; flex-wrap: wrap; gap: 8px 16px; }
+
+.th { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; }
+.th p { margin: 0 0 8px; line-height: 1.7; }
+.th-foot { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12px; color: var(--muted); padding-top: 8px; border-top: 1px solid var(--hair); }
+.link { color: var(--ink); text-decoration: underline; text-decoration-color: var(--muted); }
+
+.mfoot { display: flex; justify-content: space-between; gap: 12px; padding: 12px 20px; font-size: 12px; color: var(--muted); border-top: 1px solid var(--line); }
+.mfoot .mark { color: var(--ink-2); }
+
+/* ============ 黑金带：深色永远开启；浅色按档位开启 ============ */
+/* 带：顶栏 */
+.s-dark .mbar,
+html[data-bk="2"] .s-light .mbar,
+html[data-bk="3"] .s-light .mbar {
+  background: var(--band); border-bottom: 1px solid var(--gold-line);
+}
+.s-dark .mbar b, html[data-bk="2"] .s-light .mbar b, html[data-bk="3"] .s-light .mbar b { color: var(--gold); }
+.s-dark .mbar a, html[data-bk="2"] .s-light .mbar a, html[data-bk="3"] .s-light .mbar a { color: var(--band-muted); }
+.s-dark .mbar a.on, html[data-bk="2"] .s-light .mbar a.on, html[data-bk="3"] .s-light .mbar a.on {
+  color: var(--band-ink); box-shadow: inset 0 -2px 0 var(--gold);
+}
+.s-dark .mbar .asof, html[data-bk="2"] .s-light .mbar .asof, html[data-bk="3"] .s-light .mbar .asof { color: var(--band-muted); }
+
+/* 带：页脚 */
+.s-dark .mfoot, html[data-bk="2"] .s-light .mfoot, html[data-bk="3"] .s-light .mfoot {
+  background: var(--band); color: var(--band-muted); border-top: 1px solid var(--gold-line);
+}
+.s-dark .mfoot .mark, html[data-bk="2"] .s-light .mfoot .mark, html[data-bk="3"] .s-light .mfoot .mark { color: var(--gold); }
+
+/* 带：页首（浅色只有“重”档） */
+.s-dark .mast, html[data-bk="3"] .s-light .mast {
+  background: var(--band); border-bottom: 1px solid var(--gold-line);
+}
+html[data-bk="3"] .s-light .mast h1 { color: var(--band-ink); }
+html[data-bk="3"] .s-light .mast .code, .s-dark .mast .code { color: var(--gold); }
+html[data-bk="3"] .s-light .mast p { color: var(--band-muted); }
+/* 深色页首是更深一层的黑，与正文的暖黑拉开 */
+
+/* ---------- 规则 ---------- */
+.rules { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; border-top: 1px solid var(--o-ink); padding-top: 18px; }
+.rules h3 { margin: 0 0 6px; font-size: 14.5px; }
+.rules p { margin: 0; color: var(--o-ink-2); font-size: 13.5px; }
+.sw { display: inline-block; width: 11px; height: 11px; border-radius: 3px; vertical-align: -1px; margin: 0 3px 0 1px; box-shadow: inset 0 0 0 1px rgba(0,0,0,.1); }
+
+.foot { margin-top: 72px; color: var(--o-muted); font-size: 12.5px; border-top: 1px solid var(--o-line); padding-top: 14px; }
+
+@media (max-width: 1180px) {
+  .duo { grid-template-columns: minmax(0,1fr); }
+  .duo, .coat, .levels, .rules { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+  .page { padding: 32px 16px 64px; }
+  .controls { margin: 20px -16px 0; padding: 10px 16px; }
+  .pane-in { padding: 18px 16px 22px; }
+  .mast { padding: 20px 16px 16px; }
+  .kpis { grid-template-columns: 1fr 1fr; }
+  .two { grid-template-columns: 1fr; }
+  .mbar .asof { display: none; }
+  .mbar { gap: 12px; padding: 0 14px; overflow-x: auto; }
+  .mbar b { font-size: 12.5px; }
+  .t th, .t td { padding: 7px 5px; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="intro">
+    <h1>印刷纸本 × 黑金</h1>
+    <p>形态定为印刷纸本，主题色蜜金，指引 / 预期 = 蜜。这一版只回答一个问题：25 色金渐层的“黑金”感能不能放进来，放多少。</p>
+  </header>
+
+  <h2 class="sec">黑从哪里来</h2>
+  <div class="coat">
+    <div>
+      <div class="hair-strip" aria-hidden="true"></div>
+      <div class="hair-cap"><span>底绒 · 浅金</span><span>中段 · 蜜金</span><span>毛尖 · 黑</span></div>
+    </div>
+    <div>
+      <p>25 色的毛是底绒金、毛尖黑，所以看起来是金色上覆着一层黑。界面照这个结构来：<b>黑是一种暖黑，金是从黑里透出来的线。</b></p>
+      <p>暖黑不是纯黑，而是蜜色相、彩度极低的黑：<span class="hex">#17130e</span>。全站的墨色也一起改成这一系，<span class="hex">#1c1a17</span> → <span class="hex">#1c1712</span>，肉眼几乎看不出，但和金放在一起时不会发青。</p>
+      <p>金只做细线和字，不做大面积色块。大面积铺金会变成土豪金。</p>
+    </div>
+  </div>
+
+  <div class="controls" role="toolbar" aria-label="黑金程度">
+    <span class="ctl-k">浅色模式的黑金程度</span>
+    <div class="seg" id="lv"><button data-v="1">轻</button><button data-v="2">中</button><button data-v="3">重</button></div>
+    <span class="lv-note" id="lv-note"></span>
+  </div>
+
+  <h2 class="sec">浅色 / 深色并排</h2>
+  <p class="sec-sub">左边是浅色，按上方档位变化；右边是深色，固定为完整黑金。两边用的是同一套色板和同一套组件。</p>
+
+  <div class="duo" id="duo"></div>
+
+  <h2 class="sec">三档的区别</h2>
+  <div class="levels">
+    <div><h3>轻</h3><p>页面仍然全是纸色。黑金只体现在暖黑墨色、导航下的金线和小节前的金色短线上。最安静，但黑金感要凑近才看得出。</p></div>
+    <div><h3>中<span class="rec">推荐</span></h3><p>顶栏和页脚变成暖黑带，站名是金色，带的下沿有一条金线。正文还是纸本。像一本黑色书脊、烫金书名的书，打开后内页是纸。</p></div>
+    <div><h3>重</h3><p>在“中”的基础上，页首标题区也是黑底，标题米白、代码金色。辨识度最强，但每个研究页顶部都有一大块黑，切换页面时会有一点重。</p></div>
+  </div>
+
+  <h2 class="sec">金的使用规则</h2>
+  <div class="rules">
+    <div><h3>黑带上：金是品牌</h3><p>顶栏站名、当前导航下划线、页脚标记、页首代码。这里没有数据，金色不会被误读。</p></div>
+    <div><h3>数据区：金只表示指引</h3><p>KPI、表格、图表里出现<span class="sw" style="background:#bd8f4e"></span>蜜金，就是预期或指引。数据区里的链接和强调一律用墨色。</p></div>
+    <div><h3>分隔线：深色带金，浅色用墨</h3><p>深色模式的分隔线是金混入暖黑（22%），所以发出很淡的金光，而不是灰线。浅色模式的分隔线保持暖灰，表格上下沿用墨色粗线。</p></div>
+  </div>
+
+  <p class="foot">design/compare.html · 仅供挑选，不参与构建发布。定稿后写回 theme/theme.css。</p>
+</div>
+
+<template id="pane">
+  <div class="pane">
+    <div class="mbar"><b>Dan's Investment Dashboard</b><a class="on" href="#">今天</a><a href="#">研究档案</a><a href="#">日志</a><span class="sp"></span><span class="asof">2026-11-17</span></div>
+    <header class="mast">
+      <h1>中际旭创<span class="code">300308.SZ</span></h1>
+      <p>股东总回报三因子归因 · 数据截至 2026-10-26</p>
+    </header>
+    <div class="pane-in">
+
+      <section>
+        <p class="blk-k">关键指标</p>
+        <div class="kpis">
+          <div class="kpi"><div class="kpi-k">股东总回报</div><div class="kpi-v up">+2,795<small>%</small></div><div class="kpi-d">2023-01 → 2026-10</div></div>
+          <div class="kpi"><div class="kpi-k">PE_NTM</div><div class="kpi-v">11.71<small>x</small></div><div class="kpi-d">250 日分位 0.0%</div></div>
+          <div class="kpi"><div class="kpi-k">2026 四家实际</div><div class="kpi-v actual">730<small>bn</small></div><div class="kpi-d">年内上修 <span class="up num">+10.9%</span></div></div>
+          <div class="kpi"><div class="kpi-k">2027 指引外推</div><div class="kpi-v guide">1,051<small>bn</small></div><div class="kpi-d">情景参考</div></div>
+        </div>
+      </section>
+
+      <div class="two">
+        <section>
+          <p class="blk-k">北美四家 capex（十亿美元）</p>
+          <div class="chart">
+            <svg viewBox="0 0 320 150" role="img" aria-label="capex 实际与指引柱状图">
+              <line class="ax" x1="0" y1="124" x2="320" y2="124"/>
+              <rect x="18"  y="99" width="44" height="25"  rx="2" style="fill:var(--actual-f)"/>
+              <rect x="96"  y="78" width="44" height="46"  rx="2" style="fill:var(--actual-f)"/>
+              <rect x="174" y="49" width="44" height="75"  rx="2" style="fill:var(--actual-f)"/>
+              <rect x="174" y="43" width="44" height="6"   rx="1" style="fill:var(--guide-f)"/>
+              <rect x="252" y="16" width="44" height="108" rx="2" style="fill:none;stroke:var(--guide-f);stroke-width:1.5;stroke-dasharray:3 2"/>
+              <text class="val" x="40"  y="93" text-anchor="middle" style="fill:var(--actual)">243</text>
+              <text class="val" x="118" y="72" text-anchor="middle" style="fill:var(--actual)">447</text>
+              <text class="val" x="196" y="37" text-anchor="middle" style="fill:var(--actual)">730</text>
+              <text class="val" x="274" y="10" text-anchor="middle" style="fill:var(--guide)">1,051</text>
+              <text class="lbl" x="40"  y="141" text-anchor="middle">2024</text>
+              <text class="lbl" x="118" y="141" text-anchor="middle">2025</text>
+              <text class="lbl" x="196" y="141" text-anchor="middle">2026</text>
+              <text class="lbl" x="274" y="141" text-anchor="middle">2027E</text>
+            </svg>
+            <div class="legend"><span><i style="background:var(--actual-f)"></i>实际</span><span><i style="background:var(--guide-f)"></i>指引 / 外推</span></div>
+          </div>
+        </section>
+        <section>
+          <p class="blk-k">三因子归因</p>
+          <table class="t">
+            <thead><tr><th>年</th><th>盈利</th><th>估值</th><th>总回报</th></tr></thead>
+            <tbody>
+              <tr><td>2023</td><td class="up">+87.6</td><td class="up">+48.2</td><td class="up">+288.7%</td></tr>
+              <tr><td>2024</td><td class="up">+89.3</td><td class="down">−44.9</td><td class="up">+56.7%</td></tr>
+              <tr><td>2025</td><td class="up">+75.3</td><td class="up">+84.7</td><td class="up">+161.0%</td></tr>
+            </tbody>
+          </table>
+        </section>
+      </div>
+
+      <div class="two">
+        <section>
+          <p class="blk-k">提示框</p>
+          <div class="cos">
+            <div class="co actual"><span class="co-k">口径</span><p>NTM 按日历滚动加权，不是分析师改模型。</p></div>
+            <div class="co risk"><span class="co-k">风险</span><p>若盈利下修且倍数同时压缩，结论失效。</p></div>
+            <div class="co"><span class="co-k">方法</span><p>总回报 = 盈利 × 估值 × 分红，取对数后可加。</p></div>
+          </div>
+        </section>
+        <section>
+          <p class="blk-k">判断</p>
+          <div class="th">
+            <p>旭创的 28.9 倍来自 E_NTM ×39.4、PE ×0.76，「涨太多所以会跌」在本例不成立。</p>
+            <div class="th-foot"><span class="st"><i></i><span>跟踪中</span></span><a class="link" href="#">三因子归因</a><span>下次检查 <span class="num">2026-12-31</span></span></div>
+          </div>
+          <div class="sts" style="margin-top:12px">
+            <span class="st"><i></i><span>跟踪中</span></span>
+            <span class="st hold"><i></i><span>成立</span></span>
+            <span class="st doubt"><i></i><span>存疑</span></span>
+            <span class="st dead"><i></i><span>证伪</span></span>
+            <span class="st due"><i></i><span>已到期</span></span>
+          </div>
+        </section>
+      </div>
+
+    </div>
+    <footer class="mfoot"><span class="mark">Dan's Investment Dashboard</span><span>个人研究记录，不构成投资建议</span></footer>
+  </div>
+</template>
+
+<script>
+(function () {
+  var root = document.documentElement;
+  var tpl = document.getElementById("pane"), host = document.getElementById("duo");
+  [["s-light", "浅色"], ["s-dark", "深色 · 完整黑金"]].forEach(function (d) {
+    var col = document.createElement("div");
+    col.innerHTML = '<p class="duo-k">' + d[1] + '</p>';
+    var p = tpl.content.firstElementChild.cloneNode(true);
+    p.classList.add(d[0]); col.appendChild(p); host.appendChild(col);
+  });
+  host.addEventListener("click", function (e) { if (e.target.closest("a")) e.preventDefault(); });
+
+  var notes = { "1": "纸色为主，金只出现在细线上", "2": "顶栏与页脚为暖黑带（推荐）", "3": "再加黑色页首" };
+  var lv = document.getElementById("lv");
+  function sync() {
+    var v = root.getAttribute("data-bk");
+    lv.querySelectorAll("button").forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.v === v)); });
+    document.getElementById("lv-note").textContent = notes[v];
+  }
+  lv.addEventListener("click", function (e) {
+    var b = e.target.closest("button"); if (!b) return;
+    root.setAttribute("data-bk", b.dataset.v); sync();
+  });
+  sync();
+})();
+</script>
+</body>
+</html>

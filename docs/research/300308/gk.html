@@ -100,30 +100,29 @@ footer b{color:#8b98a8}
 </style>
 
 <style id="site-topbar-style">
-  /* 由 build 注入：统一顶栏。固定定位 + html padding，避免影响原页面 body 布局。 */
-  html { padding-top: 42px !important; }
+  /* 由 build 注入：统一顶栏（黑金带）。固定定位 + html padding，避免影响原页面 body 布局。 */
+  html { padding-top: 44px !important; }
   #site-topbar {
     position: fixed; inset: 0 0 auto 0; z-index: 2147483000;
-    height: 42px; display: flex; align-items: center; gap: 10px;
+    height: 44px; display: flex; align-items: center; gap: 10px;
     padding: 0 14px;
     font: 500 12.5px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
           "Noto Sans SC", "Microsoft YaHei", sans-serif;
-    background: #f7f5f0; color: #4b4437; border-bottom: 1px solid #e6ddc9;
-    box-shadow: 0 1px 3px rgba(0,0,0,.05);
+    /* 黑金带：暖黑底 + 金线，和 theme.css 的 .topbar 一致 */
+    background: #17130e; color: #a39b8e;
+    border-bottom: 1px solid #6a5330;
     -webkit-font-smoothing: antialiased;
   }
-  #site-topbar[data-tone="dark"] {
-    background: #12161c; color: #c3cedb; border-bottom-color: #232b36;
-    box-shadow: 0 1px 3px rgba(0,0,0,.4);
-  }
+  /* 研究页都是深色底，顶栏固定为金色调，不再按页面明暗翻转 */
   #site-topbar > * { white-space: nowrap; }
   #site-topbar .stb-lab { margin-left: 5px; }
   #site-topbar .stb-btn { text-align: center; }
-  #site-topbar a { color: inherit; text-decoration: none; opacity: .82; }
-  #site-topbar a:hover { opacity: 1; text-decoration: underline; text-underline-offset: 3px; }
-  #site-topbar .stb-home { font-weight: 700; }
-  #site-topbar .stb-sep { opacity: .32; }
-  #site-topbar .stb-title { font-weight: 650; opacity: 1;
+  #site-topbar a { color: inherit; text-decoration: none; opacity: .85; }
+  #site-topbar a:hover { opacity: 1; color: #ece6da; text-decoration: none; }
+  #site-topbar .stb-home { font-weight: 600; }
+  #site-topbar .stb-home, #site-topbar .stb-group { color: #bd8f4e; }
+  #site-topbar .stb-sep { opacity: .3; }
+  #site-topbar .stb-title { font-weight: 600; color: #ece6da; opacity: 1;
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   #site-topbar .stb-spacer { flex: 1 1 auto; }
   #site-topbar .stb-asof { opacity: .62; font-variant-numeric: tabular-nums;
@@ -131,13 +130,13 @@ footer b{color:#8b98a8}
   #site-topbar .stb-btn {
     font: inherit; font-size: 11.5px; cursor: pointer;
     background: transparent; color: inherit; opacity: .7;
-    border: 1px solid currentColor; border-bottom-color: transparent;
-    border-radius: 5px; padding: 1px 8px; line-height: 1.55;
+    border: 1px solid #6a5330;
+    border-radius: 4px; padding: 1px 8px; line-height: 1.55;
   }
-  #site-topbar .stb-btn:hover { opacity: 1; }
+  #site-topbar .stb-btn:hover { opacity: 1; border-color: #bd8f4e; color: #ece6da; }
   #site-topbar .stb-btn:disabled { opacity: .3; cursor: default; }
   /* 页面自带的吸顶表头要让开顶栏 */
-  thead th { top: 42px !important; }
+  thead th { top: 44px !important; }
   @media (max-width: 720px) {
     #site-topbar { gap: 6px; padding: 0 10px; }
     #site-topbar .stb-asof, #site-topbar .stb-group, #site-topbar .stb-sep { display: none; }
@@ -149,7 +148,7 @@ footer b{color:#8b98a8}
   }
   @media print { #site-topbar { display: none; } html { padding-top: 0 !important; } }
 </style>
-</head><body><div id="site-topbar" data-tone="light"><a class="stb-home" href="../../index.html" title="研究入口">←<span class="stb-lab">研究入口</span></a><span class="stb-sep">/</span><a class="stb-group" href="../../research/300308/index.html">中际旭创</a><span class="stb-sep">/</span><span class="stb-title">中际旭创 · 股东总回报三因子归因</span><span class="stb-spacer"></span><span class="stb-asof">数据截至 2026-10-26</span><span class="stb-btns" style="display:flex;gap:4px"><button class="stb-btn" disabled>‹<span class="stb-lab">上一页</span></button><a class="stb-btn" href="attribution.html" title="下一页：事后归因">›<span class="stb-lab">下一页</span></a></span></div>
+</head><body><div id="site-topbar"><a class="stb-home" href="../../index.html" title="研究入口">←<span class="stb-lab">研究入口</span></a><span class="stb-sep">/</span><a class="stb-group" href="../../research/300308/index.html">中际旭创</a><span class="stb-sep">/</span><span class="stb-title">中际旭创 · 股东总回报三因子归因</span><span class="stb-spacer"></span><span class="stb-asof">数据截至 2026-10-26</span><span class="stb-btns" style="display:flex;gap:4px"><button class="stb-btn" disabled>‹<span class="stb-lab">上一页</span></button><a class="stb-btn" href="attribution.html" title="下一页：事后归因">›<span class="stb-lab">下一页</span></a></span></div>
 <div class="wrap">
 <header>
   <div class="ident"><h1>中际旭创</h1><span class="code">300308.SZ</span>
@@ -706,35 +705,6 @@ const G2 = {W:1140, rowH:158, gap:26, MT:26, MB:44, ML:56, MR:104};
     vy.style.display=yr?'':'none'; vc.style.display=yr?'none':'';};
   bY.addEventListener('click',function(){set(true);});
   bC.addEventListener('click',function(){set(false);});
-})();
-</script>
-
-<script id="site-topbar-script">
-(function () {
-  var bar = document.getElementById('site-topbar');
-  if (!bar) return;
-  function luma(c) {
-    var m = /rgba?\(([^)]+)\)/.exec(c || '');
-    if (!m) return 1;
-    var p = m[1].split(',').map(parseFloat);
-    if (p.length > 3 && p[3] === 0) return 1;
-    var f = function (v) { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); };
-    return 0.2126 * f(p[0]) + 0.7152 * f(p[1]) + 0.0722 * f(p[2]);
-  }
-  function sync() {
-    var b = getComputedStyle(document.body).backgroundColor;
-    if (!b || b === 'rgba(0, 0, 0, 0)' || b === 'transparent') {
-      b = getComputedStyle(document.documentElement).backgroundColor;
-    }
-    bar.setAttribute('data-tone', luma(b) < 0.42 ? 'dark' : 'light');
-  }
-  sync();
-  try {
-    var mo = new MutationObserver(sync);
-    [document.documentElement, document.body].forEach(function (n) {
-      mo.observe(n, { attributes: true, attributeFilter: ['class', 'data-theme', 'style'] });
-    });
-  } catch (e) {}
 })();
 </script>
 </body></html>
