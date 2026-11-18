@@ -84,7 +84,7 @@ deploy.bat     :: 构建 → 检查通过 → commit → push
 - `auto` 块缺失也能构建，会自动退回旧的纯文字卡（不会报错）。
 - `tone` 决定颜色：`up`=涨/利多（红）、`down`=跌/利空（绿）、留空=中性。
 - 想换卡片版式，改 `sitegen/render.py` 的 `today_card()` 和 `theme/theme.css` 的 `.today` 段。
-  备选方案（5 种）在 `design/today-cards.html`，跑 `python design/_gen_today.py` 可以重生成。
+  备选方案（5 种）在 `design/today-cards.html`，跑 `python design/gen_today.py` 可以重生成。
 
 ---
 
