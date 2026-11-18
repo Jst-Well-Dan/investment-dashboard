@@ -15,9 +15,6 @@ site:
   title: Dan's Investment Dashboard
   subtitle: 研究入口 · 每日复盘
   author: Dan
-  # 复盘日志开关。false = 不渲染日志页、首页不显示「今日复盘」、顶栏去掉「日志」。
-  # journal/ 目录和 new_journal.bat 都保留着，哪天想用了把它改成 true 再 build 即可。
-  show_journal: false
   # Pages 地址（用于 README 和分享链接；不影响站内相对路径）
   base_url: https://jst-well-dan.github.io/investment-dashboard/
   disclaimer: 本站为个人研究记录，所有数字与结论仅供自己复盘使用，不构成投资建议。
@@ -75,7 +72,7 @@ research:
     latest:
       date: 2026-11-11
       text: 国际金价 4,074.9 美元/盎司，年初至今 -5.88%；人民币金价 881.0 元/克。
-      # >>> auto（由 pull_latest.py 写入，不要手改）
+      # >>> auto（由 scripts/pull_latest.py 写入，不要手改）
       asof: 2026-11-09
       verdict: "偏利空 · 熊市调整"
       tone: down
@@ -83,7 +80,7 @@ research:
       metrics:
         - {k: 国际金价, v: "4,107.4", u: "美元/盎司", d: "+0.80% 单日", tone: up}
         - {k: 年初至今, v: "-5.13%", u: "", d: "人民币金价 881.0", tone: down}
-        - {k: 本轮累计, v: "-24%", u: "", d: "2026.01 → 2026.11 10 个月", tone: down}
+        - {k: 本轮累计, v: "-24%", u: "", d: "第16轮 · 10 个月", tone: down}
         - {k: 地缘威胁, v: "157", u: "", d: "高于历史均值 100", tone: flat}
       spark: [4542.5, 4448.4, 4506.3, 4505.0, 4286.4, 4238.8, 4381.4, 4149.4, 4096.3, 4082.4,
         4157.4, 4113.7, 4051.8, 4015.9, 4050.2, 4038.7, 4107.0, 4305.2, 4419.7, 4420.4,
@@ -108,7 +105,7 @@ research:
     latest:
       date: 2026-11-11
       text: 升温 69 分，名单跑赢沪深 300 2.17pt；占 A 股成交额 12.6%，10 日波动率 4.30%（剧烈）。
-      # >>> auto（由 pull_latest.py 写入，不要手改）
+      # >>> auto（由 scripts/pull_latest.py 写入，不要手改）
       asof: 2026-11-11
       verdict: "升温 · 69 分"
       tone: up

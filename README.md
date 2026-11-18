@@ -12,16 +12,16 @@
 
 ### 1. 刷新今天的数据
 
-```bat
-pull_latest.bat      :: 从黄金 / GS50 的数据里抓今天的数字，写回 research.yaml
-build.bat            :: 重建 + 自动打开首页
+在仓库根目录跑：
+
+```bash
+python scripts/pull_latest.py        # 从黄金 / GS50 的数据里抓今天的数字，写回 research.yaml
+python -m scripts.sitegen.build      # 重建整站 + 检查
 ```
 
-`pull_latest.py` 只替换 `research.yaml` 里每条研究 `latest:` 下 `# >>> auto` 到 `# <<< auto`
+`scripts/pull_latest.py` 只替换 `research.yaml` 里每条研究 `latest:` 下 `# >>> auto` 到 `# <<< auto`
 之间的内容；你手写的 `text:` / `summary:` 一个字都不动。源文件找不到时会跳过并提示，
 不会把 `research.yaml` 写成半截。
-
-**写不写日志都不影响这一套。** 复盘日志模块现在是关闭的，见下方「复盘日志（暂时关闭）」。
 
 ### 2. 加一项新研究
 
@@ -29,10 +29,10 @@ build.bat            :: 重建 + 自动打开首页
 2. 在 `research.yaml` 的 `research:` 下加一条：
 
 ```yaml
-  - id: my-report              # 唯一，用于 URL 和日志引用
+  - id: my-report              # 唯一，用于 URL 和站内引用
     group: 300308              # 必须是 groups 里已有的 id
     title: 中际旭创 · 某某分析   # 显示在卡片和页面标题
-    short: 某某分析             # 可选，标签/日志链接用的短名
+    short: 某某分析             # 可选，标签/链接用的短名
     kind: report               # dashboard=持续更新看板 / report=一次性研究 / tracker=定期补数
     topics: [个股研究]          # 用于档案页筛选
     source: E:/.../my_report.html   # 本地文件绝对路径（构建时复制 + 清洗 + 注入顶栏）
@@ -47,17 +47,17 @@ build.bat            :: 重建 + 自动打开首页
         note: 反证条件或备注
 ```
 
-3. `build.bat`
+3. `python -m scripts.sitegen.build`
 
 不需要改任何代码或模板。外链型研究用 `external: true` + `url: https://...`。
 
 ### 3. 发布
 
-```bat
-deploy.bat     :: 构建 → 检查通过 → commit → push
+```bash
+python -m scripts.sitegen.build && git add -A && git commit -m "build: $(date +%F)" && git push
 ```
 
-构建失败（发现本机路径 / 凭证 / 死链）时**不会**提交。
+构建失败（发现本机路径 / 凭证 / 死链）时**不会**走到 commit。
 
 ---
 
@@ -83,21 +83,8 @@ deploy.bat     :: 构建 → 检查通过 → commit → push
 - 手写的 `text:` **优先**；没写时退回 auto 块里的 `text_auto:`，再退回条目的 `summary:`。
 - `auto` 块缺失也能构建，会自动退回旧的纯文字卡（不会报错）。
 - `tone` 决定颜色：`up`=涨/利多（红）、`down`=跌/利空（绿）、留空=中性。
-- 想换卡片版式，改 `sitegen/render.py` 的 `today_card()` 和 `theme/theme.css` 的 `.today` 段。
+- 想换卡片版式，改 `scripts/sitegen/render.py` 的 `today_card()` 和 `theme/theme.css` 的 `.today` 段。
   备选方案（5 种）在 `design/today-cards.html`，跑 `python design/gen_today.py` 可以重生成。
-
----
-
-## 复盘日志（暂时关闭）
-
-`site.show_journal: false`（在 `research.yaml` 顶部）。关闭时：
-
-- 不渲染任何日志页，`docs/journal/` 不会生成
-- 首页不显示「今日复盘」区块，顶栏没有「日志」入口
-- `journal/` 目录、`_template.md`、`new_journal.py/.bat` 全部原样保留
-
-哪天想重新启用：把 `show_journal` 改成 `true`，`new_journal.bat` → 写 → `build.bat`。
-日志里可用的引用语法（`[[300308-consensus]]`、`[[journal:2026-11-17]]`）都还在。
 
 ---
 
@@ -105,32 +92,26 @@ deploy.bat     :: 构建 → 检查通过 → commit → push
 
 ```
 Dan's Investment Dashboard/
-├─ research.yaml          ★ 唯一事实源：所有研究条目 + 可跟踪判断 + 今日卡片数据
-├─ pull_latest.py         从两个看板抓数，写回 research.yaml 的 auto 块
-├─ journal/               复盘日志（当前关闭，文件保留）
+├─ research.yaml          ★ 唯一事实源：研究条目 + 可跟踪判断 + 今日卡片数据
+├─ scripts/               所有可执行脚本（根目录不放 bat / py）
+│   ├─ pull_latest.py     从两个看板抓数，写回 research.yaml 的 auto 块
+│   └─ sitegen/           构建引擎
+│       ├─ model.py       读 research.yaml、校验、派生 URL 与论点状态
+│       ├─ sync.py        复制研究页：清洗本机路径 → 注入顶栏 → 扫描敏感串
+│       ├─ render.py      首页 / 档案 / 分组页 / 主题样本页
+│       └─ build.py       一条命令跑完整站 + 死链检查
 ├─ theme/                 theme.css（设计令牌 + 组件）、site.js（主题切换 / 筛选）
-├─ sitegen/               构建脚本
-│   ├─ model.py           读 research.yaml、校验、派生 URL 与论点状态
-│   ├─ sync.py            复制研究页：清洗本机路径 → 注入顶栏 → 扫描敏感串
-│   ├─ render.py          首页 / 档案 / 分组页 / 日志页 / 主题样例页
-│   └─ build.py           一条命令跑完整站 + 死链检查
 ├─ design/                设计稿（不进构建）：today-cards.html 是今日卡片备选方案
-├─ build.bat              构建（失败会停下并列出问题）
-├─ pull_latest.bat        拉今日数据
-├─ new_journal.bat        新建今天的日志（日志模块关闭时不使用）
-├─ preview.bat            本地预览 http://127.0.0.1:8080/
-├─ deploy.bat             构建 + 发布
 ├─ GOALS.md               目标、约束、验收标准
 ├─ index.html             跳转壳（→ docs/index.html，双击仓库根目录时用）
 └─ docs/                  ← 发布产物（GitHub Pages 源）
 ```
 
-`docs/` 是生成的，**不要手改**，改完下次构建就被覆盖。内容永远只有 `research.yaml` + `theme/` 两处是真源
-（日志模块打开时再加 `journal/`）。
+`docs/` 是生成的，**不要手改**，改完下次构建就被覆盖。内容永远只有 `research.yaml` + `theme/` 两处是真源。
 
 ## 托管研究页是怎么处理的
 
-源文件留在原目录，构建时对副本做三件事（`sitegen/sync.py`）：
+源文件留在原目录，构建时对副本做三件事（`scripts/sitegen/sync.py`）：
 
 1. **清洗**：把 `E:\...`、`C:\Users\...` 这类本机绝对路径替换为「（本机路径已隐去）」。有些页面的内嵌 JSON 里带 `.cache` 路径，不清洗就等于公开本机目录结构。
 2. **注入顶栏**：一条固定顶栏（返回入口 / 分组 / 标题 / 数据截至 / 上一页下一页），用 `html{padding-top}` 让开高度，不动原页面的 `body` 布局和 ECharts 尺寸计算。顶栏是黑金带，纯 CSS，不注入脚本。
@@ -162,16 +143,21 @@ Dan's Investment Dashboard/
 
 ## 依赖
 
-```bat
+```bash
 pip install -r requirements.txt
 ```
 
-只要 `PyYAML` 和 `Markdown`，无前端构建、无 CDN、无 Node。产物是纯静态文件，`file://` 双击首页也能看（只有依赖 `fetch` 的功能会降级，目前没有）。
+只要 `PyYAML`，无前端构建、无 CDN、无 Node。产物是纯静态文件，`file://` 双击首页也能看。
+
+## 本地预览
+
+```bash
+python -m http.server 8080 --directory docs
+```
 
 ## 已知限制
 
-- **「今天」的数字要手动刷一次**：跑 `pull_latest.bat` 才会更新，构建本身不联网、不读别的仓库。
+- **「今天」的数字要手动刷一次**：跑 `python scripts/pull_latest.py` 才会更新，构建本身不联网、不读别的仓库。
   这是刻意的——`research.yaml` 是唯一事实源，构建必须离线可复现。
 - **高盛研报那页没上线**：`report_300308_goldman.html` 含第三方研报原文摘录，公开前需要确认引用范围。加进 `research.yaml` 一行即可上线。
 - **旧页面不迁主题**：黄金、GS50、300308 现有页面保留各自风格，只加了顶栏。新页面请用 `theme.css`。
-- **复盘日志模块关闭**：见上方「复盘日志（暂时关闭）」。

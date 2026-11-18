@@ -5,28 +5,8 @@ import datetime as dt
 import math
 import re
 from html import escape as esc
-from pathlib import Path
-
-import markdown
 
 from .model import Entry, Group, Thesis
-
-MD = markdown.Markdown(
-    extensions=["tables", "fenced_code", "sane_lists", "nl2br"],
-    output_format="html5",
-)
-
-# python-markdown 没有内置任务列表，这里自己补：把 `- [ ] xxx` / `- [x] xxx`
-# 渲染成打勾框。必须在 markdown 转换之后做，此时已经是 <li>[ ] xxx</li>。
-TASK = re.compile(r"<li>(\s*)\[( |x|X)\](\s*)", re.I)
-
-
-def _tasks(html: str) -> str:
-    return TASK.sub(
-        lambda m: f'<li>{m.group(1)}<span class="task" aria-hidden="true">'
-                  f'{"☑" if m.group(2).lower() == "x" else "☐"}</span>{m.group(3)}',
-        html,
-    )
 
 
 # --------------------------------------------------------------- 公共片段
@@ -51,20 +31,11 @@ def topbar(site: dict, depth: int, current: str) -> str:
     nav = [
         ("index.html", "今天", "today"),
         ("archive.html", "研究档案", "archive"),
+        ("theme.html", "主题", "theme"),
     ]
-    if site.get("show_journal"):
-        nav.append(("journal/", "日志", "journal"))
-    nav.append(("theme.html", "主题", "theme"))
-
-    def href_for(h: str) -> str:
-        # journal/ 目录下的页面用 ./ 指向自己这一层，避免变成 journal/journal/
-        if h == "journal/" and current == "journal":
-            return "./"
-        return up + h
-
     links = "".join(
-        f'<a href="{href_for(href)}"' + (' aria-current="page"' if key == current else "") + f'>{label}</a>'
-        for href, label, key in nav
+        f'<a href="{up}{h}"' + (' aria-current="page"' if key == current else "") + f'>{label}</a>'
+        for h, label, key in nav
     )
     return f"""<div class="topbar">
   <a class="brand" href="{up}index.html">{esc(site.get('title', "Dan's Investment Dashboard"))}</a>
@@ -273,8 +244,7 @@ def group_block(g: Group, depth: int = 0) -> str:
 </div>"""
 
 
-def index_page(cfg: dict, built_at: str, latest_journal, journal_count: int,
-               journal_dir_rel: str) -> str:
+def index_page(cfg: dict, built_at: str) -> str:
     site = cfg["site"]
     entries = cfg["entries"]
     groups = cfg["groups"]
@@ -285,24 +255,6 @@ def index_page(cfg: dict, built_at: str, latest_journal, journal_count: int,
     overdue = [t for t in theses if t.overdue]
     settled = [t for t in theses if t.status in ("成立", "证伪")]
 
-    if site.get("show_journal"):
-        if latest_journal:
-            j_date, j_title, j_sum = latest_journal
-            journal_block = f"""<a class="jrow" href="{journal_dir_rel}{j_date}.html">
-  <span class="j-date">{j_date}</span>
-  <span class="j-title">{esc(j_title)}</span>
-  <span class="tag">最近一篇</span>
-  <span class="j-note">{esc(j_sum)}</span>
-</a>"""
-        else:
-            journal_block = '<div class="empty">还没有复盘记录。运行 <code>new_journal.bat</code> 生成今天的一篇。</div>'
-        journal_sect = f"""<section class="sect">
-    <div class="sect-head"><h2>今日复盘</h2><span class="hint">一天一个文件，写在 journal/ 目录</span></div>
-    <div class="sect-rule"></div>
-    <div class="jlist">{journal_block}</div>
-  </section>"""
-    else:
-        journal_sect = ""
 
     topics = cfg["topics"]
     filters = '<button type="button" data-filter-topic="" aria-pressed="true">全部</button>' + "".join(
@@ -316,11 +268,9 @@ def index_page(cfg: dict, built_at: str, latest_journal, journal_count: int,
         overdue_note = f'<div class="callout risk"><div class="co-h">需要复盘</div>' \
                        f'<p>有 {len(overdue)} 条判断已过检查日期，见下方标红项。</p></div>'
 
-    # lede 只报真实存在的模块，否则会出现「0 篇复盘」这种噪音
+    # lede 只报真实存在的模块
     lede_bits = [f'已收录 <span class="num">{len(entries)}</span> 项研究',
                  f'<span class="num">{len(theses)}</span> 条可跟踪判断']
-    if site.get("show_journal") and journal_count:
-        lede_bits.append(f'<span class="num">{journal_count}</span> 篇复盘')
 
     return (
         head(site.get("title", "Dan's Investment Dashboard"), 0)
@@ -337,8 +287,6 @@ def index_page(cfg: dict, built_at: str, latest_journal, journal_count: int,
     <div class="sect-rule"></div>
     <div class="today-grid">{"".join(today_card(e, i) for i, e in enumerate(today_entries)) or '<div class="empty">清单里还没有标 today 的看板。</div>'}</div>
   </section>
-
-  {journal_sect}
 
   <section class="sect">
     <div class="sect-head"><h2>在跟踪的判断</h2><span class="hint">{len(tracking)} 条跟踪中 · 按下次检查日期排{settled_hint}</span></div>
@@ -439,140 +387,6 @@ def group_page(cfg: dict, g: Group, built_at: str, depth: int = 2) -> str:
 """
         + foot(site, d, built_at)
         + script(d)
-        + "</body>\n</html>\n"
-    )
-
-
-# --------------------------------------------------------------- 日志
-
-FRONT_MATTER = re.compile(r"^---\n(.*?)\n---\n", re.S)
-
-
-def _resolve_links(md_text: str, refs: dict[str, str], labels: dict[str, str] | None = None) -> str:
-    """[[id]] → 站内链接。日志页在 journal/ 下，所以组内相对路径要加 ../。"""
-    labels = labels or {}
-
-    def sub(m):
-        key = m.group(1).strip()
-        if key.startswith("journal:"):
-            d = key.split(":", 1)[1]
-            return f"[{d} 复盘]({d}.html)"
-        if key in refs:
-            target = refs[key]
-            prefix = "" if target.startswith("http") else "../"
-            return f"[{labels.get(key, key)}]({prefix}{target})"
-        return m.group(0)
-
-    return re.sub(r"\[\[([^\]]+)\]\]", sub, md_text)
-
-
-def parse_journal(path: Path) -> dict:
-    text = path.read_text(encoding="utf-8")
-    title, summary = "", ""
-    m = FRONT_MATTER.match(text)
-    if m:
-        for line in m.group(1).splitlines():
-            if ":" in line:
-                k, v = line.split(":", 1)
-                k, v = k.strip(), v.strip().strip('"').strip("'")
-                if k == "title":
-                    title = v
-                elif k == "summary":
-                    summary = v
-        text = text[m.end():]
-    body = text
-    h1 = re.search(r"^#\s+(.+)$", body, re.M)
-    if h1 and not title:
-        title = h1.group(1).strip()
-        body = body[: h1.start()] + body[h1.end():]
-    if not summary:
-        # 取第一段非标题文本作为摘要
-        for line in body.splitlines():
-            s = line.strip()
-            if s and not s.startswith(("#", ">", "-", "|", "```", "*")):
-                summary = s[:120]
-                break
-    return {"date": path.stem, "title": title or path.stem, "summary": summary, "body": body}
-
-
-def load_journals(journal_dir: Path) -> list[dict]:
-    if not journal_dir.exists():
-        return []
-    items = []
-    for p in sorted(journal_dir.glob("*.md"), reverse=True):
-        if p.name.startswith("_"):
-            continue
-        items.append(parse_journal(p))
-    return items
-
-
-def journal_entry_page(cfg: dict, j: dict, prev: dict | None, next: dict | None,
-                       built_at: str) -> str:
-    site = cfg["site"]
-    refs = {e.id: e.url for e in cfg["entries"]}
-    refs.update({g.id: g.url for g in cfg["groups"]})
-    labels = {e.id: e.short or e.title for e in cfg["entries"]}
-    labels.update({g.id: g.name for g in cfg["groups"]})
-    MD.reset()
-    html_body = _tasks(MD.convert(_resolve_links(j["body"], refs, labels)))
-    pager = []
-    if prev:
-        pager.append(f'<a class="prev" href="{prev["date"]}.html"><span>前一篇</span>{prev["date"]} {esc(prev["title"])}</a>')
-    if next:
-        pager.append(f'<a class="next" href="{next["date"]}.html"><span>后一篇</span>{next["date"]} {esc(next["title"])}</a>')
-    return (
-        head(f'{j["date"]} 复盘 · ' + site.get("title", ""), 1)
-        + topbar(site, 1, "journal")
-        + f"""<div class="wrap">
-  <header class="pagehead">
-    <div class="kicker">复盘日志</div>
-    <h1>{esc(j["title"])}</h1>
-    <div class="meta"><span class="num">{j["date"]}</span></div>
-  </header>
-  <article class="prose">{html_body}</article>
-  <div class="pager">{"".join(pager)}</div>
-  <p class="card-note" style="margin-top:20px"><a href="./">← 全部日志</a></p>
-"""
-        + foot(site, 1, built_at)
-        + script(1)
-        + "</body>\n</html>\n"
-    )
-
-
-def journal_index_page(cfg: dict, journals: list[dict], built_at: str) -> str:
-    site = cfg["site"]
-    if journals:
-        yrs: dict[str, list[dict]] = {}
-        for j in journals:
-            yrs.setdefault(j["date"][:4], []).append(j)
-        blocks = []
-        for y, items in yrs.items():
-            rows = "".join(
-                f"""<a class="jrow" href="{j['date']}.html">
-  <span class="j-date">{j['date']}</span>
-  <span class="j-title">{esc(j['title'])}</span>
-  <span class="tag">阅读 →</span>
-  <span class="j-note">{esc(j['summary'])}</span>
-</a>""" for j in items)
-            blocks.append(f'<div class="sect-head" style="margin-top:24px"><h2>{y}</h2>'
-                          f'<span class="hint">{len(items)} 篇</span></div>'
-                          f'<div class="jlist">{rows}</div>')
-        body = "".join(blocks)
-    else:
-        body = '<div class="empty">还没有复盘记录。运行 <code>new_journal.bat</code> 生成今天的一篇。</div>'
-    return (
-        head("复盘日志 · " + site.get("title", ""), 1)
-        + topbar(site, 1, "journal")
-        + f"""<div class="wrap">
-  <header class="pagehead">
-    <div class="kicker">Journal</div>
-    <h1>复盘日志</h1>
-    <p class="lede">一天一个文件。写了什么不重要，重要的是三个月后能看出哪些判断改了、为什么改。</p>
-  </header>
-  {body}
-"""
-        + foot(site, 1, built_at)
-        + script(1)
         + "</body>\n</html>\n"
     )
 
@@ -802,12 +616,11 @@ def theme_page(cfg: dict, built_at: str) -> str:
   </section>
 
   <section class="sect">
-    <div class="sect-head"><h2>日志正文（Markdown 渲染）</h2></div>
+    <div class="sect-head"><h2>长文本（阅读区）</h2><span class="hint">.prose：研究笔记、方法说明用这块</span></div>
     <div class="sect-rule"></div>
     <div class="prose">
-      <h2>今日市场一句话</h2>
-      <p>AI 链温度回升到 69，但波动率仍在剧烈档；黄金继续走弱。<a href="research/300308/consensus.html">共识与估值</a>
-         的判断没有变化。（日志里写 <code>[[300308-consensus]]</code>，构建时就会变成这样的链接。）</p>
+      <h2>小节标题</h2>
+      <p>正文段落，行宽限制在 72ch。<a href="research/300308/consensus.html">站内链接</a>用金色下划线，不改变行距。</p>
       <blockquote><p>引用块用于摘录原文或自己的旧判断。</p></blockquote>
       <ul><li>支持列表</li><li>支持表格、代码块</li></ul>
     </div>

@@ -16,7 +16,6 @@ from . import model, render, sync
 ROOT = model.ROOT
 DOCS = ROOT / "docs"
 THEME = ROOT / "theme"
-JOURNAL = ROOT / "journal"
 
 
 def log(msg: str) -> None:
@@ -60,27 +59,12 @@ def build() -> int:
                 log(f"  同步 {e.id:<22} → {e.url}  {info['bytes'] / 1024:,.0f} KB{note}")
 
     # ---------------------------------------------------- 页面
-    # 日志是可选模块：site.show_journal 为 false 时完全不生成，
-    # journal/ 目录和 new_journal.bat 保留着，哪天打开开关就能用。
-    show_journal = bool(site.get("show_journal"))
-    journals = render.load_journals(JOURNAL) if show_journal else []
-    latest_journal = (journals[0]["date"], journals[0]["title"], journals[0]["summary"]) if journals else None
-
     pages: list[tuple[str, str]] = []
-    pages.append(("index.html", render.index_page(cfg, built_at, latest_journal,
-                                                  len(journals), "journal/")))
+    pages.append(("index.html", render.index_page(cfg, built_at)))
     pages.append(("archive.html", render.archive_page(cfg, built_at)))
     pages.append(("theme.html", render.theme_page(cfg, built_at)))
     for g in cfg["groups"]:
         pages.append((g.url, render.group_page(cfg, g, built_at, depth=2)))
-
-    if show_journal:
-        pages.append(("journal/index.html", render.journal_index_page(cfg, journals, built_at)))
-        for i, j in enumerate(journals):
-            prev_j = journals[i + 1] if i + 1 < len(journals) else None
-            next_j = journals[i - 1] if i > 0 else None
-            pages.append((f"journal/{j['date']}.html",
-                          render.journal_entry_page(cfg, j, prev_j, next_j, built_at)))
 
     for rel, html in pages:
         p = DOCS / rel
@@ -107,8 +91,7 @@ def build() -> int:
 
     # ---------------------------------------------------- 汇报
     log("")
-    log(f"已生成 {len(pages)} 个页面、同步 {len(stats)} 个研究页"
-        + (f"、{len(journals)} 篇日志" if journals else "") + "。")
+    log(f"已生成 {len(pages)} 个页面、同步 {len(stats)} 个研究页。")
     redacted = sum(s["redacted"] for s in stats)
     if redacted:
         log(f"清洗掉 {redacted} 处本机路径。")

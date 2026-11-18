@@ -33,7 +33,7 @@
   --ink:          #1c1712;
   --ink-2:        #4a433a;
   --muted:        #6f685c;
-  --dim:          #a39b8e;
+  --dim:          #726c63;   /* 4.8:1 起，原来 #a39b8e 只有 2.7 */
 
   --line:         #e4ddcf;
   --line-soft:    #ece6da;
@@ -54,9 +54,10 @@
   --font-serif: Cambria, "Iowan Old Style", Georgia, "Times New Roman", serif;
 
   /* 字号阶梯 */
-  --fs-xs:  11.5px;
-  --fs-sm:  13px;
-  --fs-md:  14.5px;
+  --fs-2xs: 11.5px;   /* 只给数字单位、图表轴标签这类极短文本 */
+  --fs-xs:  12.5px;
+  --fs-sm:  13.5px;
+  --fs-md:  15px;
   --fs-lg:  17px;
   --fs-xl:  21px;
   --fs-2xl: 27px;
@@ -99,7 +100,7 @@
   --ink:          #efe6d4;
   --ink-2:        #cfc4b0;
   --muted:        #9a9285;
-  --dim:          #6d6659;
+  --dim:          #8b8274;   /* 4.7:1 起，原来 #6d6659 只有 3.1 */
 
   /* 深色：分隔线里混一点金，所以是暗金光而不是灰线 */
   --line:         color-mix(in oklch, #bd8f4e 22%, #1c1712);
@@ -128,7 +129,7 @@
     --plum-t:  #cda2da;  --plum-f:  #9d75a9;
 
     --paper: #130f0a; --paper-2: #17130e; --card: #1c1712; --card-2: #211c17;
-    --ink: #efe6d4; --ink-2: #cfc4b0; --muted: #9a9285; --dim: #6d6659;
+    --ink: #efe6d4; --ink-2: #cfc4b0; --muted: #9a9285; --dim: #8b8274;
     --line: color-mix(in oklch, #bd8f4e 22%, #1c1712);
     --line-soft: color-mix(in oklch, #bd8f4e 12%, #1c1712);
     --line-strong: color-mix(in oklch, #bd8f4e 36%, #1c1712);
@@ -208,6 +209,7 @@ a {
   text-decoration-thickness: 1px;
 }
 a:hover { text-decoration-color: var(--brand-f); }
+/* 正文里的内联链接不改变行距，只把下划线加粗一档，避免"看着像可点但很难点" */
 
 ::selection { background: var(--sel-bg); color: var(--ink); }
 :focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; border-radius: 2px; }
@@ -218,7 +220,7 @@ a:hover { text-decoration-color: var(--brand-f); }
 ::-webkit-scrollbar-thumb { background: var(--line-strong); border-radius: 999px;
                             border: 3px solid var(--paper); }
 
-h1, h2, h3, h4 { margin: 0; line-height: 1.3; font-weight: 650; letter-spacing: -.01em; }
+h1, h2, h3, h4 { margin: 0; line-height: 1.3; font-weight: 600; letter-spacing: -.01em; }
 h1 { font-size: var(--fs-2xl); }
 h2 { font-size: var(--fs-xl); }
 h3 { font-size: var(--fs-lg); }
@@ -233,7 +235,7 @@ code { background: var(--paper-2); border: 1px solid var(--line-soft); border-ra
 pre { background: var(--paper-2); border: 1px solid var(--line); border-radius: var(--r-md);
       padding: var(--s3) var(--s4); overflow-x: auto; line-height: 1.6; }
 pre code { background: none; border: 0; padding: 0; }
-strong, b { font-weight: 650; color: var(--ink); }
+strong, b { font-weight: 600; color: var(--ink); }
 small { font-size: var(--fs-xs); }
 img, svg { max-width: 100%; }
 
@@ -272,8 +274,8 @@ img, svg { max-width: 100%; }
   color: var(--band-muted);
 }
 .topbar .brand {
-  font-weight: 700; color: var(--brand-f); letter-spacing: .01em; white-space: nowrap;
-  text-decoration: none; font-size: 13.5px;
+  font-weight: 600; color: var(--brand-f); letter-spacing: .01em; white-space: nowrap;
+  text-decoration: none; font-size: 14px; display: flex; align-items: center; min-height: 32px;
 }
 .topbar .brand:hover { text-decoration: none; color: var(--band-ink); }
 .topbar nav { display: flex; gap: var(--s1); min-width: 0; }
@@ -290,7 +292,7 @@ img, svg { max-width: 100%; }
   border: 1px solid color-mix(in oklch, var(--honey-f) 40%, var(--band));
   background: transparent; color: var(--band-muted);
   border-radius: var(--r-sm); cursor: pointer; font: inherit; font-size: var(--fs-xs);
-  padding: 3px 10px; line-height: 1.5;
+  padding: 5px 11px; line-height: 1.5; min-height: 32px;
 }
 .iconbtn:hover { color: var(--band-ink); border-color: var(--brand-f); }
 
@@ -322,7 +324,7 @@ img, svg { max-width: 100%; }
 }
 .card-tight { padding: var(--s4); }
 .card-h { display: flex; align-items: baseline; gap: var(--s2); margin-bottom: var(--s2); }
-.card-h h3 { font-size: var(--fs-md); font-weight: 650; }
+.card-h h3 { font-size: var(--fs-md); font-weight: 600; }
 .card-h .badge-group { margin-left: auto; }
 .card p:last-child { margin-bottom: 0; }
 .card-note { color: var(--muted); font-size: var(--fs-xs); line-height: 1.65; }
@@ -348,7 +350,7 @@ img, svg { max-width: 100%; }
                        text-decoration-color: var(--brand-f); text-underline-offset: 4px; }
 .today:hover .t-link { text-decoration: underline; }
 .today .t-top { display: flex; align-items: baseline; gap: var(--s2); flex-wrap: wrap; }
-.today .t-name { font-weight: 650; font-size: var(--fs-md); }
+.today .t-name { font-weight: 600; font-size: var(--fs-md); }
 .today .t-date { color: var(--muted); font-size: var(--fs-xs); margin-left: auto; }
 .today .t-text { color: var(--ink-2); font-size: var(--fs-sm); line-height: 1.7; }
 .today .t-link { font-size: var(--fs-xs); color: var(--ink-2); margin-top: auto; }
@@ -370,14 +372,14 @@ img, svg { max-width: 100%; }
 /* 迷你走势线 */
 .spark { width: 100%; height: 54px; display: block; }
 .spark-axis { display: flex; justify-content: space-between;
-              font-size: 10.5px; color: var(--dim); margin-top: -6px; }
+              font-size: var(--fs-2xs); color: var(--dim); margin-top: -6px; }
 
 /* 三列 KPI */
 .kpi3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s2);
         border-top: 1px solid var(--line-soft); padding-top: var(--s2); }
 .k3-k { font-size: var(--fs-xs); color: var(--muted); }
 .k3-v { font-size: var(--fs-lg); line-height: 1.3; }
-.k3-u { font-size: 10.5px; color: var(--muted); font-weight: 400; margin-left: 3px; font-family: var(--font-sans); }
+.k3-u { font-size: var(--fs-2xs); color: var(--muted); font-weight: 400; margin-left: 3px; font-family: var(--font-sans); }
 .k3-d { font-size: var(--fs-xs); color: var(--muted); }
 
 /* 涨跌色：只能用在数字上 */
@@ -408,8 +410,9 @@ table.table {
   background: transparent;
 }
 table.table th, table.table td { padding: 8px 12px; text-align: left; vertical-align: top; }
+/* 表头不做吸顶：外层 overflow-x:auto 会让 sticky 失效，留着只是假象。
+   长表靠上下墨线和行hover定位。 */
 table.table thead th {
-  position: sticky; top: 0; z-index: 1;
   background: var(--paper); color: var(--muted);
   font-size: var(--fs-xs); font-weight: 600; letter-spacing: .03em;
   border-bottom: 1px solid var(--line); white-space: nowrap;
@@ -442,7 +445,7 @@ table.table td.date { white-space: nowrap; font-variant-numeric: tabular-nums; }
   background: var(--card); border: 1px solid var(--line); border-radius: var(--r-lg);
   padding: var(--s4) var(--s4) var(--s3);
 }
-.chart-title { font-size: var(--fs-md); font-weight: 650; }
+.chart-title { font-size: var(--fs-md); font-weight: 600; }
 .chart-sub { font-size: var(--fs-xs); color: var(--muted); margin-top: 2px; }
 .chart-body { margin: var(--s3) 0 var(--s2); }
 .chart-foot {
@@ -516,7 +519,7 @@ table.table td.date { white-space: nowrap; font-variant-numeric: tabular-nums; }
   text-decoration: none; color: inherit;
 }
 .rcard:hover .r-title { text-decoration: underline; text-decoration-color: var(--brand-f); text-underline-offset: 4px; }
-.rcard .r-title { font-weight: 650; font-size: var(--fs-md); line-height: 1.45; color: var(--ink); }
+.rcard .r-title { font-weight: 600; font-size: var(--fs-md); line-height: 1.45; color: var(--ink); }
 .rcard .r-sum { font-size: var(--fs-sm); color: var(--ink-2); line-height: 1.7; }
 .rcard .r-foot {
   margin-top: auto; padding-top: var(--s2);
@@ -534,7 +537,7 @@ table.table td.date { white-space: nowrap; font-variant-numeric: tabular-nums; }
 .filters { display: flex; gap: var(--s2); flex-wrap: wrap; margin-bottom: var(--s4); }
 .filters button {
   font: inherit; font-size: var(--fs-xs); cursor: pointer;
-  padding: 4px 12px; border-radius: var(--r-sm);
+  padding: 6px 13px; border-radius: var(--r-sm); min-height: 34px;
   border: 1px solid var(--line); background: var(--card); color: var(--ink-2);
 }
 .filters button:hover { border-color: var(--line-strong); color: var(--ink); }
@@ -542,20 +545,7 @@ table.table td.date { white-space: nowrap; font-variant-numeric: tabular-nums; }
   background: var(--ink); border-color: var(--ink); color: var(--card); font-weight: 600;
 }
 
-/* ------------------------------------------------------------------ 日志 */
-.jlist { display: grid; gap: var(--s2); }
-.jrow {
-  display: grid; grid-template-columns: auto 1fr auto; gap: var(--s3); align-items: baseline;
-  padding: var(--s3) var(--s4); background: var(--card);
-  border: 1px solid var(--line); border-radius: var(--r-md);
-}
-.jrow:hover { border-color: var(--accent-line); }
-.jrow .j-date { font-family: var(--font-mono); font-variant-numeric: tabular-nums;
-                color: var(--ink); font-size: var(--fs-sm); white-space: nowrap; font-weight: 600; }
-.jrow .j-title { color: var(--ink); font-size: var(--fs-sm); }
-.jrow .j-note { color: var(--muted); font-size: var(--fs-xs); grid-column: 2 / -1; }
-
-/* 日志正文（Markdown 渲染结果） */
+/* --------------------------------------------------------------- 长文本阅读区 */
 .prose { max-width: 72ch; }
 .prose h1 { font-size: var(--fs-xl); margin: var(--s5) 0 var(--s3); }
 .prose h2 { font-size: var(--fs-lg); margin: var(--s5) 0 var(--s2); padding-bottom: 4px; border-bottom: 1px solid var(--line-soft); }
@@ -572,15 +562,6 @@ table.table td.date { white-space: nowrap; font-variant-numeric: tabular-nums; }
 .prose th { border-bottom: 1px solid var(--line); font-size: var(--fs-xs); color: var(--muted); }
 .prose tbody tr + tr td { border-top: 1px solid var(--line-soft); }
 .prose td { font-variant-numeric: tabular-nums; }
-.prose .task { color: var(--muted); margin-right: 5px; font-size: 1.05em; }
-
-/* 前后篇 */
-.pager { display: flex; gap: var(--s3); margin-top: var(--s6); padding-top: var(--s4); border-top: 1px solid var(--line); }
-.pager a { flex: 1 1 0; padding: var(--s3); border: 1px solid var(--line); border-radius: var(--r-md);
-           background: var(--card); font-size: var(--fs-sm); color: var(--ink-2); text-decoration: none; }
-.pager a:hover { border-color: var(--accent-line); color: var(--ink); }
-.pager a span { display: block; font-size: var(--fs-xs); color: var(--muted); }
-.pager a.next { text-align: right; }
 
 /* 空状态 */
 .empty {
@@ -645,7 +626,6 @@ table.table td.date { white-space: nowrap; font-variant-numeric: tabular-nums; }
   .hero-num .hn-v { font-size: var(--fs-xl); }
   .thesis { grid-template-columns: 1fr; }
   .thesis .th-badges { justify-content: flex-start; }
-  .jrow { grid-template-columns: auto 1fr; }
   .wheel-wrap { grid-template-columns: 1fr; }
   /* 窄屏放不下站名 + 导航：藏掉站名，导航横滑，单行不折 */
   .topbar { gap: var(--s2); padding: 0 var(--s3); }
@@ -657,9 +637,25 @@ table.table td.date { white-space: nowrap; font-variant-numeric: tabular-nums; }
   .foot { padding: var(--s4); }
 }
 
+/* 窄屏表格：档案表 6 列挤不下，只保留 日期 / 研究 / 数据截至 / 结论 */
+@media (max-width: 760px) {
+  table.table th:nth-child(3), table.table td:nth-child(3),
+  table.table th:nth-child(4), table.table td:nth-child(4) { display: none; }
+}
+
+/* --------------------------------------------- 系统要求减少动态效果 */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition-duration: .01ms !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 /* ------------------------------------------------------------- 打印 */
 @media print {
-  .topbar, .filters, .pager { display: none; }
+  .topbar, .filters { display: none; }
   body { background: #fff; color: #000; }
   .foot { background: none; color: #000; border-top: 1px solid #000; padding-left: 0; padding-right: 0; }
   .foot .mark { color: #000; }

@@ -4,7 +4,7 @@
 只是设计稿：不进构建、不被 build.py 引用，用来挑方案用。
 数据取自两个看板当前的真实 JSON（2026-11-11 前后）。
 
-    python design/_gen_today.py
+    python design/gen_today.py
 """
 from __future__ import annotations
 

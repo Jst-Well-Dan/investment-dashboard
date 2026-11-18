@@ -11,7 +11,7 @@ from pathlib import Path
 
 import yaml
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(__file__).resolve().parent.parent.parent
 
 STATUS_LABEL = {
     "跟踪中": "track",

@@ -5,10 +5,10 @@
 research.yaml 必须是唯一事实源。所以「最新数字」由这个脚本负责搬运，
 构建时只消费，不猜测。
 
-用法：
-    python pull_latest.py           # 拉黄金 + GS50，写回 research.yaml
-    python pull_latest.py gold      # 只拉黄金
-    python pull_latest.py gs50      # 只拉 GS50
+用法（在仓库根目录）：
+    python scripts/pull_latest.py           # 拉黄金 + GS50，写回 research.yaml
+    python scripts/pull_latest.py gold      # 只拉黄金
+    python scripts/pull_latest.py gs50      # 只拉 GS50
 
 写回规则：只替换每条研究 latest: 下面
     # >>> auto
@@ -23,10 +23,11 @@ import datetime as dt
 import glob
 import json
 import os
+import re
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent
+ROOT = Path(__file__).resolve().parent.parent
 YAML_PATH = ROOT / "research.yaml"
 
 # 两个看板的本地数据位置（可用环境变量覆盖）
@@ -35,7 +36,7 @@ GOLD_JSON = Path(os.environ.get(
 GS50_DIR = Path(os.environ.get(
     "DAN_GS50_DIR", r"E:/Python_Doc/Investment/20261029 gs50_dashboard/docs/data"))
 
-AUTO_OPEN = "      # >>> auto（由 pull_latest.py 写入，不要手改）"
+AUTO_OPEN = "      # >>> auto（由 scripts/pull_latest.py 写入，不要手改）"
 AUTO_CLOSE = "      # <<< auto"
 SPARK_N = 40
 
@@ -47,6 +48,14 @@ def _num(v: float, dp: int = 2) -> str:
 
 def _sign(v: float, dp: int = 2, unit: str = "%") -> str:
     return f"{v:+.{dp}f}{unit}"
+
+
+def _cycle_hint(cycle: dict) -> str:
+    """「第16轮熊市 · 进行中」+「2026.01 → 2026.11 · 10 个月」→「第16轮 · 10 个月」。"""
+    m = re.search(r"第\s*\d+\s*轮", cycle.get("value") or "")
+    span = [x for x in (cycle.get("text") or "").split("·") if x.strip()]
+    tail = span[-1].strip() if span else ""
+    return " · ".join(x for x in (m.group(0) if m else "", tail) if x)
 
 
 def _tail(text: str) -> str:
@@ -77,9 +86,10 @@ def pull_gold() -> dict:
          "d": _sign(g["chg_1d"]) + " 单日", "tone": _tone(g["chg_1d"])},
         {"k": "年初至今", "v": _sign(g["chg_ytd"]), "u": "",
          "d": f"人民币金价 {_num(cny['value'], 1)}", "tone": _tone(g["chg_ytd"])},
+        # KPI 卡片只有 3 列、列宽约 130px，这里只放最短的一行，
+        # 年份区间交给走势线的两端轴标签，不在这里重复。
         {"k": draw.get("label") or "本轮回撤", "v": draw.get("value", "—"), "u": "",
-         "d": (cycle.get("text") or "").replace(" · ", " "),
-         "tone": {"bad": "down", "good": "up"}.get(draw.get("tone"), "flat")},
+         "d": _cycle_hint(cycle), "tone": {"bad": "down", "good": "up"}.get(draw.get("tone"), "flat")},
         {"k": gpr.get("label") or "地缘威胁", "v": gpr.get("value", "—"), "u": "",
          "d": _tail(gpr.get("text", "")), "tone": "flat"},
     ]
@@ -250,7 +260,7 @@ def main() -> int:
 
     if changed:
         YAML_PATH.write_text(text, encoding="utf-8")
-        print("\nresearch.yaml 已更新，接着跑 build.bat。")
+        print("\nresearch.yaml 已更新，接着跑 python -m scripts.sitegen.build。")
     else:
         print("\n没有改动。")
     return 0
