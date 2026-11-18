@@ -2,3 +2,6 @@ __pycache__/
 *.pyc
 .DS_Store
 Thumbs.db
+
+# 设计对比时的临时脚本与截图（不进仓库）
+design/_*
