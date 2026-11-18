@@ -330,12 +330,16 @@ img, svg { max-width: 100%; }
 /* 今日看板卡：整卡是链接 */
 .today-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s4); }
 .today {
-  display: flex; flex-direction: column; gap: var(--s2);
+  display: flex; flex-direction: column; gap: var(--s2); min-width: 0;
+  overflow-wrap: anywhere;
   background: var(--card); border: 1px solid var(--line); border-radius: var(--r-lg);
   padding: var(--s4) var(--s5);
   color: inherit; text-decoration: none;
   transition: border-color .15s, box-shadow .15s;
 }
+/* 结论基调：卡片左侧一条细边（利多=朱、利空=石绿、观察=无） */
+.today.tone-bull { border-left: 2px solid var(--up); }
+.today.tone-bear { border-left: 2px solid var(--down); }
 .today:hover, .today:focus-visible {
   border-color: var(--accent-line); box-shadow: var(--shadow-2);
   text-decoration: none; color: inherit;
@@ -635,8 +639,10 @@ table.table td.date { white-space: nowrap; font-variant-numeric: tabular-nums; }
 @media (max-width: 760px) {
   :root { --fs-2xl: 23px; --fs-xl: 18px; --fs-3xl: 27px; }
   .wrap { padding: var(--s4) var(--s4) 0; }
-  .today-grid { grid-template-columns: 1fr; }
+  .today-grid { grid-template-columns: minmax(0, 1fr); }
   .today { padding: var(--s4); }
+  .kpi3 { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: var(--s3); }
+  .hero-num .hn-v { font-size: var(--fs-xl); }
   .thesis { grid-template-columns: 1fr; }
   .thesis .th-badges { justify-content: flex-start; }
   .jrow { grid-template-columns: auto 1fr; }
