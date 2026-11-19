@@ -243,21 +243,28 @@ def rewrite_css(css: str, mapping: dict[str, str], stats: dict) -> str:
 
     css = re.sub(HEX_RE, sub_hex, css)
 
-    def sub_radius(m: re.Match) -> str:
-        val = m.group(2).strip()
-        if val.startswith("var(") or val in ("0", "0px"):
-            return m.group(0)
-        if val in ("999px", "50%"):
-            return m.group(0)          # 圆点 / 胶囊在形状语言里有意义，保留
-        num = re.match(r"(\d+(?:\.\d+)?)px", val)
+    def one_radius(v: str) -> str:
+        v = v.strip()
+        if v.startswith("var(") or v in ("0", "0px"):
+            return v
+        if v in ("999px", "50%"):
+            return v                   # 圆点 / 胶囊在形状语言里有意义，保留
+        num = re.match(r"(\d+(?:\.\d+)?)px$", v)
         if not num:
-            return m.group(0)
+            return v
         px = float(num.group(1))
         for lo, tok in RADIUS_TOKENS:
             if px >= lo:
-                stats["radius"] += 1
-                return f"{m.group(1)}{tok}"
-        return m.group(0)
+                return tok
+        return v
+
+    def sub_radius(m: re.Match) -> str:
+        # 简写（0 8px 8px 0）逐值处理，否则右半圆角会漏掉
+        parts = m.group(2).split()
+        out = [one_radius(v) for v in parts]
+        if out != parts:
+            stats["radius"] += 1
+        return f"{m.group(1)}{' '.join(out)}"
 
     css = re.sub(r"(border-radius\s*:\s*)([^;}]+)", sub_radius, css)
 

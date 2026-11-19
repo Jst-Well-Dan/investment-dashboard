@@ -55,43 +55,43 @@ def redact(html: str) -> tuple[str, int]:
 
 TOPBAR_STYLE = """
 <style id="site-topbar-style">
-  /* 由 build 注入：统一顶栏（黑金带）。固定定位 + html padding，避免影响原页面 body 布局。 */
-  html { padding-top: 44px !important; }
+  /* 由 build 注入：统一顶栏（黑金带）。固定定位 + html padding，避免影响原页面 body 布局。
+     颜色走 tokens.css 的令牌（研究页的 head 里已经引了它），不再写死 hex——
+     以前这里是 theme.css 的一份硬编码副本，改色要改两处。 */
+  html { padding-top: var(--topbar-h, 44px) !important; }
   #site-topbar {
     position: fixed; inset: 0 0 auto 0; z-index: 2147483000;
-    height: 44px; display: flex; align-items: center; gap: 10px;
+    height: var(--topbar-h, 44px); display: flex; align-items: center; gap: 10px;
     padding: 0 14px;
-    font: 500 12.5px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
-          "Noto Sans SC", "Microsoft YaHei", sans-serif;
-    /* 黑金带：暖黑底 + 金线，和 theme.css 的 .topbar 一致 */
-    background: #17130e; color: #a39b8e;
-    border-bottom: 1px solid #6a5330;
+    font: 500 12.5px/1.5 var(--font-sans, -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif);
+    background: var(--band); color: var(--band-muted);
+    border-bottom: 1px solid var(--band-line);
     -webkit-font-smoothing: antialiased;
   }
-  /* 研究页都是深色底，顶栏固定为金色调，不再按页面明暗翻转 */
   #site-topbar > * { white-space: nowrap; }
   #site-topbar .stb-lab { margin-left: 5px; }
   #site-topbar .stb-btn { text-align: center; }
   #site-topbar a { color: inherit; text-decoration: none; opacity: .85; }
-  #site-topbar a:hover { opacity: 1; color: #ece6da; text-decoration: none; }
+  #site-topbar a:hover { opacity: 1; color: var(--band-ink); text-decoration: none; }
   #site-topbar .stb-home { font-weight: 600; }
-  #site-topbar .stb-home, #site-topbar .stb-group { color: #bd8f4e; }
+  #site-topbar .stb-home, #site-topbar .stb-group { color: var(--brand-f); }
   #site-topbar .stb-sep { opacity: .3; }
-  #site-topbar .stb-title { font-weight: 600; color: #ece6da; opacity: 1;
+  #site-topbar .stb-title { font-weight: 600; color: var(--band-ink); opacity: 1;
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   #site-topbar .stb-spacer { flex: 1 1 auto; }
   #site-topbar .stb-asof { opacity: .62; font-variant-numeric: tabular-nums;
-    font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 11.5px; white-space: nowrap; }
+    font-family: var(--font-mono, ui-monospace, Menlo, Consolas, monospace);
+    font-size: 11.5px; white-space: nowrap; }
   #site-topbar .stb-btn {
     font: inherit; font-size: 11.5px; cursor: pointer;
     background: transparent; color: inherit; opacity: .7;
-    border: 1px solid #6a5330;
-    border-radius: 4px; padding: 1px 8px; line-height: 1.55;
+    border: 1px solid var(--band-line);
+    border-radius: var(--r-sm, 4px); padding: 1px 8px; line-height: 1.55;
   }
-  #site-topbar .stb-btn:hover { opacity: 1; border-color: #bd8f4e; color: #ece6da; }
+  #site-topbar .stb-btn:hover { opacity: 1; border-color: var(--brand-f); color: var(--band-ink); }
   #site-topbar .stb-btn:disabled { opacity: .3; cursor: default; }
   /* 页面自带的吸顶表头要让开顶栏 */
-  thead th { top: 44px !important; }
+  thead th { top: var(--topbar-h, 44px) !important; }
   @media (max-width: 720px) {
     #site-topbar { gap: 6px; padding: 0 10px; }
     #site-topbar .stb-asof, #site-topbar .stb-group, #site-topbar .stb-sep { display: none; }

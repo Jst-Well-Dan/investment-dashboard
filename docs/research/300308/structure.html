@@ -101,43 +101,43 @@
 <script type="application/json" id="llmGuidesJson">{"alerts": [{"insight": "2025营收382.4亿同比+60.3%、归母108亿同比+108.8%，毛利率33.8%→42.0%、净利率21.7%→28.2%，ROE到36.27%主驱是净利率；OCF同比+244.9%到109亿，覆盖率从0.61修回1.01。", "level": "高", "question": "毛42%/净28%是不是光模块周期高点，2026守得住吗？", "title": "2025共振：量价齐爆，含金量顺带修复", "verify": "去分部图看收发模块毛利率单年跳变，去利润弹窗看毛利率走势"}, {"insight": "2024营收238.6亿同比+122.6%，归母51.7亿+137.9%、OCF31.6亿+66.3%但绝对增量尚小，覆盖率仅0.61；有息9.6→35.6亿（+270%），Capex 28.7亿，FCF只剩2.9亿；ROE+11.79pp主驱是周转0.536→0.827。", "level": "高", "question": "新增35.6亿有息和28.7亿Capex花去哪了，何时见回报？", "title": "2024：翻倍增收，现金与杠杆掉队", "verify": "去资金去向弹窗看2024年运用端，去资产负债L3看在建工程"}, {"insight": "2023归母+77.6%到21.7亿、净利率12.7%→20.3%，但OCF同比-22.4%只剩19亿，收现率90.1%单年掉16.8pp，应收同比+70.9%远超营收+11.2%。", "level": "高", "question": "2024年应收收回来没有，赊销有没有恶化成坏账？", "title": "2023共振：利润是赊出来的，收现崩了个口子", "verify": "去资产负债科目下钻看应收账款走势，去现金流收现页签看2024是否回升"}, {"insight": "2022年OCF从8.1亿增至24.5亿（+202%，低基数增量16.4亿），是2020年0.2亿贴地、2021年8.1亿之后造血修复的起点，但绝对值仍小，随后2023年又掉回19亿。", "level": "中", "question": "2020-2021年OCF为什么贴地，当时的钱被什么占了？", "title": "2022：造血修复起点，但底子薄", "verify": "去现金流调节桥看2020-2022年营运资金占用段"}, {"insight": "ROE两连跳主驱切换：2024年+11.79pp靠周转（0.536→0.827次），2025年+9.24pp靠净利率（21.67%→28.24%）；乘数两年几乎不动（1.509→1.522）。", "level": "中", "question": "周转红利吃完后，36% ROE全压在利润率一根柱上？", "title": "ROE驱动切换：吃完周转吃利润率", "verify": "去杜邦ROE归因页签看两年堆叠对比"}], "falsify": "若2025年报对应收/存货大额计提减值，或2026毛利率回落至35%以下，则“健康量价齐升”判断错，实为周期顶点赊销冲量。", "note": "规则命中21项，定向点评5条；2023/2025为共振年，2024翻倍增收、2022为造血修复起点。"}</script>
 
 <style id="site-topbar-style">
-  /* 由 build 注入：统一顶栏（黑金带）。固定定位 + html padding，避免影响原页面 body 布局。 */
-  html { padding-top: 44px !important; }
+  /* 由 build 注入：统一顶栏（黑金带）。固定定位 + html padding，避免影响原页面 body 布局。
+     颜色走 tokens.css 的令牌（研究页的 head 里已经引了它），不再写死 hex——
+     以前这里是 theme.css 的一份硬编码副本，改色要改两处。 */
+  html { padding-top: var(--topbar-h, 44px) !important; }
   #site-topbar {
     position: fixed; inset: 0 0 auto 0; z-index: 2147483000;
-    height: 44px; display: flex; align-items: center; gap: 10px;
+    height: var(--topbar-h, 44px); display: flex; align-items: center; gap: 10px;
     padding: 0 14px;
-    font: 500 12.5px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
-          "Noto Sans SC", "Microsoft YaHei", sans-serif;
-    /* 黑金带：暖黑底 + 金线，和 theme.css 的 .topbar 一致 */
-    background: #17130e; color: #a39b8e;
-    border-bottom: 1px solid #6a5330;
+    font: 500 12.5px/1.5 var(--font-sans, -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif);
+    background: var(--band); color: var(--band-muted);
+    border-bottom: 1px solid var(--band-line);
     -webkit-font-smoothing: antialiased;
   }
-  /* 研究页都是深色底，顶栏固定为金色调，不再按页面明暗翻转 */
   #site-topbar > * { white-space: nowrap; }
   #site-topbar .stb-lab { margin-left: 5px; }
   #site-topbar .stb-btn { text-align: center; }
   #site-topbar a { color: inherit; text-decoration: none; opacity: .85; }
-  #site-topbar a:hover { opacity: 1; color: #ece6da; text-decoration: none; }
+  #site-topbar a:hover { opacity: 1; color: var(--band-ink); text-decoration: none; }
   #site-topbar .stb-home { font-weight: 600; }
-  #site-topbar .stb-home, #site-topbar .stb-group { color: #bd8f4e; }
+  #site-topbar .stb-home, #site-topbar .stb-group { color: var(--brand-f); }
   #site-topbar .stb-sep { opacity: .3; }
-  #site-topbar .stb-title { font-weight: 600; color: #ece6da; opacity: 1;
+  #site-topbar .stb-title { font-weight: 600; color: var(--band-ink); opacity: 1;
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   #site-topbar .stb-spacer { flex: 1 1 auto; }
   #site-topbar .stb-asof { opacity: .62; font-variant-numeric: tabular-nums;
-    font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 11.5px; white-space: nowrap; }
+    font-family: var(--font-mono, ui-monospace, Menlo, Consolas, monospace);
+    font-size: 11.5px; white-space: nowrap; }
   #site-topbar .stb-btn {
     font: inherit; font-size: 11.5px; cursor: pointer;
     background: transparent; color: inherit; opacity: .7;
-    border: 1px solid #6a5330;
-    border-radius: 4px; padding: 1px 8px; line-height: 1.55;
+    border: 1px solid var(--band-line);
+    border-radius: var(--r-sm, 4px); padding: 1px 8px; line-height: 1.55;
   }
-  #site-topbar .stb-btn:hover { opacity: 1; border-color: #bd8f4e; color: #ece6da; }
+  #site-topbar .stb-btn:hover { opacity: 1; border-color: var(--brand-f); color: var(--band-ink); }
   #site-topbar .stb-btn:disabled { opacity: .3; cursor: default; }
   /* 页面自带的吸顶表头要让开顶栏 */
-  thead th { top: 44px !important; }
+  thead th { top: var(--topbar-h, 44px) !important; }
   @media (max-width: 720px) {
     #site-topbar { gap: 6px; padding: 0 10px; }
     #site-topbar .stb-asof, #site-topbar .stb-group, #site-topbar .stb-sep { display: none; }

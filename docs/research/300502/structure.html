@@ -101,43 +101,43 @@
 <script type="application/json" id="llmGuidesJson">{"note": "规则命中20项，2023/2024/2025 均为共振年（各≥2个高），按年合并成3条；中项只留1条营运资金膨胀+1条规则外。", "alerts": [{"level": "高", "title": "2025共振：营收+187.3%至248.4亿，现金终于跟上", "insight": "2025营收248.4亿(+187.3%)，净利率38.4%、ROE 53.18%(+19.1pp)，OCF 77.0亿(上年6.4亿)。", "question": "53%的ROE还能靠周转再推吗？", "verify": "杜邦图三腿；2025年报现金流量表正表"}, {"level": "高", "title": "2024共振：翻倍增收+毛利率抬13.7pp，但现金反向崩", "insight": "2024营收86.47亿(+179.1%)、毛利率44.7%(+13.7pp)，OCF却-48.8%、收现率80.8%、FCF-8.4亿。", "question": "162亿收入增量有多少进了应收存货？", "verify": "现金流图；应收/存货/合同资产附注"}, {"level": "中", "title": "2024营运资金同步膨胀：存货+330.2%、应收+252.8%", "insight": "2024存货+330.2%、应收+252.8%、造血负债+325.0%至39.1亿，经营性资产39.2→106.7亿。", "question": "备货是订单驱动还是押注？", "verify": "资产负债结构图；存货跌价准备与在手订单"}, {"level": "高", "title": "2023共振：营收-6.4%叠加毛利率-5.7pp双杀", "insight": "2023营收30.98亿(-6.4%)、毛利率31.0%(-5.7pp)、归母净利率22.2%(-5.1pp)，ROE 12.59%。", "question": "2023是周期性回撤还是丢份额？", "verify": "利润表Sankey 2023年；2023年报分产品毛利率"}, {"level": "中", "title": "规则外：境内收入腰斩至9.54亿，占比仅3.8%", "insight": "2025境内收入9.54亿(2024年18.42亿，-48.2%)、占比3.8%，境内毛利率41.7%→34.0%。", "question": "国内是主动收缩还是被替代？", "verify": "分部'营业收入构成'分地区表2024/2025"}], "falsify": "若2026年OCF/归母重回1.0以上且应收存货增速低于营收，则'2024现金裂口会自我修复'的判断错了。"}</script>
 
 <style id="site-topbar-style">
-  /* 由 build 注入：统一顶栏（黑金带）。固定定位 + html padding，避免影响原页面 body 布局。 */
-  html { padding-top: 44px !important; }
+  /* 由 build 注入：统一顶栏（黑金带）。固定定位 + html padding，避免影响原页面 body 布局。
+     颜色走 tokens.css 的令牌（研究页的 head 里已经引了它），不再写死 hex——
+     以前这里是 theme.css 的一份硬编码副本，改色要改两处。 */
+  html { padding-top: var(--topbar-h, 44px) !important; }
   #site-topbar {
     position: fixed; inset: 0 0 auto 0; z-index: 2147483000;
-    height: 44px; display: flex; align-items: center; gap: 10px;
+    height: var(--topbar-h, 44px); display: flex; align-items: center; gap: 10px;
     padding: 0 14px;
-    font: 500 12.5px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
-          "Noto Sans SC", "Microsoft YaHei", sans-serif;
-    /* 黑金带：暖黑底 + 金线，和 theme.css 的 .topbar 一致 */
-    background: #17130e; color: #a39b8e;
-    border-bottom: 1px solid #6a5330;
+    font: 500 12.5px/1.5 var(--font-sans, -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif);
+    background: var(--band); color: var(--band-muted);
+    border-bottom: 1px solid var(--band-line);
     -webkit-font-smoothing: antialiased;
   }
-  /* 研究页都是深色底，顶栏固定为金色调，不再按页面明暗翻转 */
   #site-topbar > * { white-space: nowrap; }
   #site-topbar .stb-lab { margin-left: 5px; }
   #site-topbar .stb-btn { text-align: center; }
   #site-topbar a { color: inherit; text-decoration: none; opacity: .85; }
-  #site-topbar a:hover { opacity: 1; color: #ece6da; text-decoration: none; }
+  #site-topbar a:hover { opacity: 1; color: var(--band-ink); text-decoration: none; }
   #site-topbar .stb-home { font-weight: 600; }
-  #site-topbar .stb-home, #site-topbar .stb-group { color: #bd8f4e; }
+  #site-topbar .stb-home, #site-topbar .stb-group { color: var(--brand-f); }
   #site-topbar .stb-sep { opacity: .3; }
-  #site-topbar .stb-title { font-weight: 600; color: #ece6da; opacity: 1;
+  #site-topbar .stb-title { font-weight: 600; color: var(--band-ink); opacity: 1;
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   #site-topbar .stb-spacer { flex: 1 1 auto; }
   #site-topbar .stb-asof { opacity: .62; font-variant-numeric: tabular-nums;
-    font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 11.5px; white-space: nowrap; }
+    font-family: var(--font-mono, ui-monospace, Menlo, Consolas, monospace);
+    font-size: 11.5px; white-space: nowrap; }
   #site-topbar .stb-btn {
     font: inherit; font-size: 11.5px; cursor: pointer;
     background: transparent; color: inherit; opacity: .7;
-    border: 1px solid #6a5330;
-    border-radius: 4px; padding: 1px 8px; line-height: 1.55;
+    border: 1px solid var(--band-line);
+    border-radius: var(--r-sm, 4px); padding: 1px 8px; line-height: 1.55;
   }
-  #site-topbar .stb-btn:hover { opacity: 1; border-color: #bd8f4e; color: #ece6da; }
+  #site-topbar .stb-btn:hover { opacity: 1; border-color: var(--brand-f); color: var(--band-ink); }
   #site-topbar .stb-btn:disabled { opacity: .3; cursor: default; }
   /* 页面自带的吸顶表头要让开顶栏 */
-  thead th { top: 44px !important; }
+  thead th { top: var(--topbar-h, 44px) !important; }
   @media (max-width: 720px) {
     #site-topbar { gap: 6px; padding: 0 10px; }
     #site-topbar .stb-asof, #site-topbar .stb-group, #site-topbar .stb-sep { display: none; }
