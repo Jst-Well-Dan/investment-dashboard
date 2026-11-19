@@ -3,9 +3,9 @@ from __future__ import annotations
 
 import datetime as dt
 import math
-import re
 from html import escape as esc
 
+from . import home
 from .model import Entry, Group, Thesis
 
 
@@ -29,19 +29,20 @@ def head(title: str, depth: int, extra_css: str = "") -> str:
 def topbar(site: dict, depth: int, current: str) -> str:
     up = "../" * depth
     nav = [
-        ("index.html", "今天", "today"),
+        ("index.html", "今日看板", "today"),
         ("archive.html", "研究档案", "archive"),
-        ("theme.html", "主题", "theme"),
+        ("theses.html", "判断跟踪", "theses"),
     ]
     links = "".join(
         f'<a href="{up}{h}"' + (' aria-current="page"' if key == current else "") + f'>{label}</a>'
         for h, label, key in nav
     )
-    return f"""<div class="topbar">
+    return f"""<a class="skip-link" href="#main">跳到主内容</a>
+<div class="topbar">
   <a class="brand" href="{up}index.html">{esc(site.get('title', "Dan's Investment Dashboard"))}</a>
-  <nav>{links}</nav>
+  <nav aria-label="主导航">{links}</nav>
   <span class="spacer"></span>
-  <button class="iconbtn" id="theme-btn" type="button" title="切换浅色 / 深色">◐ 主题</button>
+  <button class="iconbtn" id="theme-btn" type="button" title="切换浅色 / 深色">{home.icon('sun')}<span>明暗</span></button>
 </div>
 """
 
@@ -76,234 +77,142 @@ def badges_for(e: Entry) -> str:
     return kind + ext + topics
 
 
-def date_str(d: dt.date | None) -> str:
-    return d.isoformat() if d else ""
-
-
 # --------------------------------------------------------------- 论点卡片
 
 def thesis_card(t: Thesis, depth: int = 0) -> str:
-    status_badge = f'<span class="badge {c}">{esc(t.status)}</span>' if (c := {
-        "跟踪中": "track", "成立": "hold", "存疑": "doubt", "证伪": "dead",
-    }.get(t.status, "track")) else ""
+    # 「跟踪中」用 .badge 基类（空心圆），其余状态加修饰类。
+    # .track 这类空修饰类已废弃：状态只有四种，基类就是默认态。
+    cls = {"成立": "hold", "存疑": "doubt", "证伪": "dead"}.get(t.status, "")
+    badge_cls = f"badge {cls}".strip()
+    status_badge = f'<span class="{badge_cls}">{esc(t.status)}</span>'
     if t.overdue:
         status_badge = '<span class="badge overdue">已到期</span>' + status_badge
-    check = ""
+    # AI 初稿：显式标注来源，不假装是自己的判断
+    draft_badge = '<span class="badge draft">AI 初稿 · 待改写</span>' if t.draft else ""
+    when = '<span class="th-days">—</span><span class="th-unit">未定检查日</span>'
     if t.next_check:
         d = t.days_left
         if d is None:
-            tail = ""
+            big, unit = "—", "检查日"
         elif d < 0:
-            tail = f"（逾期 {-d} 天）"
+            big, unit = str(-d), "天 · 已逾期"
         elif d == 0:
-            tail = "（今天）"
+            big, unit = "0", "今天检查"
         else:
-            tail = f"（还有 {d} 天）"
-        check = f'<span>下次检查 <span class="num">{t.next_check.isoformat()}</span>{tail}</span>'
-    note = f'<span class="th-note">{esc(t.note)}</span>' if t.note else ""
-    return f"""<div class="thesis {t.css}">
-  <div class="th-claim">{esc(t.claim)}</div>
-  <div class="th-badges">{status_badge}</div>
-  <div class="th-foot">
-    <span><a href="{href(t.entry_url, depth)}">{esc(t.entry_title)}</a></span>
-    {check}
-    {note}
+            big, unit = str(d), "天后检查"
+        when = (f'<span class="th-days num">{big}</span><span class="th-unit">{unit}</span>'
+                f'<span class="th-date num">{t.next_check.isoformat()}</span>')
+    note = f'<p class="th-note">{esc(t.note)}</p>' if t.note else ""
+    # 反证条件与动作是判断的三要素之二：一条不可观测的「反证」等于没有反证。
+    lines = []
+    if t.falsifier:
+        lines.append(f'<p class="th-line"><span class="th-k">反证</span>{esc(t.falsifier)}</p>')
+    if t.action:
+        lines.append(f'<p class="th-line"><span class="th-k">动作</span>{esc(t.action)}</p>')
+    extra = ""
+    if lines:
+        extra = '<div class="th-extra">' + "".join(lines) + '</div>'
+    # 草稿缺反证 / 动作时把缺口写出来：页面上的一条待办，比默默感动好。
+    # 只对还在跟踪的草稿提示——已结算的判断改不改都不影响下一步。
+    if t.draft and t.status in ("跟踪中", "存疑") and (not t.falsifier or not t.action):
+        gaps = [n for n, v in (("可观测的反证条件", t.falsifier), ("决策动作", t.action)) if not v]
+        extra += '<p class="th-gap">待补：' + "、".join(gaps) + '</p>'
+    return f"""<article class="thesis {t.css}">
+  <div class="th-when">{when}</div>
+  <div class="th-body">
+    <p class="th-claim">{esc(t.claim)}</p>
+    {note}{extra}
+    <a class="th-src" href="{href(t.entry_url, depth)}">{esc(t.entry_title)}</a>
   </div>
-</div>"""
+  <div class="th-badges">{status_badge}{draft_badge}</div>
+</article>"""
 
 
 # --------------------------------------------------------------- 首页
-
-def sparkline(values: list[float], uid: str, w: int = 420, h: int = 54,
-              stroke: str = "var(--ink-2)") -> str:
-    """纯 inline SVG 面积走势线：无 JS、无 CDN、无外部依赖。"""
-    vals = [float(v) for v in values if isinstance(v, (int, float))]
-    if len(vals) < 2:
-        return ""
-    lo, hi = min(vals), max(vals)
-    if hi == lo:
-        hi = lo + 1
-    n = len(vals)
-    pts = [(i / (n - 1) * w, h - 3 - (v - lo) / (hi - lo) * (h - 6)) for i, v in enumerate(vals)]
-    line = " ".join(f"{x:.1f},{y:.1f}" for x, y in pts)
-    path = "M" + f"{pts[0][0]:.1f},{h} L" + " L".join(f"{x:.1f},{y:.1f}" for x, y in pts) \
-           + f" L{pts[-1][0]:.1f},{h} Z"
-    return f"""<svg class="spark" viewBox="0 0 {w} {h}" preserveAspectRatio="none" aria-hidden="true">
-  <defs><linearGradient id="sg{uid}" x1="0" y1="0" x2="0" y2="1">
-    <stop offset="0" stop-color="{stroke}" stop-opacity=".20"/>
-    <stop offset="1" stop-color="{stroke}" stop-opacity="0"/>
-  </linearGradient></defs>
-  <path d="{path}" fill="url(#sg{uid})"/>
-  <polyline points="{line}" fill="none" stroke="{stroke}" stroke-width="1.6"
-    stroke-linejoin="round" stroke-linecap="round"/>
-  <circle cx="{pts[-1][0]:.1f}" cy="{pts[-1][1]:.1f}" r="2.6" fill="{stroke}"/>
-</svg>"""
-
-
-def today_card(e: Entry, idx: int = 0) -> str:
-    """今日看板卡：结论徽标 + 大数字 + 走势线 + 三列 KPI + 一句话。
-
-    数据来自 research.yaml 里 latest: 的手写字段（date / text）和
-    pull_latest.py 写的 auto 块（asof / verdict / metrics / spark）。
-    auto 块不存在时自动退回旧版纯文字卡，不会崩。
-    """
-    latest = e.latest
-    text = latest.get("text") or latest.get("text_auto") or e.summary
-    metrics = [m for m in (latest.get("metrics") or []) if isinstance(m, dict) and m.get("k")]
-    spark = latest.get("spark") or []
-    verdict = latest.get("verdict") or ""
-    asof = latest.get("asof") or latest.get("date") or e.data_asof
-
-    # 结论徽标颜色：按看板给出的基调猜，猜不到就中性色
-    tone = latest.get("tone") or ""
-    if not tone and metrics:
-        tone = metrics[0].get("tone", "")
-    badge_cls = {"up": "bull", "down": "bear"}.get(tone, "warn")
-    verdict_html = f'<span class="verdict {badge_cls}">{esc(verdict)}</span>' if verdict else \
-        f'<span class="tag">{esc(e.kind_label)}</span>'
-
-    hero = ""
-    if metrics:
-        m0 = metrics[0]
-        hero = f"""<div class="hero-num">
-      <span class="hn-v num">{esc(str(m0.get('v', '')))}</span>
-      <span class="hn-u">{esc(str(m0.get('u', '')))}</span>
-      <span class="hn-d num {esc(str(m0.get('tone', 'flat')))}">{esc(str(m0.get('d', '')))}</span>
-    </div>"""
-
-    # 走势线画的是「绝对值走势」而不是涨跌：用墨色，不占用涨跌语义，
-    # 也不用金色——按规则 3，数据区里的金色只表示指引。
-    spark_html = sparkline(spark, str(idx), stroke="var(--ink-2)")
-    axis = ""
-    if spark_html:
-        axis = (f'<div class="spark-axis"><span class="num">{esc(str(latest.get("spark_from", "")) or "")}</span>'
-                f'<span class="num">{esc(str(asof))}</span></div>')
-
-    rest = metrics[1:]
-    kpi_html = ""
-    if rest:
-        kpi_html = '<div class="kpi3">' + "".join(
-            f'<div class="k3"><div class="k3-k">{esc(str(m.get("k", "")))}</div>'
-            f'<div class="k3-v num">{esc(str(m.get("v", "")))}'
-            f'<span class="k3-u">{esc(str(m.get("u", "")))}</span></div>'
-            f'<div class="k3-d {esc(str(m.get("tone", "flat")))}">{esc(str(m.get("d", "")))}</div></div>'
-            for m in rest) + '</div>'
-
-    tone_cls = {"bull": " tone-bull", "bear": " tone-bear"}.get(badge_cls, "")
-    return f"""<a class="today{tone_cls}" href="{e.url}" target="_blank" rel="noopener">
-  <div class="t-top">
-    <span class="t-name">{esc(e.short or e.title)}</span>
-    {verdict_html}
-    <span class="t-date num">{esc(str(asof))}</span>
-  </div>
-  {hero}
-  {spark_html}{axis}
-  {kpi_html}
-  <div class="t-text">{esc(text)}</div>
-  <span class="t-link">打开看板 →</span>
-</a>"""
-
 
 def research_card(e: Entry, show_group: str | None = None, depth: int = 0) -> str:
     """整张卡片就是链接。日期只是标注文字，不再单独做按钮（避免嵌套 a）。"""
     asof = f'<span>数据截至 <span class="num">{esc(e.data_asof)}</span></span>' if e.data_asof else ""
     grp = f'<span class="tag accent">{esc(show_group)}</span>' if show_group else ""
     target = ' target="_blank" rel="noopener"' if e.external else ""
-    arrow = " ↗" if e.external else ""
-    return f"""<a class="rcard" href="{href(e.url, depth)}"{target} data-topics="{' '.join(e.topics)}" data-group="{e.group}">
-  <div class="r-title">{esc(e.title)}{arrow}</div>
-  <div class="r-sum">{esc(e.summary)}</div>
-  <div class="r-foot">
-    {grp}{badges_for(e)}
-    {asof}
-    <span class="tag-date num">{e.date.isoformat()}</span>
-  </div>
+    arrow = '<span class="ext" aria-label="（独立站点）">↗</span>' if e.external else ""
+    return f"""<a class="rcard" href="{href(e.url, depth)}"{target} data-topics="{esc('|'.join(e.topics))}" data-group="{e.group}">
+  <span class="r-date num">{e.date.isoformat()}</span>
+  <span class="r-main">
+    <span class="r-title">{esc(e.title)}{arrow}</span>
+    <span class="r-sum">{esc(e.summary)}</span>
+    <span class="r-foot">{grp}{badges_for(e)}{asof}</span>
+  </span>
 </a>"""
 
 
-def group_block(g: Group, depth: int = 0) -> str:
-    outer = [e for e in g.entries if not e.external]
-    links = "".join(
-        (f'<a class="tag accent" href="{e.url}" target="_blank" rel="noopener">'
-         f'{esc(e.short or e.title)} ↗</a>') if e.external else
-        f'<a class="tag" href="{href(e.url, depth)}">{esc(e.short or e.title)}</a>'
-        for e in g.entries
-    )
+def group_block(g: Group, depth: int = 0, named: bool = True) -> str:
+    """一个分组的两栏账本。named=False 时省掉组名与简介——
+    分组名和作用域名一字不差（例如「方法论」）时，重复一遍只是噪声。"""
     code = f'<span class="code">{esc(g.code)}</span>' if g.code else ""
-    return f"""<div class="group-block" data-topics="{esc(g.topic)}" data-group="{g.id}">
-  <div class="group-head">
-    <h3><a href="{href(g.url, depth)}">{esc(g.name)}</a></h3>
+    # 分组自己的主题 + 成员条目的主题并集：否则按「方法论」筛选时，
+    # 同组里的方法论条目会连同整组一起被隐藏。
+    gtopics = sorted({g.topic, *(t for e in g.entries for t in e.topics)})
+    head = ""
+    if named:
+        head = f"""  <h3><a href="{href(g.url, depth)}">{esc(g.name)}</a></h3>
     {code}
-    <span class="tag-date num">最近更新 {g.latest_date.isoformat()}</span>
-  </div>
-  <p class="group-intro">{esc(g.intro)}</p>
-  <div class="archive-grid">
+    <p class="group-intro">{esc(g.intro)}</p>
+"""
+    return f"""<section class="group-block{' flush' if not named else ''}" data-topics="{esc('|'.join(gtopics))}" data-group="{g.id}">
+  <header class="group-head">{head}
+    <p class="group-meta">{'<a href="' + href(g.url, depth) + '">' if not named else ''}<span class="num">{len(g.entries)}</span> 篇 · 最近更新 <span class="num">{g.latest_date.isoformat()}</span>{'</a>' if not named else ''}</p>
+  </header>
+  <div class="archive-list">
     {"".join(research_card(e, depth=depth) for e in g.entries)}
   </div>
-  <p class="card-note" style="margin-top:8px">组内页面：{links}</p>
-</div>"""
+</section>"""
 
 
 def index_page(cfg: dict, built_at: str) -> str:
     site = cfg["site"]
-    entries = cfg["entries"]
-    groups = cfg["groups"]
-    theses = cfg["theses"]
-
-    today_entries = [e for e in entries if e.raw.get("today")]
-    tracking = [t for t in theses if t.status in ("跟踪中", "存疑")]
-    overdue = [t for t in theses if t.overdue]
-    settled = [t for t in theses if t.status in ("成立", "证伪")]
-
-
-    topics = cfg["topics"]
-    filters = '<button type="button" data-filter-topic="" aria-pressed="true">全部</button>' + "".join(
-        f'<button type="button" data-filter-topic="{esc(t)}" aria-pressed="false">{esc(t)}</button>'
-        for t in topics
+    return (
+        head("今日看板 · " + site.get("title", ""), 0)
+        + topbar(site, 0, "today")
+        + '<div class="wrap">'
+        + home.today_boards(cfg, built_at)
+        + "</div>\n"
+        + foot(site, 0, built_at)
+        + script(0)
+        + "</body>\n</html>\n"
     )
 
-    settled_hint = f" · 另有 {len(settled)} 条已结算" if settled else ""
-    overdue_note = ""
-    if overdue:
-        overdue_note = f'<div class="callout risk"><div class="co-h">需要复盘</div>' \
-                       f'<p>有 {len(overdue)} 条判断已过检查日期，见下方标红项。</p></div>'
 
-    # lede 只报真实存在的模块
-    lede_bits = [f'已收录 <span class="num">{len(entries)}</span> 项研究',
-                 f'<span class="num">{len(theses)}</span> 条可跟踪判断']
-
+def theses_page(cfg: dict, built_at: str) -> str:
+    site = cfg["site"]
+    theses = cfg["theses"]
+    active = [t for t in theses if t.status in ("跟踪中", "存疑")]
+    settled = [t for t in theses if t.status in ("成立", "证伪")]
+    drafts = sum(1 for t in theses if t.draft)
+    draft_note = ""
+    if drafts:
+        draft_note = (f' · <span class="num">{drafts}</span> 条为 AI 初稿，待自己重写'
+                      f'（<span class="badge draft">AI 初稿</span> 标记，改写后删掉 research.yaml 里的 '
+                      f'<code>origin: ai</code> 即可）')
     return (
-        head(site.get("title", "Dan's Investment Dashboard"), 0)
-        + topbar(site, 0, "today")
-        + f"""<div class="wrap">
+        head("判断跟踪 · " + site.get("title", ""), 0)
+        + topbar(site, 0, "theses")
+        + f"""<div class="wrap" id="main">
   <header class="pagehead">
-    <div class="kicker">研究入口</div>
-    <h1>{esc(site.get("title", ""))}</h1>
-    <p class="lede">{esc(site.get("subtitle", ""))} · {'、'.join(lede_bits)}。</p>
+    <h1>判断跟踪</h1>
+    <p class="lede">每条判断来自具体研究，保留原文结论与反证条件。</p>
+    <div class="meta"><span class="num">{len(active)}</span> 条跟踪中 · <span class="num">{len(settled)}</span> 条已结算{draft_note}</div>
   </header>
-
+  <div class="workbench">{home.review_queue(theses, title="下一组到期", all_link=False, compact=True)}</div>
   <section class="sect">
-    <div class="sect-head"><h2>今天</h2><span class="hint">每天自动更新的看板，点开是它们的独立站点</span></div>
-    <div class="sect-rule"></div>
-    <div class="today-grid">{"".join(today_card(e, i) for i, e in enumerate(today_entries)) or '<div class="empty">清单里还没有标 today 的看板。</div>'}</div>
+    <div class="sect-head"><h2>跟踪中</h2><span class="hint">按下次检查日期排列</span></div>
+    <div class="thesis-list">{"".join(thesis_card(t) for t in active) or '<div class="empty">没有正在跟踪的判断。</div>'}</div>
   </section>
-
   <section class="sect">
-    <div class="sect-head"><h2>在跟踪的判断</h2><span class="hint">{len(tracking)} 条跟踪中 · 按下次检查日期排{settled_hint}</span></div>
-    <div class="sect-rule"></div>
-    {overdue_note}
-    <div class="thesis-list">{"".join(thesis_card(t) for t in tracking) or '<div class="empty">没有正在跟踪的判断。</div>'}</div>
+    <div class="sect-head"><h2>已结算</h2><span class="hint">成立或证伪的旧判断</span></div>
+    <div class="thesis-list">{"".join(thesis_card(t) for t in settled) or '<div class="empty">暂无已结算判断。</div>'}</div>
   </section>
-
-  <section class="sect">
-    <div class="sect-head"><h2>研究档案</h2><span class="hint">{len(groups)} 组 · 按主题筛选</span></div>
-    <div class="sect-rule"></div>
-    <div class="filters" id="filters">{filters}</div>
-    <div class="stack" id="archive">
-      {"".join(group_block(g) for g in groups)}
-    </div>
-    <p class="card-note" style="margin-top:16px">时间线视图：<a href="archive.html">全部研究按日期排列 →</a></p>
-  </section>
+</div>
 """
         + foot(site, 0, built_at)
         + script(0)
@@ -314,43 +223,51 @@ def index_page(cfg: dict, built_at: str) -> str:
 # --------------------------------------------------------------- 档案（时间线）
 
 def archive_page(cfg: dict, built_at: str) -> str:
+    """研究档案：只收进档案的分组（scope 三段），市场看板不在这里。
+
+    只有一个视图：按作用域分段的分组账本。之前那版「时间线表格 + 分组账本」
+    是同一批研究列两遍（12 行对 12 张卡，URL 完全重合），删掉了表格。
+    """
     site = cfg["site"]
-    entries = sorted(cfg["entries"], key=lambda e: (e.date, e.id), reverse=True)
-    rows = []
-    for e in entries:
-        target = ' target="_blank" rel="noopener"' if e.external else ""
-        rows.append(f"""<tr data-topics="{' '.join(e.topics)}">
-  <td class="date">{e.date.isoformat()}</td>
-  <td><a href="{href(e.url, 0)}"{target}>{esc(e.title)}</a>{' ↗' if e.external else ''}</td>
-  <td><span class="tag">{esc(e.kind_label)}</span></td>
-  <td>{' '.join(f'<span class="tag">{esc(t)}</span>' for t in e.topics)}</td>
-  <td class="n">{esc(e.data_asof) or "—"}</td>
-  <td>{esc(e.summary)}</td>
-</tr>""")
-    topics = cfg["topics"]
+    entries = [e for g in cfg["archive_groups"] for e in g.entries]
+    # 筛选按钮只列档案里真的出现过的主题：市场看板已经不在档案里，
+    # 再给一个「市场与制度」按钮，点下去只会得到一页空白。
+    topics = [t for t in cfg["topics"] if any(t in e.topics for e in entries)]
     filters = '<button type="button" data-filter-topic="" aria-pressed="true">全部</button>' + "".join(
         f'<button type="button" data-filter-topic="{esc(t)}" aria-pressed="false">{esc(t)}</button>'
         for t in topics
     )
+    scope_nav = "".join(
+        f'<a href="#scope-{esc(s["id"])}">{esc(s["name"])}<span>{len(s["entries"])}</span></a>'
+        for s in cfg["scopes"]
+    )
+    scope_blocks = "".join(
+        f'''<section class="scope-block" id="scope-{esc(s["id"])}" aria-labelledby="scope-h-{esc(s["id"])}">
+    <header class="scope-head">
+      <h2 id="scope-h-{esc(s["id"])}">{esc(s["name"])}</h2>
+      <span class="scope-count num">{len(s["entries"])}</span>
+      <p>{esc(s["intro"])}</p>
+    </header>
+    <div class="stack">{"".join(group_block(g, named=(g.name != s["name"])) for g in s["groups"])}</div>
+  </section>'''
+        for s in cfg["scopes"]
+    )
     return (
         head("研究档案 · " + site.get("title", ""), 0)
         + topbar(site, 0, "archive")
-        + f"""<div class="wrap">
+        + f"""<div class="wrap" id="main">
   <header class="pagehead">
-    <div class="kicker">Archive</div>
     <h1>研究档案</h1>
-    <p class="lede">按完成 / 最近更新日倒序。<span class="num">{len(entries)}</span> 项。</p>
+    <p class="lede">按板块 / 个股 / 方法论三段组织，共 <span class="num">{len(entries)}</span> 项。市场看板不在这里，它们就是首页。</p>
   </header>
-  <div class="filters" id="filters">{filters}</div>
-  <div class="table-wrap">
-    <table class="table">
-      <thead><tr>
-        <th>日期</th><th>研究</th><th>类型</th><th>主题</th><th class="n">数据截至</th><th>一句话结论</th>
-      </tr></thead>
-      <tbody>{"".join(rows)}</tbody>
-    </table>
+  <nav class="group-shortcuts scope-nav" aria-label="按作用域浏览">{scope_nav}</nav>
+  <div class="archive-toolbar">
+    <div class="filters" id="filters">{filters}</div>
+    <label class="search-field" for="archive-search">{home.icon('search')}<input id="archive-search" type="search" placeholder="筛选标题、主题或结论…" autocomplete="off"></label>
   </div>
-  <p class="card-note" style="margin-top:12px">分组视图：<a href="index.html#archive">回到首页按组浏览 →</a></p>
+  <div id="archive">{scope_blocks}</div>
+  <p class="note-line">视觉验收样本（色板、组件演示）已存档，不在导航里：<a href="archive/theme.html">打开主题样本页</a>。</p>
+</div>
 """
         + foot(site, 0, built_at)
         + script(0)
@@ -369,20 +286,18 @@ def group_page(cfg: dict, g: Group, built_at: str, depth: int = 2) -> str:
     if theses:
         thesis_block = f"""<section class="sect">
     <div class="sect-head"><h2>本组判断</h2><span class="hint">{len(theses)} 条</span></div>
-    <div class="sect-rule"></div>
     <div class="thesis-list">{"".join(thesis_card(t, d) for t in theses)}</div>
   </section>"""
     return (
         head(g.name + " · " + site.get("title", ""), d)
         + topbar(site, d, "")
-        + f"""<div class="wrap">
+        + f"""<div class="wrap" id="main">
   <header class="pagehead">
-    <div class="kicker">研究分组</div>
     <h1>{esc(g.name)} {code}</h1>
     <p class="lede">{esc(g.intro)}</p>
     <div class="meta">共 <span class="num">{len(g.entries)}</span> 页 · 最近更新 <span class="num">{g.latest_date.isoformat()}</span> · 主题 {esc(g.topic)}</div>
   </header>
-  <div class="archive-grid">{"".join(research_card(e, depth=depth) for e in g.entries)}</div>
+  <div class="archive-list">{"".join(research_card(e, depth=depth) for e in g.entries)}</div>
   {thesis_block}
 """
         + foot(site, d, built_at)
@@ -395,20 +310,26 @@ def group_page(cfg: dict, g: Group, built_at: str, depth: int = 2) -> str:
 
 def theme_page(cfg: dict, built_at: str) -> str:
     site = cfg["site"]
+    up = "../"  # 主题页存档在 docs/archive/，资源与站内链接比首页深一层
 
     # 色板：OKLCH 固定明度/彩度、只转色相。浅色文字档 L .50、色块档 L .68；
     # 深色文字档 L .77、色块档 L .62。数值与 theme.css 的令牌一一对应。
+    # 对比度一律按「纸底 paper」记，因为细线和字大多落在纸上，不落在卡片上。
     pal = [
-        ("蜜", "Honey", 74, ("#835a18", "6.0"), ("#bd8f4e", ""), ("#d7ac72", "8.3"), ("#a77e45", ""),
+        ("蜜", "Honey", 74, ("#835a18", "5.6"), ("#bd8f4e", ""), ("#d7ac72", "9.1"), ("#a77e45", ""),
          "主题色 · 指引 / 预期", "导航高亮、品牌标记、图表里的预期柱"),
-        ("朱", "Cinnabar", 28, ("#924c44", "6.2"), ("#cf8075", ""), ("#e89e94", "8.1"), ("#b67168", ""),
-         "涨 · 风险框 · 已到期", ""),
-        ("石绿", "Jade", 158, ("#29734e", "5.7"), ("#5eab81", ""), ("#82c69e", "8.7"), ("#539771", ""),
+        ("朱", "Cinnabar", 28, ("#924c44", "5.8"), ("#cf8075", ""), ("#e89e94", "8.9"), ("#b67168", ""),
+         "涨 · 风险侧栏 · 已到期", ""),
+        ("石绿", "Jade", 158, ("#29734e", "5.3"), ("#5eab81", ""), ("#82c69e", "9.6"), ("#539771", ""),
          "跌", ""),
-        ("靛", "Indigo", 250, ("#356697", "5.9"), ("#679dd4", ""), ("#88b9ec", "8.4"), ("#5b8abb", ""),
+        ("靛", "Indigo", 250, ("#356697", "5.5"), ("#679dd4", ""), ("#88b9ec", "9.3"), ("#5b8abb", ""),
          "实际值 · 口径框", ""),
-        ("梅", "Plum", 318, ("#7a5186", "6.2"), ("#b284c0", ""), ("#cda2da", "8.1"), ("#9d75a9", ""),
-         "备用 · 图表第三条系列", "不分配固定含义"),
+        ("梅", "Plum", 318, ("#7a5186", "5.8"), ("#b284c0", ""), ("#cda2da", "8.9"), ("#9d75a9", ""),
+         "图表第三系列", "不分配给业务含义"),
+        ("青", "Qing", 204, ("#007378", "5.2"), ("#38abb1", ""), ("#67c6cb", "9.6"), ("#33969b", ""),
+         "图表第四系列", "多系列图的后补色"),
+        ("赭", "Ochre", 50, ("#8e522e", "5.7"), ("#ca865f", ""), ("#e3a480", "9.0"), ("#b27654", ""),
+         "图表第五系列", "多系列图的后补色"),
     ]
 
     def swatch(c: tuple[str, str], on_dark: bool = False) -> str:
@@ -441,22 +362,22 @@ def theme_page(cfg: dict, built_at: str) -> str:
         )
     wheel = "".join(dots)
 
+    # 主题页是验收依据，所以它必须把首页与内页「真正在用」的组件全部演一遍。
+    # 顺序 = 阅读顺序：色板 → 规则 → 排版 → 今日栏 → 判断行 → 档案行 → 表格 …
     return (
-        head("主题 · " + site.get("title", ""), 0)
-        + topbar(site, 0, "theme")
-        + f"""<div class="wrap">
+        head("主题 · " + site.get("title", ""), 1)
+        + topbar(site, 1, "")
+        + f"""<div class="wrap" id="main">
   <header class="pagehead">
-    <div class="kicker">Design tokens</div>
     <h1>主题</h1>
-    <p class="lede">印刷纸本 + 黑金：纸色做正文，暖黑做书脊（顶栏与页脚），金只用细线和字。
-       所有页面都读这一套令牌，点右上角「主题」切深色，验证两种模式都成立。</p>
+    <p class="lede">暖纸、黑金与七色 OKLCH 色板保持不变；首页使用工作台面板承载行情复盘与判断复核，研究档案与内页保留账本式阅读结构。
+       这一页是二次存档的视觉验收样本（不在主导航里），展示色板、首页工作台与内页组件。</p>
   </header>
 
   <section class="sect">
     <div class="sect-head"><h2>色板</h2><span class="hint">OKLCH 里固定明度与彩度，只转色相</span></div>
-    <div class="sect-rule"></div>
     <div class="wheel-wrap">
-      <svg class="wheel" viewBox="-120 -120 240 240" role="img" aria-label="色相环：五个色板值的位置">
+      <svg class="wheel" viewBox="-120 -120 240 240" role="img" aria-label="色相环：七个色板值的位置">
         <circle r="92" fill="none" stroke="var(--line)" stroke-width="1"/>
         <circle r="62" fill="none" stroke="var(--line-soft)" stroke-width="1" stroke-dasharray="2 4"/>
         {wheel}
@@ -465,13 +386,17 @@ def theme_page(cfg: dict, built_at: str) -> str:
       </svg>
       <div class="notes">
         <p><b>色相来自主题色。</b>蜜金 74° 是起点；朱 28° 与石绿 158° 被「红涨绿跌」固定；
-           靛 250°、梅 318° 把剩下的色环拉开。相邻两色的色差都在 7 以上。</p>
+           靛 250°、梅 318° 把剩下的色环拉开。后补的青 204° 与赭 50° 不承担业务含义，
+           只给多系列图表用，所以它们只出现在系列色位置，不出现在正文里。</p>
         <p><b>明度与彩度固定。</b>文字档 L .50、色块档 L .68（深色分别提到 .77 与 .62），彩度 .09–.10。
            所有颜色一样重、一样艳，所以表格里一列朱一列石绿不会互相抢。</p>
-        <p><b>梅是备用。</b>不分配固定含义，只在图表需要第三条系列时使用。</p>
+        <p><b>对比度按纸底记。</b>下表写的是「文字档 vs 纸底 <code>--paper</code>」的实测值，
+           落在卡片上会再高 0.3–0.6，两个底都过 AA。</p>
+        <p><b>梅、青、赭是系列色。</b>不分配固定含义，只在图表需要第三、四、五条系列时使用；
+           正文与结论区不用这三个色。</p>
       </div>
     </div>
-    <div style="overflow-x:auto;margin-top:24px">
+    <div class="table-wrap mt-5">
       <table class="pal">
         <thead><tr><th>色板值</th><th>浅色 · 文字</th><th>浅色 · 色块</th>
           <th>深色 · 文字</th><th>深色 · 色块</th><th>用途</th></tr></thead>
@@ -481,41 +406,112 @@ def theme_page(cfg: dict, built_at: str) -> str:
   </section>
 
   <section class="sect">
-    <div class="sect-head"><h2>三条规则</h2></div>
-    <div class="sect-rule"></div>
-    <div class="kpi-grid" style="grid-template-columns:repeat(3,minmax(0,1fr))">
-      <div class="card card-tight">
-        <div class="card-h"><h3>数据区里，金只表示指引</h3></div>
-        <p class="card-note">KPI、表格、图表里出现金色，读者就可以默认它是预期或指引。
-          数据区里的链接和强调一律用墨色下划线；金色留给顶栏、页脚、小节标记和图表里的预期柱。</p>
-      </div>
-      <div class="card card-tight">
-        <div class="card-h"><h3>判断状态不占色板</h3></div>
-        <p class="card-note">跟踪中、成立、存疑、证伪用空心、实心、半圆和删除线区分，颜色都是墨色；
-          只有「已到期」借朱，因为它就是警示。这样「成立」不会再和「跌」同为绿色。</p>
-      </div>
-      <div class="card card-tight">
-        <div class="card-h"><h3>浅底在 OKLCH 里混色</h3></div>
-        <p class="card-note">提示框底色用 <code>color-mix(in oklch, 色块档 9%, 卡片)</code>，
-          不再用 rgba 叠在暖纸色上，所以口径框不会变成灰蓝。</p>
-      </div>
+    <div class="sect-head"><h2>四条规则</h2><span class="hint">这四条决定了下面的组件长什么样</span></div>
+    <div class="cols cols-4">
+      <div><h3>工作台有边界</h3>
+        <p>首页的独立功能模块（市场概览、复核队列、研究预览）使用细边框面板与留白分隔；内页表格、判断行与档案行仍用墨线分栏，不套多层卡片。</p></div>
+      <div><h3>金只表示指引</h3>
+        <p>数据区里出现金色，读者就可以默认它是预期或指引。
+           链接与强调一律墨色下划线；金色留给顶栏、页脚、小节菱形和图表里的预期柱。</p></div>
+      <div><h3>结论不占行情色</h3>
+        <p>涨跌色只能落在数字上。结论、状态用形状区分（▲▼●、空心实心半圆删除线），颜色是墨色。
+           这样「利空」不会和「跌」撞成同一个绿。</p></div>
+      <div><h3>手动才动</h3>
+        <p>页面加载时没有任何动画。走势线、数字、区块都在原地，动效只发生在用户操作上，
+           而且只动 150–250ms 的颜色与位移。</p></div>
     </div>
   </section>
 
   <section class="sect">
+    <div class="sect-head"><h2>首页工作台</h2><span class="hint">首页就是今日看板：两块并列、各自标注数据截至</span></div>
+    <div class="workbench">{home.market([e for e in cfg["entries"] if e.raw.get("today")], "theme-market", up="../")}</div>
+    <p class="note-line">主趋势线代表历史实际值，因此使用靛色 <code>--actual</code>；两个看板并列展示，走势采样点在无 JS 时也可读。内页使用 <code>.pagehead</code>。</p>
+  </section>
+
+  <section class="sect">
+    <div class="sect-head"><h2>复核日期带</h2><span class="hint">判断跟踪页顶部的一条带——同页下面就列全量判断，不再重复正文</span></div>
+    {home.review_queue(cfg["theses"], up="../", title="下一组到期", all_link=False, compact=True)}
+  </section>
+
+  <section class="sect">
+    <div class="sect-head"><h2>区块标题</h2><span class="hint">墨线在上；菱形是唯一的小面积金色</span></div>
+    <div class="sect-head">
+      <h2>今天</h2><span class="hint">右侧灰字是这一块的读法提示</span>
+    </div>
+    <div class="sect-more"><a href="../archive.html">区块末尾的「还有更多」链接长这样 →</a></div>
+    <p class="note-line">页面标题 <code>.pagehead</code> 已经用墨线收尾，紧跟其后的第一个区块标题自动去掉上边线（<code>.pagehead + .sect .sect-head</code>），不会出现两条并行墨线。</p>
+  </section>
+
+  <section class="sect">
+    <div class="sect-head"><h2>判断行</h2><span class="hint">判断跟踪页与分组页：左栏天数，中间判断，右栏状态</span></div>
+    <div class="thesis-list">
+      <article class="thesis"><div class="th-when"><span class="th-days num">74</span><span class="th-unit">天后检查</span><span class="th-date num">2027-01-31</span></div>
+        <div class="th-body"><p class="th-claim">共识线的上涨大部分是日历滚动，不是分析师改模型。</p><p class="th-note">反证条件或备注写在这里。</p><a class="th-src" href="{up}research/300308/attribution.html">中际旭创 · 事后归因</a></div>
+        <div class="th-badges"><span class="badge">跟踪中</span></div></article>
+      <article class="thesis st-overdue"><div class="th-when"><span class="th-days num">320</span><span class="th-unit">天 · 已逾期</span><span class="th-date num">2026-01-01</span></div>
+        <div class="th-body"><p class="th-claim">这条已经过了检查日期，天数会变成朱色。</p><a class="th-src" href="{up}index.html">示例</a></div>
+        <div class="th-badges"><span class="badge overdue">已到期</span><span class="badge doubt">存疑</span></div></article>
+    </div>
+  </section>
+
+  <section class="sect">
+    <div class="sect-head"><h2>档案行</h2><span class="hint">研究档案与分组页共用：日期 / 标题 / 一句话 / 标签</span></div>
+    <div class="archive-list">
+      <a class="rcard" href="{up}research/300308/consensus.html">
+        <span class="r-date num">2026-11-04</span>
+        <span class="r-main">
+          <span class="r-title">中际旭创 · 共识演化与估值分位</span>
+          <span class="r-sum">NTM 共识净利 598.2 亿（21 家券商），PE_NTM 11.71x，滚动 250 日分位 0.0%。共识中位始终低估实际（同一天比低 31.6%），但低分位不等于低估 —— 分母仍然是预测。</span>
+          <span class="r-foot"><span class="tag">研究</span><span class="tag">个股研究</span><span>数据截至 <span class="num">2026-10-26</span></span></span>
+        </span>
+      </a>
+      <a class="rcard" href="https://jst-well-dan.github.io/gold-dashboard/" target="_blank" rel="noopener">
+        <span class="r-date num">2026-11-07</span>
+        <span class="r-main">
+          <span class="r-title">黄金研究看板<span class="ext" aria-label="（独立站点）">↗</span></span>
+          <span class="r-sum">不预测金价，只把黄金正在反映什么摊开：制度层 / 宏观层 / 市场层，41 个数据接口、30+ 指标，每图带最新值与 10 年分位。</span>
+          <span class="r-foot"><span class="tag">看板</span><span class="tag">独立站点</span><span class="tag">市场与制度</span><span>数据截至 <span class="num">2026-11-11</span></span></span>
+        </span>
+      </a>
+    </div>
+  </section>
+
+  <section class="sect">
+    <div class="sect-head"><h2>筛选与分组</h2><span class="hint">下划线式分段；分组左栏宽屏吸顶</span></div>
+    <div class="filters"><button type="button" aria-pressed="true">全部</button><button type="button" aria-pressed="false">市场与制度</button><button type="button" aria-pressed="false">AI 产业链</button><button type="button" aria-pressed="false">个股研究</button><button type="button" aria-pressed="false">方法论</button></div>
+    <section class="group-block">
+      <header class="group-head">
+        <h3><a href="{up}research/300308/index.html">中际旭创</a></h3>
+        <span class="code">300308.SZ</span>
+        <p class="group-intro">光模块龙头。同一组数据切成不同角度：共识怎么被修上去、估值走到哪个分位、股价涨的是业绩还是倍数。</p>
+        <p class="group-meta"><span class="num">6</span> 篇 · 最近更新 <span class="num">2026-11-08</span></p>
+      </header>
+      <div class="archive-list">
+        <a class="rcard" href="{up}research/300308/gk.html">
+          <span class="r-date num">2026-11-08</span>
+          <span class="r-main">
+            <span class="r-title">中际旭创 · 股东总回报三因子归因</span>
+            <span class="r-sum">股东总回报 +2795%（×28.9）：盈利 +367.3pp、估值 -27.0pp、股息 -3.75pp。</span>
+            <span class="r-foot"><span class="tag">研究</span><span class="tag">个股研究</span><span>数据截至 <span class="num">2026-10-26</span></span></span>
+          </span>
+        </a>
+      </div>
+    </section>
+  </section>
+
+  <section class="sect">
     <div class="sect-head"><h2>字体与数字</h2><span class="hint">数字等宽 + 同宽数字；大数字用衬线</span></div>
-    <div class="sect-rule"></div>
     <h1>标题 H1</h1><h2>标题 H2</h2><h3>标题 H3</h3>
-    <p>正文 14.5px，行高 1.72。中文回退栈 PingFang SC / Noto Sans SC / Microsoft YaHei；
-       大数字用 Cambria / Georgia，报表味道来自字形而不是加粗。
+    <p>正文 15px，行高 1.72。中文回退栈 PingFang SC / Noto Sans SC / Microsoft YaHei；
+       大数字与首页报头用自托管的 Newsreader 衬线（只含拉丁与数字，中文仍回退系统黑体），
+       报表味道来自字形而不是加粗。
        <span class="num">1,234.56</span> 与 <span class="num">-3.28%</span> 纵向对齐。</p>
     <p><span class="up num">+2.17pt</span> · <span class="down num">-1.86%</span> ·
        <span class="actual num">730 bn</span> · <span class="guide num">1,051 bn</span></p>
   </section>
 
   <section class="sect">
-    <div class="sect-head"><h2>KPI 卡</h2><span class="hint">数字用衬线，单位用等宽</span></div>
-    <div class="sect-rule"></div>
+    <div class="sect-head"><h2>KPI 网格</h2><span class="hint">四格并列，竖线分栏，无卡壳</span></div>
     <div class="kpi-grid">
       <div class="kpi"><div class="kpi-k">股东总回报</div>
         <div class="kpi-v up">+2,795<span class="u">%</span></div>
@@ -538,7 +534,6 @@ def theme_page(cfg: dict, built_at: str) -> str:
 
   <section class="sect">
     <div class="sect-head"><h2>表格</h2><span class="hint">账本式：上下墨线，中间发丝线</span></div>
-    <div class="sect-rule"></div>
     <div class="table-wrap"><table class="table">
       <thead><tr><th>年</th><th class="n">市值（亿）</th><th class="n">E_NTM（亿）</th><th class="n">PE_NTM</th><th class="n">盈利 pp</th><th class="n">估值 pp</th><th class="n">总回报</th></tr></thead>
       <tbody>
@@ -550,65 +545,50 @@ def theme_page(cfg: dict, built_at: str) -> str:
   </section>
 
   <section class="sect">
-    <div class="sect-head"><h2>提示框</h2><span class="hint">细框 + 小标签；只有风险铺一层极淡底</span></div>
-    <div class="sect-rule"></div>
+    <div class="sect-head"><h2>提示框</h2><span class="hint">左侧一条色线 + 小标签；只有风险铺一层极淡底</span></div>
     <div class="stack">
-      <div class="callout"><div class="co-h">结论</div><p>默认样式：细框，无底色。用于普通结论。</p></div>
-      <div class="callout info"><div class="co-h">口径</div><p>靛色框说明数据口径与算法假设；底色是在 OKLCH 里混出来的，不会发灰。</p></div>
-      <div class="callout risk"><div class="co-h">风险</div><p>朱色框用于风险与失效条件，是唯一允许铺底的提示框。</p></div>
-      <div class="callout method"><div class="co-h">方法</div><p>方法说明用次级纸底，不占用色板。</p></div>
+      <div class="callout"><div class="co-h">结论</div><p>默认样式：只有一条灰左线，右、上、下都是空白。用于普通结论。</p></div>
+      <div class="callout info"><div class="co-h">口径</div><p>靛色左线说明数据口径与算法假设；左线颜色是唯一信号，不铺底。</p></div>
+      <div class="callout risk"><div class="co-h">风险</div><p>朱色左线用于风险与失效条件，是唯一允许铺一层右向渐隐底的提示框。</p></div>
+      <div class="callout method"><div class="co-h">方法</div><p>方法说明用最淡的一条线，让位给内容本身。</p></div>
     </div>
   </section>
 
   <section class="sect">
-    <div class="sect-head"><h2>标签与判断状态</h2><span class="hint">形状区分，不借行情色</span></div>
-    <div class="sect-rule"></div>
-    <div class="row" style="margin-bottom:12px">
+    <div class="sect-head"><h2>标签与判断状态</h2><span class="hint">状态只看形状，不借行情色</span></div>
+    <div class="row mb-3">
       <span class="tag">标签</span><span class="tag accent">强调标签</span>
       <span class="tag-date num">2026-10-26</span>
     </div>
     <div class="row">
-      <span class="badge track">跟踪中</span><span class="badge hold">成立</span>
+      <span class="badge">跟踪中</span><span class="badge hold">成立</span>
       <span class="badge doubt">存疑</span><span class="badge dead">证伪</span>
-      <span class="badge overdue">已到期</span>
+      <span class="badge overdue">已到期</span><span class="badge draft">AI 初稿</span>
     </div>
+    <p class="note-line">前五个是判断状态，靠形状区分、不借行情色；最右的 <span class="badge draft">AI 初稿</span>
+      不是状态而是一个「来源」标记，所以用虚线框，不参与四种状态的形状语言。</p>
   </section>
 
   <section class="sect">
-    <div class="sect-head"><h2>论点卡</h2><span class="hint">首页「在跟踪的判断」用的就是这个</span></div>
-    <div class="sect-rule"></div>
-    <div class="thesis-list">
-      <div class="thesis st-track"><div class="th-claim">共识线的上涨大部分是日历滚动，不是分析师改模型。</div>
-        <div class="th-badges"><span class="badge track">跟踪中</span></div>
-        <div class="th-foot"><span>中际旭创 · 事后归因</span><span>下次检查 <span class="num">2027-01-31</span></span></div></div>
-      <div class="thesis st-overdue"><div class="th-claim">这条已经过了检查日期，会被标红。</div>
-        <div class="th-badges"><span class="badge overdue">已到期</span><span class="badge doubt">存疑</span></div>
-        <div class="th-foot"><span>示例</span><span>下次检查 <span class="num">2026-01-01</span>（逾期 320 天）</span></div></div>
-    </div>
-  </section>
-
-  <section class="sect">
-    <div class="sect-head"><h2>图表容器</h2><span class="hint">标题 + 副标题 + 正文 + 来源脚注</span></div>
-    <div class="sect-rule"></div>
+    <div class="sect-head"><h2>图表容器</h2><span class="hint">标题 + 副标题 + 正文 + 来源脚注；上下墨线，无卡壳</span></div>
     <div class="chart-card">
       <div class="chart-title">图一 · 北美四家 capex（十亿美元）</div>
       <div class="chart-sub">实际值用靛，指引与外推用蜜金虚线框。</div>
       <div class="chart-body">
-        <svg viewBox="0 0 320 150" style="width:100%;height:auto" role="img" aria-label="capex 实际与指引">
-          <line x1="0" y1="124" x2="320" y2="124" stroke="var(--line)"/>
-          <rect x="18"  y="99" width="44" height="25"  rx="2" fill="var(--actual-f)"/>
-          <rect x="96"  y="78" width="44" height="46"  rx="2" fill="var(--actual-f)"/>
-          <rect x="174" y="49" width="44" height="75"  rx="2" fill="var(--actual-f)"/>
-          <rect x="174" y="43" width="44" height="6"   rx="1" fill="var(--guide-f)"/>
-          <rect x="252" y="16" width="44" height="108" rx="2" fill="none" stroke="var(--guide-f)" stroke-width="1.5" stroke-dasharray="3 2"/>
-          <text x="40"  y="93" text-anchor="middle" fill="var(--actual)" font-size="11" font-weight="600">243</text>
-          <text x="118" y="72" text-anchor="middle" fill="var(--actual)" font-size="11" font-weight="600">447</text>
-          <text x="196" y="37" text-anchor="middle" fill="var(--actual)" font-size="11" font-weight="600">730</text>
-          <text x="274" y="10" text-anchor="middle" fill="var(--guide)"  font-size="11" font-weight="600">1,051</text>
-          <text x="40"  y="141" text-anchor="middle" fill="var(--muted)" font-size="11">2024</text>
-          <text x="118" y="141" text-anchor="middle" fill="var(--muted)" font-size="11">2025</text>
-          <text x="196" y="141" text-anchor="middle" fill="var(--muted)" font-size="11">2026</text>
-          <text x="274" y="141" text-anchor="middle" fill="var(--muted)" font-size="11">2027E</text>
+        <svg class="fit" viewBox="0 0 960 450" role="img" aria-label="capex 实际与指引">
+          <line x1="0" y1="372" x2="960" y2="372" stroke="var(--line)"/>
+          <rect x="54"  y="297" width="132" height="75"  rx="2" fill="var(--actual-f)"/>
+          <rect x="288" y="234" width="132" height="138" rx="2" fill="var(--actual-f)"/>
+          <rect x="522" y="147" width="132" height="225" rx="2" fill="var(--actual-f)"/>
+          <rect x="756" y="48"  width="132" height="324" rx="2" fill="none" stroke="var(--guide-f)" stroke-width="1.5" stroke-dasharray="4 3"/>
+          <text x="120" y="279" text-anchor="middle" class="cv-num" fill="var(--actual)">243</text>
+          <text x="354" y="216" text-anchor="middle" class="cv-num" fill="var(--actual)">447</text>
+          <text x="588" y="129" text-anchor="middle" class="cv-num" fill="var(--actual)">730</text>
+          <text x="822" y="30"  text-anchor="middle" class="cv-num" fill="var(--guide)">1,051</text>
+          <text x="120" y="423" text-anchor="middle" class="cv-ax"  fill="var(--muted)">2024</text>
+          <text x="354" y="423" text-anchor="middle" class="cv-ax"  fill="var(--muted)">2025</text>
+          <text x="588" y="423" text-anchor="middle" class="cv-ax"  fill="var(--muted)">2026</text>
+          <text x="822" y="423" text-anchor="middle" class="cv-ax"  fill="var(--muted)">2027E</text>
         </svg>
       </div>
       <div class="chart-foot"><span>单位：十亿美元</span><span class="src">来源：公司指引汇总 · 数据截至 2026-10-29</span></div>
@@ -617,16 +597,15 @@ def theme_page(cfg: dict, built_at: str) -> str:
 
   <section class="sect">
     <div class="sect-head"><h2>长文本（阅读区）</h2><span class="hint">.prose：研究笔记、方法说明用这块</span></div>
-    <div class="sect-rule"></div>
     <div class="prose">
       <h2>小节标题</h2>
-      <p>正文段落，行宽限制在 72ch。<a href="research/300308/consensus.html">站内链接</a>用金色下划线，不改变行距。</p>
+      <p>正文段落，行宽限制在 72ch。<a href="{up}research/300308/consensus.html">站内链接</a>用墨色下划线，不改变行距。</p>
       <blockquote><p>引用块用于摘录原文或自己的旧判断。</p></blockquote>
       <ul><li>支持列表</li><li>支持表格、代码块</li></ul>
     </div>
   </section>
 """
-        + foot(site, 0, built_at)
-        + script(0)
+        + foot(site, 1, built_at)
+        + script(1)
         + "</body>\n</html>\n"
     )

@@ -19,15 +19,30 @@ site:
   base_url: https://jst-well-dan.github.io/investment-dashboard/
   disclaimer: 本站为个人研究记录，所有数字与结论仅供自己复盘使用，不构成投资建议。
 
-# 主题标签（档案页筛选按钮的顺序 = 这里的顺序）
+# 主题标签（条目上的分类，用于档案页搜索与标签展示）
 topics:
   - 市场与制度
   - AI 产业链
   - 个股研究
   - 方法论
 
+# 作用域：研究档案按这三段组织，顺序 = 这里的顺序。
+# 没有 scope 的分组不进档案（例如 market：只作为「今日看板」的数据来源）。
+
+scopes:
+  - id: sector
+    name: 板块研究
+    intro: 先看一条产业链走到哪一步，再落到具体环节。
+  - id: stock
+    name: 个股研究
+    intro: 同一套口径切不同角度，同一只股票可以从共识、估值、结构三个方向横切。
+  - id: method
+    name: 方法论
+    intro: 拆解与归因的口径、恒等式与可复用工具。
+
 # 分组：同一个 group 的研究在档案里聚成一组，并生成一个分组总览页（research/<group>/）。
 # research[].kind：dashboard=持续更新看板 / report=一次性研究 / tracker=定期补数
+# scope 缺省 = 不进档案（只出现在今日看板页）。
 
 groups:
   - id: market
@@ -37,20 +52,24 @@ groups:
   - id: ai-chain
     name: AI 产业链
     topic: AI 产业链
+    scope: sector
     intro: 从一个环节的成本与预期，看 AI 资本开支周期走到了哪一步。
   - id: 300308
     name: 中际旭创
     code: 300308.SZ
     topic: 个股研究
+    scope: stock
     intro: 光模块龙头。同一组数据切成不同角度：共识怎么被修上去、估值走到哪个分位、股价涨的是业绩还是倍数。
   - id: 300502
     name: 新易盛
     code: 300502.SZ
     topic: 个股研究
+    scope: stock
     intro: 光模块二线龙头，与中际旭创互为参照（同样的归因与共识口径，便于横向比）。
   - id: method
     name: 方法论
     topic: 方法论
+    scope: method
     intro: 拆解与归因的口径、恒等式与可复用工具。
 
 research:
@@ -121,7 +140,7 @@ research:
         16.8, 19.8, 61.0, 21.9, 84.0, 61.9, 19.8, 52.1, 60.2, 68.9]
       # <<< auto
 
-  # --------------------------------------------------------------- AI 产业链
+    # --------------------------------------------------------------- AI 产业链
   - id: ai-capex
     group: ai-chain
     title: AI 资本开支 · 指引追踪
@@ -132,10 +151,12 @@ research:
     slug: capex
     date: 2026-11-06
     data_asof: 2026-10-29
+    preview: {file: ai-capex.png, caption: 历史资本开支与未来路径}
     summary: 事前指引 × 事后实际 × 自由现金流，逐季可复现。四家 2026 指引合计 730bn；同公司组年内上修 +10.9%，低于 2025 的 +18.8% —— 上修还在，力度在收敛。
     theses:
       - claim: 北美四家 2027 年 capex 增速仍在上修，但年内上修幅度已从 +18.8% 收窄到 +10.9%，指引的边际信息量在下降。
         status: 跟踪中
+        origin: ai            # AI 初稿，待 Dan 重写后删掉此行
         next_check: 2026-12-31
         note: 看 Q4 财报季是否出现首次下修；若出现，AI 链的估值锚要换到 FCF 而非指引。
 
@@ -154,6 +175,7 @@ research:
     theses:
       - claim: 2024-11 之后共识线的上涨大部分是日历滚动（w 递减 × FY2−FY1），不是分析师改模型；把「线在动」读成「预期在动」会系统性高估景气。
         status: 成立
+        origin: ai            # AI 初稿，待 Dan 重写后删掉此行
         next_check: 2027-01-31
         note: 已在阶段切分页验证（B/C 段切点即由此确定）。
 
@@ -171,6 +193,7 @@ research:
     theses:
       - claim: 当前 11.7x 的 PE_NTM 已在近一年最低分位，若 FY2027 共识 655 亿不被下修，估值继续压缩的空间有限，风险转移到盈利端。
         status: 跟踪中
+        origin: ai            # AI 初稿，待 Dan 重写后删掉此行
         next_check: 2026-12-31
         note: 触发条件——FY2027 共识出现首次连续两月下修，则本条证伪。
 
@@ -184,10 +207,12 @@ research:
     slug: gk
     date: 2026-11-08
     data_asof: 2026-10-26
+    preview: {file: 300308-gk.png, caption: 股价、共识与倍数指数化走势}
     summary: 股东总回报 +2795%（×28.9）：盈利 +367.3pp、估值 -27.0pp、股息 -3.75pp。三年 28.9 倍里，倍数其实在拖后腿 —— 涨的是盈利，不是估值。
     theses:
       - claim: 旭创的 28.9 倍来自 E_NTM ×39.4、PE_NTM ×0.76。这意味着「涨太多所以会跌」在本例中不成立：倍数已经压到 11.7x，若盈利不下修，估值并不构成下跌理由。
         status: 跟踪中
+        origin: ai            # AI 初稿，待 Dan 重写后删掉此行
         next_check: 2026-12-31
         note: 反证条件：出现盈利下修且倍数同时压缩。
 
@@ -205,6 +230,7 @@ research:
     theses:
       - claim: 2025-04-22 是三年里唯一一次真下修落地、同时 PE 处于全样本最低区（8.16）的时点；此后三个月估值 +303%。「下修落地 = 底部」这条经验值不值得重复使用，要看下一次下修。
         status: 跟踪中
+        origin: ai            # AI 初稿，待 Dan 重写后删掉此行
         next_check: 2027-03-31
         note: 单次事件，样本量为 1，只能当假设，不能当规则。
 
@@ -243,10 +269,13 @@ research:
     slug: consensus
     date: 2026-10-27
     data_asof: 2026-10-26
+    featured: true
+    preview: {file: 300502-consensus.png, caption: 卖方共识净利与估值分位}
     summary: 卖方共识中位低估实际 56%；NTM 共识 323.9 亿，PE_NTM 10.84x，处于近一年最低分位。与旭创同口径，可直接横向比。
     theses:
       - claim: 新易盛的共识偏离（中位低估 56%）显著大于旭创（31.6%），说明卖方对新易盛的跟踪质量更差 —— 这是相对旭创的一个信息劣势，不是优势。
         status: 跟踪中
+        origin: ai            # AI 初稿，待 Dan 重写后删掉此行
         next_check: 2027-01-31
         note: 若下一轮两家偏离度收敛，说明是覆盖机构差异而非公司差异。
 

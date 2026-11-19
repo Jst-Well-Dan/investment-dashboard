@@ -13,12 +13,6 @@ import yaml
 
 ROOT = Path(__file__).resolve().parent.parent.parent
 
-STATUS_LABEL = {
-    "跟踪中": "track",
-    "成立": "hold",
-    "存疑": "doubt",
-    "证伪": "dead",
-}
 STATUS_ORDER = {"跟踪中": 0, "存疑": 1, "成立": 2, "证伪": 3}
 KIND_LABEL = {"dashboard": "看板", "report": "研究", "tracker": "追踪"}
 
@@ -33,13 +27,19 @@ class Thesis:
     entry_title: str
     entry_url: str
     group_name: str
+    falsifier: str = ""     # 什么数据出现就算这条错了（可观测）
+    action: str = ""        # 这条对 / 错，我的动作会怎么变（决策含义）
+    origin: str = ""        # "ai" = AI 写的初稿，待自己重写；留空 = 自己写的
+
+    @property
+    def draft(self) -> bool:
+        return self.origin == "ai"
 
     @property
     def css(self) -> str:
-        cls = STATUS_LABEL.get(self.status, "track")
-        if self.overdue:
-            return "st-overdue"
-        return "st-" + cls
+        # 状态类只用于「已到期」着色；其余四种状态靠 .badge 的形状区分，
+        # 所以这里只返回 st-overdue，不再生成 st-track / st-hold 这类空类。
+        return "st-overdue" if self.overdue else ""
 
     @property
     def overdue(self) -> bool:
@@ -90,6 +90,7 @@ class Group:
     topic: str
     intro: str
     code: str = ""
+    scope: str = ""          # 研究档案里的作用域；留空 = 不进档案（例如市场看板）
     entries: list[Entry] = field(default_factory=list)
 
     @property
@@ -118,11 +119,17 @@ def load(path: Path | None = None) -> dict:
     path = path or ROOT / "research.yaml"
     cfg = yaml.safe_load(path.read_text(encoding="utf-8"))
 
+    scope_defs = cfg.get("scopes") or []
+    scope_ids = {s["id"] for s in scope_defs}
+
     groups = {}
     for g in cfg.get("groups") or []:
+        scope = g.get("scope", "")
+        if scope and scope not in scope_ids:
+            raise ConfigError(f"[research.yaml] groups[{g['id']}] 的 scope 不在 scopes 里：{scope}")
         groups[g["id"]] = Group(
             id=g["id"], name=g["name"], topic=g.get("topic", ""),
-            intro=g.get("intro", ""), code=g.get("code", ""),
+            intro=g.get("intro", ""), code=g.get("code", ""), scope=scope,
         )
 
     seen: set[str] = set()
@@ -182,16 +189,37 @@ def load(path: Path | None = None) -> dict:
                     entry_title=e.title,
                     entry_url=e.url,
                     group_name=g.name,
+                    falsifier=t.get("falsifier", ""),
+                    action=t.get("action", ""),
+                    origin=t.get("origin", ""),
                 ))
     theses.sort(key=lambda t: (
         STATUS_ORDER.get(t.status, 9),
         t.next_check or dt.date(2100, 1, 1),
     ))
 
+    all_groups = [g for g in groups.values() if g.entries]
+
+    # 研究档案按作用域分段；没有 scope 的分组只作为「今日看板」的来源，不进档案。
+    scopes = []
+    for s in scope_defs:
+        inside = [g for g in all_groups if g.scope == s["id"]]
+        if inside:
+            members = [e for g in inside for e in g.entries]
+            # 作用域块带成员主题的并集，否则按主题筛选时整块会连同标题一起消失
+            topics = sorted({t for e in members for t in e.topics})
+            scopes.append({
+                "id": s["id"], "name": s["name"], "intro": s.get("intro", ""),
+                "groups": inside, "entries": members, "topics": topics,
+            })
+    archive_groups = [g for g in all_groups if g.scope]
+
     return {
         "site": cfg.get("site") or {},
         "topics": cfg.get("topics") or [],
-        "groups": [g for g in groups.values() if g.entries],
-        "entries": [e for g in groups.values() for e in g.entries],
+        "groups": all_groups,
+        "scopes": scopes,
+        "archive_groups": archive_groups,
+        "entries": [e for g in all_groups for e in g.entries],
         "theses": theses,
     }

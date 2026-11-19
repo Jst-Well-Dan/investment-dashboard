@@ -1,0 +1,139 @@
+/* =============================================================================
+   Dan's Investment Dashboard · 研究页共享层
+   -----------------------------------------------------------------------------
+   theme.css 提供色板与用途令牌；这里只做三件事：
+     1) 把研究页历史变量名（--bg / --panel / --green …）别名到主题令牌
+     2) 把研究页的形状收敛到主题（圆角、阴影、面板、表格、提示框）
+     3) 涨跌语义统一：正=朱 --up，负=石绿 --down（A 股红涨绿跌）
+
+   用法（由 scripts/sitegen/sync.py 注入，研究页源文件不自己引）：
+     <link rel="stylesheet" href="../../assets/theme.css">
+     <link rel="stylesheet" href="../../assets/research.css">
+
+   研究页的版式（72ch 正文、图表容器、导读卡）不在这里改，那是各页自己的事。
+   ========================================================================== */
+
+/* ------------------------------------------------------ 1. 历史变量名别名
+   A 组页面写的是 Tokyo Night 那套名字，B/C 组各有一套。统一在这里接一次，
+   页面内联样式不用逐行改；改色只改 theme.css。 */
+:root {
+  --bg:            var(--paper);
+  --panel:         var(--card);
+  --panel2:        var(--card-2);
+  --line2:         var(--line-soft);
+  --text:          var(--ink);
+  --ink2:          var(--ink-2);
+  --muted-2:       var(--muted);
+
+  /* 系列色：旧页面叫 blue / cyan / purple / orange / gray */
+  --blue:          var(--actual);
+  --cyan:          var(--series-4);
+  --purple:        var(--series-3);
+  --orange:        var(--guide);
+  --gold:          var(--brand);
+  --gray:          var(--dim);
+
+  /* 涨跌：旧页面是绿涨红跌，这里整对翻过来 */
+  --green:         var(--up);
+  --red:           var(--down);
+
+  /* 浅底配方：替代 rgba()，在 OKLCH 里朝卡片混，换肤时不会发灰 */
+  --actual-bg:     color-mix(in oklch, var(--actual-f) 10%, var(--card));
+  --guide-bg:      color-mix(in oklch, var(--guide-f) 12%, var(--card));
+  --accent-bg:     color-mix(in oklch, var(--series-3-f) 10%, var(--card));
+  --sunken:        var(--paper-2);
+  --shadow:        none;
+}
+
+/* ------------------------------------------------------ 2. 页面基底
+   research 页面自己会写 body 背景；这里只在它们没写全时兜底。 */
+html { background: var(--paper); }
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+code, pre, kbd, samp { font-family: var(--font-mono); }
+code {
+  background: var(--paper-2);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--r-sm);
+  padding: .1em .35em;
+  font-size: .88em;
+  color: var(--ink-2);
+}
+pre {
+  background: var(--paper-2);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  padding: var(--s3) var(--s4);
+  overflow-x: auto;
+}
+
+a { color: var(--ink); text-decoration-color: var(--line-strong); text-underline-offset: 3px; }
+a:hover { text-decoration-color: var(--brand-f); }
+
+::selection { background: var(--sel-bg); }
+
+/* ------------------------------------------------------ 3. 形状收敛
+   研究页原来的圆角 6–14px + 投影，在纸本上显得浮。统一到主题档位：
+   小件 --r-sm，面板 --r-lg，卡片不留阴影（浮层 tooltip / modal 例外，它们是悬空的）。 */
+:where(.card, .panel, .kbox, .tbox, .chartbox, .chart-card, .chart-wrap,
+      .guide-card, .guide-item, .guide-falsify, .guide-core,
+      .kpi, .metric, .box, .section-card, .modal-box, .pop, .tip) {
+  border-radius: var(--r-lg);
+  box-shadow: none;
+}
+:where(.chip, .pill, .tag, .badge, .btn, .tbtn, .year-btn, .back-btn,
+      .view-chip, .cf-tab, .stmt-range, .source-badge, select) {
+  border-radius: var(--r-sm);
+  box-shadow: none;
+}
+:where(.card, .panel, .kbox, .tbox, .chartbox, .chart-card, .kpi, .metric, .box):hover {
+  transform: none;
+}
+
+/* 胶囊一律改成方角细框：圆角 999px 在纸本里是「按钮」而不是「标签」 */
+:where(.chip, .pill) { border-radius: var(--r-sm); }
+
+/* 分隔性阴影全部去掉，靠发丝线；浮层保留 */
+:where(#tip, #tip2, #tip3, .tooltip, .modal-overlay > .modal-box, .pop) {
+  box-shadow: 0 8px 24px color-mix(in oklch, #000 28%, transparent);
+}
+
+/* ------------------------------------------------------ 4. 表格
+   研究页表格风格已接近，这里只补：表头吸顶要让开顶栏、数字等宽。 */
+:where(table) { border-color: var(--line); }
+:where(thead th) { background: var(--card); border-color: var(--line); color: var(--muted); }
+:where(tbody td) { border-color: var(--line-soft); }
+:where(td.num, td.n, th.num, .num) { font-variant-numeric: tabular-nums; }
+thead th { top: var(--topbar-h) !important; }
+
+/* ------------------------------------------------------ 5. 涨跌语义
+   五个类名 + 两个别名，全部指向主题令牌。研究页里原来的 !important 已删掉，
+   这里不加 !important，谁后写谁生效。 */
+.up, .pos, .dirup   { color: var(--up); }
+.down, .neg, .dirdn { color: var(--down); }
+.flat, .neu         { color: var(--flat); }
+.guide              { color: var(--guide); }
+.actual             { color: var(--actual); }
+
+/* ------------------------------------------------------ 6. 图表容器
+   研究页的图head/图注沿用它们自己的结构，只改边框与文字档位。 */
+:where(.charthead, .chart-hint, .chart-note, .chart-foot) { color: var(--muted); }
+:where(.charthead .t, .chart-title) { color: var(--ink); }
+
+/* ------------------------------------------------------ 7. 提示框 / 边注 */
+:where(.note, .callout, .card-note, .takeaway) { color: var(--ink-2); }
+
+/* ------------------------------------------------------ 8. 打印与动效 */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
+@media print {
+  html { padding-top: 0 !important; }
+  body { background: #fff; }
+}

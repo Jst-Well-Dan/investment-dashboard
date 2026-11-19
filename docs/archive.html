@@ -8,130 +8,172 @@
 
 </head>
 <body>
+<a class="skip-link" href="#main">跳到主内容</a>
 <div class="topbar">
   <a class="brand" href="index.html">Dan&#x27;s Investment Dashboard</a>
-  <nav><a href="index.html">今天</a><a href="archive.html" aria-current="page">研究档案</a><a href="theme.html">主题</a></nav>
+  <nav aria-label="主导航"><a href="index.html">今日看板</a><a href="archive.html" aria-current="page">研究档案</a><a href="theses.html">判断跟踪</a></nav>
   <span class="spacer"></span>
-  <button class="iconbtn" id="theme-btn" type="button" title="切换浅色 / 深色">◐ 主题</button>
+  <button class="iconbtn" id="theme-btn" type="button" title="切换浅色 / 深色"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></svg><span>明暗</span></button>
 </div>
-<div class="wrap">
+<div class="wrap" id="main">
   <header class="pagehead">
-    <div class="kicker">Archive</div>
     <h1>研究档案</h1>
-    <p class="lede">按完成 / 最近更新日倒序。<span class="num">14</span> 项。</p>
+    <p class="lede">按板块 / 个股 / 方法论三段组织，共 <span class="num">12</span> 项。市场看板不在这里，它们就是首页。</p>
   </header>
-  <div class="filters" id="filters"><button type="button" data-filter-topic="" aria-pressed="true">全部</button><button type="button" data-filter-topic="市场与制度" aria-pressed="false">市场与制度</button><button type="button" data-filter-topic="AI 产业链" aria-pressed="false">AI 产业链</button><button type="button" data-filter-topic="个股研究" aria-pressed="false">个股研究</button><button type="button" data-filter-topic="方法论" aria-pressed="false">方法论</button></div>
-  <div class="table-wrap">
-    <table class="table">
-      <thead><tr>
-        <th>日期</th><th>研究</th><th>类型</th><th>主题</th><th class="n">数据截至</th><th>一句话结论</th>
-      </tr></thead>
-      <tbody><tr data-topics="个股研究 方法论">
-  <td class="date">2026-11-08</td>
-  <td><a href="research/300308/gk.html">中际旭创 · 股东总回报三因子归因</a></td>
-  <td><span class="tag">研究</span></td>
-  <td><span class="tag">个股研究</span> <span class="tag">方法论</span></td>
-  <td class="n">2026-10-26</td>
-  <td>股东总回报 +2795%（×28.9）：盈利 +367.3pp、估值 -27.0pp、股息 -3.75pp。三年 28.9 倍里，倍数其实在拖后腿 —— 涨的是盈利，不是估值。</td>
-</tr><tr data-topics="市场与制度">
-  <td class="date">2026-11-07</td>
-  <td><a href="https://jst-well-dan.github.io/gold-dashboard/" target="_blank" rel="noopener">黄金研究看板</a> ↗</td>
-  <td><span class="tag">看板</span></td>
-  <td><span class="tag">市场与制度</span></td>
-  <td class="n">2026-11-11</td>
-  <td>不预测金价，只把黄金正在反映什么摊开：制度层 / 宏观层 / 市场层，41 个数据接口、30+ 指标，每图带最新值与 10 年分位。</td>
-</tr><tr data-topics="方法论">
-  <td class="date">2026-11-06</td>
-  <td><a href="research/300308/attribution.html">股东总回报三因子恒等式</a></td>
-  <td><span class="tag">研究</span></td>
-  <td><span class="tag">方法论</span></td>
-  <td class="n">2026-10-26</td>
-  <td>Δln(1+TSR) = 股息 + Δln(E_NTM) + Δln(PE_NTM)，三项同日、同预测集，残差恒为 0。所有个股页都用这一把尺，所以不同股票的分解结果可以直接相加比较。</td>
-</tr><tr data-topics="AI 产业链">
-  <td class="date">2026-11-06</td>
-  <td><a href="research/ai-chain/capex.html">AI 资本开支 · 指引追踪</a></td>
-  <td><span class="tag">追踪</span></td>
-  <td><span class="tag">AI 产业链</span></td>
-  <td class="n">2026-10-29</td>
-  <td>事前指引 × 事后实际 × 自由现金流，逐季可复现。四家 2026 指引合计 730bn；同公司组年内上修 +10.9%，低于 2025 的 +18.8% —— 上修还在，力度在收敛。</td>
-</tr><tr data-topics="个股研究">
-  <td class="date">2026-11-06</td>
-  <td><a href="research/300502/gk.html">新易盛 · 股东总回报三因子归因</a></td>
-  <td><span class="tag">研究</span></td>
-  <td><span class="tag">个股研究</span></td>
-  <td class="n">2026-10-26</td>
-  <td>股东总回报 +2564%（×26.6）：盈利 +343.9pp、估值 -16.6pp、股息 +0.94pp。和旭创一样，涨幅几乎全部由盈利上修贡献，倍数反而在压。</td>
-</tr><tr data-topics="个股研究 方法论">
-  <td class="date">2026-11-06</td>
-  <td><a href="research/300308/attribution.html">中际旭创 · 股价事后归因（2023–2026）</a></td>
-  <td><span class="tag">研究</span></td>
-  <td><span class="tag">个股研究</span> <span class="tag">方法论</span></td>
-  <td class="n">2026-10-26</td>
-  <td>市值 = 远期共识净利 × PE_NTM，每一层都恒等、残差为 0。自动切出 17 段路径逐段看瀑布：涨的时候到底是共识在动、还是倍数在动。</td>
-</tr><tr data-topics="个股研究">
-  <td class="date">2026-11-04</td>
-  <td><a href="research/300308/structure-q.html">中际旭创 · 财报结构（单季口径）</a></td>
-  <td><span class="tag">研究</span></td>
-  <td><span class="tag">个股研究</span></td>
-  <td class="n">2026-09-30</td>
-  <td>利润表 / 现金流还原成单季、杜邦换 TTM。同比被基数掩盖的时候，这一页看的是环比在往哪个方向走。</td>
-</tr><tr data-topics="个股研究">
-  <td class="date">2026-11-04</td>
-  <td><a href="research/300308/structure.html">中际旭创 · 财报结构（年报口径）</a></td>
-  <td><span class="tag">研究</span></td>
-  <td><span class="tag">个股研究</span></td>
-  <td class="n">2026-09-30</td>
-  <td>三大报表结构 + 分产品 / 分地区利润构成。看收入从哪里来、毛利被什么吃掉，比看单季增速更能判断利润的可持续性。</td>
-</tr><tr data-topics="个股研究 方法论">
-  <td class="date">2026-11-04</td>
-  <td><a href="research/300308/stages.html">中际旭创 · 阶段切分（2024 年以来）</a></td>
-  <td><span class="tag">研究</span></td>
-  <td><span class="tag">个股研究</span> <span class="tag">方法论</span></td>
-  <td class="n">2026-10-26</td>
-  <td>切点只服从一件事 —— ΔPE 与 ΔNTM 的相对符号变了。六段里这个符号组合没有一段重复：估值压缩小于盈利上修是「消化」，大于就是「否定」。</td>
-</tr><tr data-topics="个股研究">
-  <td class="date">2026-11-04</td>
-  <td><a href="research/300308/consensus.html">中际旭创 · 共识演化与估值分位</a></td>
-  <td><span class="tag">研究</span></td>
-  <td><span class="tag">个股研究</span></td>
-  <td class="n">2026-10-26</td>
-  <td>NTM 共识净利 598.2 亿（21 家券商），PE_NTM 11.71x，滚动 250 日分位 0.0%。共识中位始终低估实际（同一天比低 31.6%），但低分位不等于低估 —— 分母仍然是预测。</td>
-</tr><tr data-topics="AI 产业链 市场与制度">
-  <td class="date">2026-10-29</td>
-  <td><a href="https://jst-well-dan.github.io/gs50-dashboard/" target="_blank" rel="noopener">GS50 · AI 主题每日复盘</a> ↗</td>
-  <td><span class="tag">看板</span></td>
-  <td><span class="tag">AI 产业链</span> <span class="tag">市场与制度</span></td>
-  <td class="n">2026-11-11</td>
-  <td>高盛三张 AI 名单去重出 54 家（A 41 / 港股 13）当探针，每天读一遍 AI 这条线在中国的温度、广度、轮动与背离。</td>
-</tr><tr data-topics="个股研究">
-  <td class="date">2026-10-27</td>
-  <td><a href="research/300502/structure-q.html">新易盛 · 财报结构（单季口径）</a></td>
-  <td><span class="tag">研究</span></td>
-  <td><span class="tag">个股研究</span></td>
-  <td class="n">2026-09-30</td>
-  <td>单季环比视角，看季度间的毛利率与费用节奏是否在恶化。</td>
-</tr><tr data-topics="个股研究">
-  <td class="date">2026-10-27</td>
-  <td><a href="research/300502/structure.html">新易盛 · 财报结构（年报口径）</a></td>
-  <td><span class="tag">研究</span></td>
-  <td><span class="tag">个股研究</span></td>
-  <td class="n">2026-09-30</td>
-  <td>与旭创同模板，便于对比两家的产品结构、地区结构与费用率。</td>
-</tr><tr data-topics="个股研究">
-  <td class="date">2026-10-27</td>
-  <td><a href="research/300502/consensus.html">新易盛 · 卖方共识演化与估值分位</a></td>
-  <td><span class="tag">研究</span></td>
-  <td><span class="tag">个股研究</span></td>
-  <td class="n">2026-10-26</td>
-  <td>卖方共识中位低估实际 56%；NTM 共识 323.9 亿，PE_NTM 10.84x，处于近一年最低分位。与旭创同口径，可直接横向比。</td>
-</tr></tbody>
-    </table>
+  <nav class="group-shortcuts scope-nav" aria-label="按作用域浏览"><a href="#scope-sector">板块研究<span>1</span></a><a href="#scope-stock">个股研究<span>10</span></a><a href="#scope-method">方法论<span>1</span></a></nav>
+  <div class="archive-toolbar">
+    <div class="filters" id="filters"><button type="button" data-filter-topic="" aria-pressed="true">全部</button><button type="button" data-filter-topic="AI 产业链" aria-pressed="false">AI 产业链</button><button type="button" data-filter-topic="个股研究" aria-pressed="false">个股研究</button><button type="button" data-filter-topic="方法论" aria-pressed="false">方法论</button></div>
+    <label class="search-field" for="archive-search"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4.5 4.5"/></svg><input id="archive-search" type="search" placeholder="筛选标题、主题或结论…" autocomplete="off"></label>
   </div>
-  <p class="card-note" style="margin-top:12px">分组视图：<a href="index.html#archive">回到首页按组浏览 →</a></p>
+  <div id="archive"><section class="scope-block" id="scope-sector" aria-labelledby="scope-h-sector">
+    <header class="scope-head">
+      <h2 id="scope-h-sector">板块研究</h2>
+      <span class="scope-count num">1</span>
+      <p>先看一条产业链走到哪一步，再落到具体环节。</p>
+    </header>
+    <div class="stack"><section class="group-block" data-topics="AI 产业链" data-group="ai-chain">
+  <header class="group-head">  <h3><a href="research/ai-chain/index.html">AI 产业链</a></h3>
+    
+    <p class="group-intro">从一个环节的成本与预期，看 AI 资本开支周期走到了哪一步。</p>
+
+    <p class="group-meta"><span class="num">1</span> 篇 · 最近更新 <span class="num">2026-11-06</span></p>
+  </header>
+  <div class="archive-list">
+    <a class="rcard" href="research/ai-chain/capex.html" data-topics="AI 产业链" data-group="ai-chain">
+  <span class="r-date num">2026-11-06</span>
+  <span class="r-main">
+    <span class="r-title">AI 资本开支 · 指引追踪</span>
+    <span class="r-sum">事前指引 × 事后实际 × 自由现金流，逐季可复现。四家 2026 指引合计 730bn；同公司组年内上修 +10.9%，低于 2025 的 +18.8% —— 上修还在，力度在收敛。</span>
+    <span class="r-foot"><span class="tag">追踪</span><span class="tag">AI 产业链</span><span>数据截至 <span class="num">2026-10-29</span></span></span>
+  </span>
+</a>
+  </div>
+</section></div>
+  </section><section class="scope-block" id="scope-stock" aria-labelledby="scope-h-stock">
+    <header class="scope-head">
+      <h2 id="scope-h-stock">个股研究</h2>
+      <span class="scope-count num">10</span>
+      <p>同一套口径切不同角度，同一只股票可以从共识、估值、结构三个方向横切。</p>
+    </header>
+    <div class="stack"><section class="group-block" data-topics="个股研究|方法论" data-group="300308">
+  <header class="group-head">  <h3><a href="research/300308/index.html">中际旭创</a></h3>
+    <span class="code">300308.SZ</span>
+    <p class="group-intro">光模块龙头。同一组数据切成不同角度：共识怎么被修上去、估值走到哪个分位、股价涨的是业绩还是倍数。</p>
+
+    <p class="group-meta"><span class="num">6</span> 篇 · 最近更新 <span class="num">2026-11-08</span></p>
+  </header>
+  <div class="archive-list">
+    <a class="rcard" href="research/300308/gk.html" data-topics="个股研究|方法论" data-group="300308">
+  <span class="r-date num">2026-11-08</span>
+  <span class="r-main">
+    <span class="r-title">中际旭创 · 股东总回报三因子归因</span>
+    <span class="r-sum">股东总回报 +2795%（×28.9）：盈利 +367.3pp、估值 -27.0pp、股息 -3.75pp。三年 28.9 倍里，倍数其实在拖后腿 —— 涨的是盈利，不是估值。</span>
+    <span class="r-foot"><span class="tag">研究</span><span class="tag">个股研究</span><span class="tag">方法论</span><span>数据截至 <span class="num">2026-10-26</span></span></span>
+  </span>
+</a><a class="rcard" href="research/300308/attribution.html" data-topics="个股研究|方法论" data-group="300308">
+  <span class="r-date num">2026-11-06</span>
+  <span class="r-main">
+    <span class="r-title">中际旭创 · 股价事后归因（2023–2026）</span>
+    <span class="r-sum">市值 = 远期共识净利 × PE_NTM，每一层都恒等、残差为 0。自动切出 17 段路径逐段看瀑布：涨的时候到底是共识在动、还是倍数在动。</span>
+    <span class="r-foot"><span class="tag">研究</span><span class="tag">个股研究</span><span class="tag">方法论</span><span>数据截至 <span class="num">2026-10-26</span></span></span>
+  </span>
+</a><a class="rcard" href="research/300308/structure-q.html" data-topics="个股研究" data-group="300308">
+  <span class="r-date num">2026-11-04</span>
+  <span class="r-main">
+    <span class="r-title">中际旭创 · 财报结构（单季口径）</span>
+    <span class="r-sum">利润表 / 现金流还原成单季、杜邦换 TTM。同比被基数掩盖的时候，这一页看的是环比在往哪个方向走。</span>
+    <span class="r-foot"><span class="tag">研究</span><span class="tag">个股研究</span><span>数据截至 <span class="num">2026-09-30</span></span></span>
+  </span>
+</a><a class="rcard" href="research/300308/structure.html" data-topics="个股研究" data-group="300308">
+  <span class="r-date num">2026-11-04</span>
+  <span class="r-main">
+    <span class="r-title">中际旭创 · 财报结构（年报口径）</span>
+    <span class="r-sum">三大报表结构 + 分产品 / 分地区利润构成。看收入从哪里来、毛利被什么吃掉，比看单季增速更能判断利润的可持续性。</span>
+    <span class="r-foot"><span class="tag">研究</span><span class="tag">个股研究</span><span>数据截至 <span class="num">2026-09-30</span></span></span>
+  </span>
+</a><a class="rcard" href="research/300308/stages.html" data-topics="个股研究|方法论" data-group="300308">
+  <span class="r-date num">2026-11-04</span>
+  <span class="r-main">
+    <span class="r-title">中际旭创 · 阶段切分（2024 年以来）</span>
+    <span class="r-sum">切点只服从一件事 —— ΔPE 与 ΔNTM 的相对符号变了。六段里这个符号组合没有一段重复：估值压缩小于盈利上修是「消化」，大于就是「否定」。</span>
+    <span class="r-foot"><span class="tag">研究</span><span class="tag">个股研究</span><span class="tag">方法论</span><span>数据截至 <span class="num">2026-10-26</span></span></span>
+  </span>
+</a><a class="rcard" href="research/300308/consensus.html" data-topics="个股研究" data-group="300308">
+  <span class="r-date num">2026-11-04</span>
+  <span class="r-main">
+    <span class="r-title">中际旭创 · 共识演化与估值分位</span>
+    <span class="r-sum">NTM 共识净利 598.2 亿（21 家券商），PE_NTM 11.71x，滚动 250 日分位 0.0%。共识中位始终低估实际（同一天比低 31.6%），但低分位不等于低估 —— 分母仍然是预测。</span>
+    <span class="r-foot"><span class="tag">研究</span><span class="tag">个股研究</span><span>数据截至 <span class="num">2026-10-26</span></span></span>
+  </span>
+</a>
+  </div>
+</section><section class="group-block" data-topics="个股研究" data-group="300502">
+  <header class="group-head">  <h3><a href="research/300502/index.html">新易盛</a></h3>
+    <span class="code">300502.SZ</span>
+    <p class="group-intro">光模块二线龙头，与中际旭创互为参照（同样的归因与共识口径，便于横向比）。</p>
+
+    <p class="group-meta"><span class="num">4</span> 篇 · 最近更新 <span class="num">2026-11-06</span></p>
+  </header>
+  <div class="archive-list">
+    <a class="rcard" href="research/300502/gk.html" data-topics="个股研究" data-group="300502">
+  <span class="r-date num">2026-11-06</span>
+  <span class="r-main">
+    <span class="r-title">新易盛 · 股东总回报三因子归因</span>
+    <span class="r-sum">股东总回报 +2564%（×26.6）：盈利 +343.9pp、估值 -16.6pp、股息 +0.94pp。和旭创一样，涨幅几乎全部由盈利上修贡献，倍数反而在压。</span>
+    <span class="r-foot"><span class="tag">研究</span><span class="tag">个股研究</span><span>数据截至 <span class="num">2026-10-26</span></span></span>
+  </span>
+</a><a class="rcard" href="research/300502/structure-q.html" data-topics="个股研究" data-group="300502">
+  <span class="r-date num">2026-10-27</span>
+  <span class="r-main">
+    <span class="r-title">新易盛 · 财报结构（单季口径）</span>
+    <span class="r-sum">单季环比视角，看季度间的毛利率与费用节奏是否在恶化。</span>
+    <span class="r-foot"><span class="tag">研究</span><span class="tag">个股研究</span><span>数据截至 <span class="num">2026-09-30</span></span></span>
+  </span>
+</a><a class="rcard" href="research/300502/structure.html" data-topics="个股研究" data-group="300502">
+  <span class="r-date num">2026-10-27</span>
+  <span class="r-main">
+    <span class="r-title">新易盛 · 财报结构（年报口径）</span>
+    <span class="r-sum">与旭创同模板，便于对比两家的产品结构、地区结构与费用率。</span>
+    <span class="r-foot"><span class="tag">研究</span><span class="tag">个股研究</span><span>数据截至 <span class="num">2026-09-30</span></span></span>
+  </span>
+</a><a class="rcard" href="research/300502/consensus.html" data-topics="个股研究" data-group="300502">
+  <span class="r-date num">2026-10-27</span>
+  <span class="r-main">
+    <span class="r-title">新易盛 · 卖方共识演化与估值分位</span>
+    <span class="r-sum">卖方共识中位低估实际 56%；NTM 共识 323.9 亿，PE_NTM 10.84x，处于近一年最低分位。与旭创同口径，可直接横向比。</span>
+    <span class="r-foot"><span class="tag">研究</span><span class="tag">个股研究</span><span>数据截至 <span class="num">2026-10-26</span></span></span>
+  </span>
+</a>
+  </div>
+</section></div>
+  </section><section class="scope-block" id="scope-method" aria-labelledby="scope-h-method">
+    <header class="scope-head">
+      <h2 id="scope-h-method">方法论</h2>
+      <span class="scope-count num">1</span>
+      <p>拆解与归因的口径、恒等式与可复用工具。</p>
+    </header>
+    <div class="stack"><section class="group-block flush" data-topics="方法论" data-group="method">
+  <header class="group-head">
+    <p class="group-meta"><a href="research/method/index.html"><span class="num">1</span> 篇 · 最近更新 <span class="num">2026-11-06</span></a></p>
+  </header>
+  <div class="archive-list">
+    <a class="rcard" href="research/300308/attribution.html" data-topics="方法论" data-group="method">
+  <span class="r-date num">2026-11-06</span>
+  <span class="r-main">
+    <span class="r-title">股东总回报三因子恒等式</span>
+    <span class="r-sum">Δln(1+TSR) = 股息 + Δln(E_NTM) + Δln(PE_NTM)，三项同日、同预测集，残差恒为 0。所有个股页都用这一把尺，所以不同股票的分解结果可以直接相加比较。</span>
+    <span class="r-foot"><span class="tag">研究</span><span class="tag">方法论</span><span>数据截至 <span class="num">2026-10-26</span></span></span>
+  </span>
+</a>
+  </div>
+</section></div>
+  </section></div>
+  <p class="note-line">视觉验收样本（色板、组件演示）已存档，不在导航里：<a href="archive/theme.html">打开主题样本页</a>。</p>
+</div>
 <footer class="foot">
   <span>本站为个人研究记录，所有数字与结论仅供自己复盘使用，不构成投资建议。</span>
   <span class="spacer"></span>
-  <span>构建于 <span class="num">2026-11-18</span></span>
+  <span>构建于 <span class="num">2026-11-19</span></span>
   <a href="index.html">回到入口</a>
 </footer>
 <script src="assets/site.js"></script>

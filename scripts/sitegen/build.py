@@ -6,10 +6,8 @@
 from __future__ import annotations
 
 import datetime as dt
-import json
 import shutil
 import sys
-from pathlib import Path
 
 from . import model, render, sync
 
@@ -30,14 +28,22 @@ def build() -> int:
     stats: list[dict] = []
     problems: list[str] = []
 
-    if DOCS.exists():
-        shutil.rmtree(DOCS)
-    DOCS.mkdir(parents=True)
+    DOCS.mkdir(parents=True, exist_ok=True)
+    for child in list(DOCS.iterdir()):
+        if child.is_dir():
+            shutil.rmtree(child)
+        else:
+            child.unlink()
 
     # ---------------------------------------------------- 静态资源
     (DOCS / "assets").mkdir()
+    shutil.copy2(THEME / "tokens.css", DOCS / "assets" / "tokens.css")
     shutil.copy2(THEME / "theme.css", DOCS / "assets" / "theme.css")
+    shutil.copy2(THEME / "research.css", DOCS / "assets" / "research.css")
     shutil.copy2(THEME / "site.js", DOCS / "assets" / "site.js")
+    if (THEME / "fonts").is_dir():  # 自托管字体：不走 CDN
+        shutil.copytree(THEME / "fonts", DOCS / "assets" / "fonts")
+    # theme/previews/ 是上一版首页「研究入口」的缩略图，那一块已删，不再发布。
     (DOCS / ".nojekyll").write_text("", encoding="utf-8")  # 关掉 GitHub Pages 的 Jekyll 处理
 
     # ---------------------------------------------------- 托管研究页
@@ -62,8 +68,9 @@ def build() -> int:
     pages: list[tuple[str, str]] = []
     pages.append(("index.html", render.index_page(cfg, built_at)))
     pages.append(("archive.html", render.archive_page(cfg, built_at)))
-    pages.append(("theme.html", render.theme_page(cfg, built_at)))
-    for g in cfg["groups"]:
+    pages.append(("theses.html", render.theses_page(cfg, built_at)))
+    pages.append(("archive/theme.html", render.theme_page(cfg, built_at)))
+    for g in cfg["archive_groups"]:
         pages.append((g.url, render.group_page(cfg, g, built_at, depth=2)))
 
     for rel, html in pages:
@@ -82,7 +89,7 @@ def build() -> int:
     dead = []
     for p in sorted(DOCS.rglob("*.html")):
         txt = p.read_text(encoding="utf-8")
-        for m in re.finditer(r'(?:href|src)="([^"#?:]+\.(?:html|css|js))"', txt):
+        for m in re.finditer(r'(?:href|src)="([^"#?:]+\.(?:html|css|js|png|webp|svg))"', txt):
             target = (p.parent / m.group(1)).resolve()
             if not target.exists():
                 dead.append(f"{p.relative_to(DOCS)} → {m.group(1)}")

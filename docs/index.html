@@ -3,305 +3,66 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Dan&#x27;s Investment Dashboard</title>
+<title>今日看板 · Dan&#x27;s Investment Dashboard</title>
 <link rel="stylesheet" href="assets/theme.css">
 
 </head>
 <body>
+<a class="skip-link" href="#main">跳到主内容</a>
 <div class="topbar">
   <a class="brand" href="index.html">Dan&#x27;s Investment Dashboard</a>
-  <nav><a href="index.html" aria-current="page">今天</a><a href="archive.html">研究档案</a><a href="theme.html">主题</a></nav>
+  <nav aria-label="主导航"><a href="index.html" aria-current="page">今日看板</a><a href="archive.html">研究档案</a><a href="theses.html">判断跟踪</a></nav>
   <span class="spacer"></span>
-  <button class="iconbtn" id="theme-btn" type="button" title="切换浅色 / 深色">◐ 主题</button>
+  <button class="iconbtn" id="theme-btn" type="button" title="切换浅色 / 深色"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></svg><span>明暗</span></button>
 </div>
-<div class="wrap">
-  <header class="pagehead">
-    <div class="kicker">研究入口</div>
-    <h1>Dan&#x27;s Investment Dashboard</h1>
-    <p class="lede">研究入口 · 每日复盘 · 已收录 <span class="num">14</span> 项研究、<span class="num">6</span> 条可跟踪判断。</p>
-  </header>
-
-  <section class="sect">
-    <div class="sect-head"><h2>今天</h2><span class="hint">每天自动更新的看板，点开是它们的独立站点</span></div>
-    <div class="sect-rule"></div>
-    <div class="today-grid"><a class="today tone-bear" href="https://jst-well-dan.github.io/gold-dashboard/" target="_blank" rel="noopener">
-  <div class="t-top">
-    <span class="t-name">黄金</span>
-    <span class="verdict bear">偏利空 · 熊市调整</span>
-    <span class="t-date num">2026-11-09</span>
-  </div>
-  <div class="hero-num">
-      <span class="hn-v num">4,107.4</span>
-      <span class="hn-u">美元/盎司</span>
-      <span class="hn-d num up">+0.80% 单日</span>
-    </div>
-  <svg class="spark" viewBox="0 0 420 54" preserveAspectRatio="none" aria-hidden="true">
-  <defs><linearGradient id="sg0" x1="0" y1="0" x2="0" y2="1">
-    <stop offset="0" stop-color="var(--ink-2)" stop-opacity=".20"/>
-    <stop offset="1" stop-color="var(--ink-2)" stop-opacity="0"/>
-  </linearGradient></defs>
-  <path d="M0.0,54 L0.0,12.0 L10.8,18.1 L21.5,14.3 L32.3,14.4 L43.1,28.6 L53.8,31.6 L64.6,22.4 L75.4,37.4 L86.2,40.9 L96.9,41.8 L107.7,36.9 L118.5,39.8 L129.2,43.8 L140.0,46.1 L150.8,43.9 L161.5,44.6 L172.3,40.2 L183.1,27.3 L193.8,19.9 L204.6,19.9 L215.4,19.9 L226.2,3.0 L236.9,4.8 L247.7,15.9 L258.5,12.1 L269.2,17.3 L280.0,24.3 L290.8,21.2 L301.5,22.7 L312.3,26.3 L323.1,35.0 L333.8,37.0 L344.6,37.0 L355.4,35.6 L366.2,35.4 L376.9,37.4 L387.7,44.6 L398.5,45.1 L409.2,51.0 L420.0,42.3 L420.0,54 Z" fill="url(#sg0)"/>
-  <polyline points="0.0,12.0 10.8,18.1 21.5,14.3 32.3,14.4 43.1,28.6 53.8,31.6 64.6,22.4 75.4,37.4 86.2,40.9 96.9,41.8 107.7,36.9 118.5,39.8 129.2,43.8 140.0,46.1 150.8,43.9 161.5,44.6 172.3,40.2 183.1,27.3 193.8,19.9 204.6,19.9 215.4,19.9 226.2,3.0 236.9,4.8 247.7,15.9 258.5,12.1 269.2,17.3 280.0,24.3 290.8,21.2 301.5,22.7 312.3,26.3 323.1,35.0 333.8,37.0 344.6,37.0 355.4,35.6 366.2,35.4 376.9,37.4 387.7,44.6 398.5,45.1 409.2,51.0 420.0,42.3" fill="none" stroke="var(--ink-2)" stroke-width="1.6"
-    stroke-linejoin="round" stroke-linecap="round"/>
-  <circle cx="420.0" cy="42.3" r="2.6" fill="var(--ink-2)"/>
-</svg><div class="spark-axis"><span class="num">2026-05-21</span><span class="num">2026-11-09</span></div>
-  <div class="kpi3"><div class="k3"><div class="k3-k">年初至今</div><div class="k3-v num">-5.13%<span class="k3-u"></span></div><div class="k3-d down">人民币金价 881.0</div></div><div class="k3"><div class="k3-k">本轮累计</div><div class="k3-v num">-24%<span class="k3-u"></span></div><div class="k3-d down">第16轮 · 10 个月</div></div><div class="k3"><div class="k3-k">地缘威胁</div><div class="k3-v num">157<span class="k3-u"></span></div><div class="k3-d flat">高于历史均值 100</div></div></div>
-  <div class="t-text">国际金价 4,074.9 美元/盎司，年初至今 -5.88%；人民币金价 881.0 元/克。</div>
-  <span class="t-link">打开看板 →</span>
-</a><a class="today tone-bull" href="https://jst-well-dan.github.io/gs50-dashboard/" target="_blank" rel="noopener">
-  <div class="t-top">
-    <span class="t-name">GS50</span>
-    <span class="verdict bull">升温 · 69 分</span>
-    <span class="t-date num">2026-11-11</span>
-  </div>
-  <div class="hero-num">
-      <span class="hn-v num">68.9</span>
-      <span class="hn-u">分</span>
-      <span class="hn-d num up">+8.7 较昨日</span>
-    </div>
-  <svg class="spark" viewBox="0 0 420 54" preserveAspectRatio="none" aria-hidden="true">
-  <defs><linearGradient id="sg1" x1="0" y1="0" x2="0" y2="1">
-    <stop offset="0" stop-color="var(--ink-2)" stop-opacity=".20"/>
-    <stop offset="1" stop-color="var(--ink-2)" stop-opacity="0"/>
-  </linearGradient></defs>
-  <path d="M0.0,54 L0.0,29.5 L10.8,36.2 L21.5,34.0 L32.3,38.9 L43.1,26.8 L53.8,14.1 L64.6,31.4 L75.4,14.1 L86.2,23.1 L96.9,27.6 L107.7,32.5 L118.5,45.6 L129.2,50.9 L140.0,26.1 L150.8,40.3 L161.5,45.3 L172.3,33.9 L183.1,42.6 L193.8,29.9 L204.6,47.4 L215.4,47.0 L226.2,26.2 L236.9,27.7 L247.7,26.4 L258.5,30.9 L269.2,49.0 L280.0,9.1 L290.8,43.6 L301.5,45.6 L312.3,7.3 L323.1,51.0 L333.8,48.9 L344.6,19.4 L355.4,47.4 L366.2,3.0 L376.9,18.8 L387.7,48.9 L398.5,25.8 L409.2,20.0 L420.0,13.8 L420.0,54 Z" fill="url(#sg1)"/>
-  <polyline points="0.0,29.5 10.8,36.2 21.5,34.0 32.3,38.9 43.1,26.8 53.8,14.1 64.6,31.4 75.4,14.1 86.2,23.1 96.9,27.6 107.7,32.5 118.5,45.6 129.2,50.9 140.0,26.1 150.8,40.3 161.5,45.3 172.3,33.9 183.1,42.6 193.8,29.9 204.6,47.4 215.4,47.0 226.2,26.2 236.9,27.7 247.7,26.4 258.5,30.9 269.2,49.0 280.0,9.1 290.8,43.6 301.5,45.6 312.3,7.3 323.1,51.0 333.8,48.9 344.6,19.4 355.4,47.4 366.2,3.0 376.9,18.8 387.7,48.9 398.5,25.8 409.2,20.0 420.0,13.8" fill="none" stroke="var(--ink-2)" stroke-width="1.6"
-    stroke-linejoin="round" stroke-linecap="round"/>
-  <circle cx="420.0" cy="13.8" r="2.6" fill="var(--ink-2)"/>
-</svg><div class="spark-axis"><span class="num"></span><span class="num">2026-11-11</span></div>
-  <div class="kpi3"><div class="k3"><div class="k3-k">名单中位</div><div class="k3-v num">+2.58%<span class="k3-u"></span></div><div class="k3-d up">超额 +2.17pt</div></div><div class="k3"><div class="k3-k">上涨家数</div><div class="k3-v num">30/41<span class="k3-u"></span></div><div class="k3-d up">涨停 4 家</div></div><div class="k3"><div class="k3-k">成交额占比</div><div class="k3-v num">12.6<span class="k3-u">%</span></div><div class="k3-d flat">A 41 + 港 13</div></div></div>
-  <div class="t-text">升温 69 分，名单跑赢沪深 300 2.17pt；占 A 股成交额 12.6%，10 日波动率 4.30%（剧烈）。</div>
-  <span class="t-link">打开看板 →</span>
-</a></div>
-  </section>
-
-  <section class="sect">
-    <div class="sect-head"><h2>在跟踪的判断</h2><span class="hint">5 条跟踪中 · 按下次检查日期排 · 另有 1 条已结算</span></div>
-    <div class="sect-rule"></div>
-    
-    <div class="thesis-list"><div class="thesis st-track">
-  <div class="th-claim">北美四家 2027 年 capex 增速仍在上修，但年内上修幅度已从 +18.8% 收窄到 +10.9%，指引的边际信息量在下降。</div>
-  <div class="th-badges"><span class="badge track">跟踪中</span></div>
-  <div class="th-foot">
-    <span><a href="research/ai-chain/capex.html">AI 资本开支 · 指引追踪</a></span>
-    <span>下次检查 <span class="num">2026-12-31</span>（还有 43 天）</span>
-    <span class="th-note">看 Q4 财报季是否出现首次下修；若出现，AI 链的估值锚要换到 FCF 而非指引。</span>
-  </div>
-</div><div class="thesis st-track">
-  <div class="th-claim">旭创的 28.9 倍来自 E_NTM ×39.4、PE_NTM ×0.76。这意味着「涨太多所以会跌」在本例中不成立：倍数已经压到 11.7x，若盈利不下修，估值并不构成下跌理由。</div>
-  <div class="th-badges"><span class="badge track">跟踪中</span></div>
-  <div class="th-foot">
-    <span><a href="research/300308/gk.html">中际旭创 · 股东总回报三因子归因</a></span>
-    <span>下次检查 <span class="num">2026-12-31</span>（还有 43 天）</span>
-    <span class="th-note">反证条件：出现盈利下修且倍数同时压缩。</span>
-  </div>
-</div><div class="thesis st-track">
-  <div class="th-claim">当前 11.7x 的 PE_NTM 已在近一年最低分位，若 FY2027 共识 655 亿不被下修，估值继续压缩的空间有限，风险转移到盈利端。</div>
-  <div class="th-badges"><span class="badge track">跟踪中</span></div>
-  <div class="th-foot">
-    <span><a href="research/300308/consensus.html">中际旭创 · 共识演化与估值分位</a></span>
-    <span>下次检查 <span class="num">2026-12-31</span>（还有 43 天）</span>
-    <span class="th-note">触发条件——FY2027 共识出现首次连续两月下修，则本条证伪。</span>
-  </div>
-</div><div class="thesis st-track">
-  <div class="th-claim">新易盛的共识偏离（中位低估 56%）显著大于旭创（31.6%），说明卖方对新易盛的跟踪质量更差 —— 这是相对旭创的一个信息劣势，不是优势。</div>
-  <div class="th-badges"><span class="badge track">跟踪中</span></div>
-  <div class="th-foot">
-    <span><a href="research/300502/consensus.html">新易盛 · 卖方共识演化与估值分位</a></span>
-    <span>下次检查 <span class="num">2027-01-31</span>（还有 74 天）</span>
-    <span class="th-note">若下一轮两家偏离度收敛，说明是覆盖机构差异而非公司差异。</span>
-  </div>
-</div><div class="thesis st-track">
-  <div class="th-claim">2025-04-22 是三年里唯一一次真下修落地、同时 PE 处于全样本最低区（8.16）的时点；此后三个月估值 +303%。「下修落地 = 底部」这条经验值不值得重复使用，要看下一次下修。</div>
-  <div class="th-badges"><span class="badge track">跟踪中</span></div>
-  <div class="th-foot">
-    <span><a href="research/300308/stages.html">中际旭创 · 阶段切分（2024 年以来）</a></span>
-    <span>下次检查 <span class="num">2027-03-31</span>（还有 133 天）</span>
-    <span class="th-note">单次事件，样本量为 1，只能当假设，不能当规则。</span>
-  </div>
-</div></div>
-  </section>
-
-  <section class="sect">
-    <div class="sect-head"><h2>研究档案</h2><span class="hint">5 组 · 按主题筛选</span></div>
-    <div class="sect-rule"></div>
-    <div class="filters" id="filters"><button type="button" data-filter-topic="" aria-pressed="true">全部</button><button type="button" data-filter-topic="市场与制度" aria-pressed="false">市场与制度</button><button type="button" data-filter-topic="AI 产业链" aria-pressed="false">AI 产业链</button><button type="button" data-filter-topic="个股研究" aria-pressed="false">个股研究</button><button type="button" data-filter-topic="方法论" aria-pressed="false">方法论</button></div>
-    <div class="stack" id="archive">
-      <div class="group-block" data-topics="市场与制度" data-group="market">
-  <div class="group-head">
-    <h3><a href="research/market/index.html">市场看板</a></h3>
-    
-    <span class="tag-date num">最近更新 2026-11-07</span>
-  </div>
-  <p class="group-intro">每天/每交易日自动更新的看板，各自独立部署，本站只做入口。</p>
-  <div class="archive-grid">
-    <a class="rcard" href="https://jst-well-dan.github.io/gold-dashboard/" target="_blank" rel="noopener" data-topics="市场与制度" data-group="market">
-  <div class="r-title">黄金研究看板 ↗</div>
-  <div class="r-sum">不预测金价，只把黄金正在反映什么摊开：制度层 / 宏观层 / 市场层，41 个数据接口、30+ 指标，每图带最新值与 10 年分位。</div>
-  <div class="r-foot">
-    <span class="tag">看板</span><span class="tag">独立站点</span><span class="tag">市场与制度</span>
-    <span>数据截至 <span class="num">2026-11-11</span></span>
-    <span class="tag-date num">2026-11-07</span>
-  </div>
-</a><a class="rcard" href="https://jst-well-dan.github.io/gs50-dashboard/" target="_blank" rel="noopener" data-topics="AI 产业链 市场与制度" data-group="market">
-  <div class="r-title">GS50 · AI 主题每日复盘 ↗</div>
-  <div class="r-sum">高盛三张 AI 名单去重出 54 家（A 41 / 港股 13）当探针，每天读一遍 AI 这条线在中国的温度、广度、轮动与背离。</div>
-  <div class="r-foot">
-    <span class="tag">看板</span><span class="tag">独立站点</span><span class="tag">AI 产业链</span><span class="tag">市场与制度</span>
-    <span>数据截至 <span class="num">2026-11-11</span></span>
-    <span class="tag-date num">2026-10-29</span>
-  </div>
-</a>
-  </div>
-  <p class="card-note" style="margin-top:8px">组内页面：<a class="tag accent" href="https://jst-well-dan.github.io/gold-dashboard/" target="_blank" rel="noopener">黄金 ↗</a><a class="tag accent" href="https://jst-well-dan.github.io/gs50-dashboard/" target="_blank" rel="noopener">GS50 ↗</a></p>
-</div><div class="group-block" data-topics="AI 产业链" data-group="ai-chain">
-  <div class="group-head">
-    <h3><a href="research/ai-chain/index.html">AI 产业链</a></h3>
-    
-    <span class="tag-date num">最近更新 2026-11-06</span>
-  </div>
-  <p class="group-intro">从一个环节的成本与预期，看 AI 资本开支周期走到了哪一步。</p>
-  <div class="archive-grid">
-    <a class="rcard" href="research/ai-chain/capex.html" data-topics="AI 产业链" data-group="ai-chain">
-  <div class="r-title">AI 资本开支 · 指引追踪</div>
-  <div class="r-sum">事前指引 × 事后实际 × 自由现金流，逐季可复现。四家 2026 指引合计 730bn；同公司组年内上修 +10.9%，低于 2025 的 +18.8% —— 上修还在，力度在收敛。</div>
-  <div class="r-foot">
-    <span class="tag">追踪</span><span class="tag">AI 产业链</span>
-    <span>数据截至 <span class="num">2026-10-29</span></span>
-    <span class="tag-date num">2026-11-06</span>
-  </div>
-</a>
-  </div>
-  <p class="card-note" style="margin-top:8px">组内页面：<a class="tag" href="research/ai-chain/capex.html">Capex 追踪</a></p>
-</div><div class="group-block" data-topics="个股研究" data-group="300308">
-  <div class="group-head">
-    <h3><a href="research/300308/index.html">中际旭创</a></h3>
-    <span class="code">300308.SZ</span>
-    <span class="tag-date num">最近更新 2026-11-08</span>
-  </div>
-  <p class="group-intro">光模块龙头。同一组数据切成不同角度：共识怎么被修上去、估值走到哪个分位、股价涨的是业绩还是倍数。</p>
-  <div class="archive-grid">
-    <a class="rcard" href="research/300308/gk.html" data-topics="个股研究 方法论" data-group="300308">
-  <div class="r-title">中际旭创 · 股东总回报三因子归因</div>
-  <div class="r-sum">股东总回报 +2795%（×28.9）：盈利 +367.3pp、估值 -27.0pp、股息 -3.75pp。三年 28.9 倍里，倍数其实在拖后腿 —— 涨的是盈利，不是估值。</div>
-  <div class="r-foot">
-    <span class="tag">研究</span><span class="tag">个股研究</span><span class="tag">方法论</span>
-    <span>数据截至 <span class="num">2026-10-26</span></span>
-    <span class="tag-date num">2026-11-08</span>
-  </div>
-</a><a class="rcard" href="research/300308/attribution.html" data-topics="个股研究 方法论" data-group="300308">
-  <div class="r-title">中际旭创 · 股价事后归因（2023–2026）</div>
-  <div class="r-sum">市值 = 远期共识净利 × PE_NTM，每一层都恒等、残差为 0。自动切出 17 段路径逐段看瀑布：涨的时候到底是共识在动、还是倍数在动。</div>
-  <div class="r-foot">
-    <span class="tag">研究</span><span class="tag">个股研究</span><span class="tag">方法论</span>
-    <span>数据截至 <span class="num">2026-10-26</span></span>
-    <span class="tag-date num">2026-11-06</span>
-  </div>
-</a><a class="rcard" href="research/300308/structure-q.html" data-topics="个股研究" data-group="300308">
-  <div class="r-title">中际旭创 · 财报结构（单季口径）</div>
-  <div class="r-sum">利润表 / 现金流还原成单季、杜邦换 TTM。同比被基数掩盖的时候，这一页看的是环比在往哪个方向走。</div>
-  <div class="r-foot">
-    <span class="tag">研究</span><span class="tag">个股研究</span>
-    <span>数据截至 <span class="num">2026-09-30</span></span>
-    <span class="tag-date num">2026-11-04</span>
-  </div>
-</a><a class="rcard" href="research/300308/structure.html" data-topics="个股研究" data-group="300308">
-  <div class="r-title">中际旭创 · 财报结构（年报口径）</div>
-  <div class="r-sum">三大报表结构 + 分产品 / 分地区利润构成。看收入从哪里来、毛利被什么吃掉，比看单季增速更能判断利润的可持续性。</div>
-  <div class="r-foot">
-    <span class="tag">研究</span><span class="tag">个股研究</span>
-    <span>数据截至 <span class="num">2026-09-30</span></span>
-    <span class="tag-date num">2026-11-04</span>
-  </div>
-</a><a class="rcard" href="research/300308/stages.html" data-topics="个股研究 方法论" data-group="300308">
-  <div class="r-title">中际旭创 · 阶段切分（2024 年以来）</div>
-  <div class="r-sum">切点只服从一件事 —— ΔPE 与 ΔNTM 的相对符号变了。六段里这个符号组合没有一段重复：估值压缩小于盈利上修是「消化」，大于就是「否定」。</div>
-  <div class="r-foot">
-    <span class="tag">研究</span><span class="tag">个股研究</span><span class="tag">方法论</span>
-    <span>数据截至 <span class="num">2026-10-26</span></span>
-    <span class="tag-date num">2026-11-04</span>
-  </div>
-</a><a class="rcard" href="research/300308/consensus.html" data-topics="个股研究" data-group="300308">
-  <div class="r-title">中际旭创 · 共识演化与估值分位</div>
-  <div class="r-sum">NTM 共识净利 598.2 亿（21 家券商），PE_NTM 11.71x，滚动 250 日分位 0.0%。共识中位始终低估实际（同一天比低 31.6%），但低分位不等于低估 —— 分母仍然是预测。</div>
-  <div class="r-foot">
-    <span class="tag">研究</span><span class="tag">个股研究</span>
-    <span>数据截至 <span class="num">2026-10-26</span></span>
-    <span class="tag-date num">2026-11-04</span>
-  </div>
-</a>
-  </div>
-  <p class="card-note" style="margin-top:8px">组内页面：<a class="tag" href="research/300308/gk.html">TSR 归因</a><a class="tag" href="research/300308/attribution.html">事后归因</a><a class="tag" href="research/300308/structure-q.html">季报结构</a><a class="tag" href="research/300308/structure.html">年报结构</a><a class="tag" href="research/300308/stages.html">阶段切分</a><a class="tag" href="research/300308/consensus.html">共识与估值</a></p>
-</div><div class="group-block" data-topics="个股研究" data-group="300502">
-  <div class="group-head">
-    <h3><a href="research/300502/index.html">新易盛</a></h3>
-    <span class="code">300502.SZ</span>
-    <span class="tag-date num">最近更新 2026-11-06</span>
-  </div>
-  <p class="group-intro">光模块二线龙头，与中际旭创互为参照（同样的归因与共识口径，便于横向比）。</p>
-  <div class="archive-grid">
-    <a class="rcard" href="research/300502/gk.html" data-topics="个股研究" data-group="300502">
-  <div class="r-title">新易盛 · 股东总回报三因子归因</div>
-  <div class="r-sum">股东总回报 +2564%（×26.6）：盈利 +343.9pp、估值 -16.6pp、股息 +0.94pp。和旭创一样，涨幅几乎全部由盈利上修贡献，倍数反而在压。</div>
-  <div class="r-foot">
-    <span class="tag">研究</span><span class="tag">个股研究</span>
-    <span>数据截至 <span class="num">2026-10-26</span></span>
-    <span class="tag-date num">2026-11-06</span>
-  </div>
-</a><a class="rcard" href="research/300502/structure-q.html" data-topics="个股研究" data-group="300502">
-  <div class="r-title">新易盛 · 财报结构（单季口径）</div>
-  <div class="r-sum">单季环比视角，看季度间的毛利率与费用节奏是否在恶化。</div>
-  <div class="r-foot">
-    <span class="tag">研究</span><span class="tag">个股研究</span>
-    <span>数据截至 <span class="num">2026-09-30</span></span>
-    <span class="tag-date num">2026-10-27</span>
-  </div>
-</a><a class="rcard" href="research/300502/structure.html" data-topics="个股研究" data-group="300502">
-  <div class="r-title">新易盛 · 财报结构（年报口径）</div>
-  <div class="r-sum">与旭创同模板，便于对比两家的产品结构、地区结构与费用率。</div>
-  <div class="r-foot">
-    <span class="tag">研究</span><span class="tag">个股研究</span>
-    <span>数据截至 <span class="num">2026-09-30</span></span>
-    <span class="tag-date num">2026-10-27</span>
-  </div>
-</a><a class="rcard" href="research/300502/consensus.html" data-topics="个股研究" data-group="300502">
-  <div class="r-title">新易盛 · 卖方共识演化与估值分位</div>
-  <div class="r-sum">卖方共识中位低估实际 56%；NTM 共识 323.9 亿，PE_NTM 10.84x，处于近一年最低分位。与旭创同口径，可直接横向比。</div>
-  <div class="r-foot">
-    <span class="tag">研究</span><span class="tag">个股研究</span>
-    <span>数据截至 <span class="num">2026-10-26</span></span>
-    <span class="tag-date num">2026-10-27</span>
-  </div>
-</a>
-  </div>
-  <p class="card-note" style="margin-top:8px">组内页面：<a class="tag" href="research/300502/gk.html">TSR 归因</a><a class="tag" href="research/300502/structure-q.html">季报结构</a><a class="tag" href="research/300502/structure.html">年报结构</a><a class="tag" href="research/300502/consensus.html">共识与估值</a></p>
-</div><div class="group-block" data-topics="方法论" data-group="method">
-  <div class="group-head">
-    <h3><a href="research/method/index.html">方法论</a></h3>
-    
-    <span class="tag-date num">最近更新 2026-11-06</span>
-  </div>
-  <p class="group-intro">拆解与归因的口径、恒等式与可复用工具。</p>
-  <div class="archive-grid">
-    <a class="rcard" href="research/300308/attribution.html" data-topics="方法论" data-group="method">
-  <div class="r-title">股东总回报三因子恒等式</div>
-  <div class="r-sum">Δln(1+TSR) = 股息 + Δln(E_NTM) + Δln(PE_NTM)，三项同日、同预测集，残差恒为 0。所有个股页都用这一把尺，所以不同股票的分解结果可以直接相加比较。</div>
-  <div class="r-foot">
-    <span class="tag">研究</span><span class="tag">方法论</span>
-    <span>数据截至 <span class="num">2026-10-26</span></span>
-    <span class="tag-date num">2026-11-06</span>
-  </div>
-</a>
-  </div>
-  <p class="card-note" style="margin-top:8px">组内页面：<a class="tag" href="research/300308/attribution.html">TSR 恒等式</a></p>
-</div>
-    </div>
-    <p class="card-note" style="margin-top:16px">时间线视图：<a href="archive.html">全部研究按日期排列 →</a></p>
-  </section>
+<div class="wrap"><main class="workspace" id="main">
+      <header class="workspace-heading"><div><h1>今日看板</h1><p>两个独立看板并列，各自标注数据截至。</p></div><div class="workspace-meta"><span>数据快照 · 非实时行情</span><span>页面构建 <time class="num">2026-11-19</time></span></div></header>
+      <section class="work-panel market" aria-label="今日看板">
+      <div class="market-boards"><section class="market-panel" aria-labelledby="market-h-0">
+      <div class="market-heading"><h3 id="market-h-0">国际金价</h3><span>指标截至 <time class="num">2026-11-09</time></span></div>
+      <div class="market-number"><span class="market-value num">4,107.4</span>
+          <span class="market-unit">美元/盎司</span><span class="market-change num up">+0.80% 单日</span></div><div class="market-verdict"><span class="verdict bear">偏利空 · 熊市调整</span><span class="snapshot-label">数据快照 · 非实时行情</span></div>
+      <figure class="market-chart" data-values="[4542.5, 4448.4, 4506.3, 4505.0, 4286.4, 4238.8, 4381.4, 4149.4, 4096.3, 4082.4, 4157.4, 4113.7, 4051.8, 4015.9, 4050.2, 4038.7, 4107.0, 4305.2, 4419.7, 4420.4, 4420.6, 4680.6, 4653.3, 4481.5, 4539.9, 4460.7, 4351.9, 4399.7, 4376.4, 4321.2, 4186.7, 4156.8, 4157.0, 4177.3, 4181.1, 4150.0, 4038.4, 4031.4, 3940.4, 4074.9]" data-unit="美元/盎司">
+      <div class="plot-heading"><span>历史走势 <span class="plot-unit">美元/盎司</span></span><output id="market-0-value">样本 40 / 40 · 4,074.90 美元/盎司</output></div>
+      <svg class="market-plot" viewBox="0 0 960 250" tabindex="0" role="img" aria-labelledby="market-0-title market-0-desc">
+        <title id="market-0-title">黄金历史走势</title>
+        <desc id="market-0-desc">40 个按原始顺序排列的采样值，最小 3,940.40，最大 4,680.60。各点日期未提供，横轴为样本序号。</desc>
+        <line x1="140" x2="944" y1="22" y2="22" class="plot-grid"/><text class="plot-y" x="126" y="26" text-anchor="end">4,769.4</text><line x1="140" x2="944" y1="86" y2="86" class="plot-grid"/><text class="plot-y" x="126" y="90" text-anchor="end">4,466.6</text><line x1="140" x2="944" y1="151" y2="151" class="plot-grid"/><text class="plot-y" x="126" y="155" text-anchor="end">4,159.1</text><line x1="140" x2="944" y1="216" y2="216" class="plot-grid"/><text class="plot-y" x="126" y="220" text-anchor="end">3,851.6</text><path d="M140,216 L140.00,69.96 L160.62,89.85 L181.23,77.61 L201.85,77.89 L222.46,124.09 L243.08,134.15 L263.69,104.01 L284.31,153.05 L304.92,164.27 L325.54,167.21 L346.15,151.36 L366.77,160.60 L387.38,173.68 L408.00,181.27 L428.62,174.02 L449.23,176.45 L469.85,162.01 L490.46,120.12 L511.08,95.92 L531.69,95.77 L552.31,95.73 L572.92,40.77 L593.54,46.54 L614.15,82.86 L634.77,70.51 L655.38,87.25 L676.00,110.25 L696.62,100.15 L717.23,105.07 L737.85,116.74 L758.46,145.17 L779.08,151.49 L799.69,151.44 L820.31,147.15 L840.92,146.35 L861.54,152.92 L882.15,176.51 L902.77,177.99 L923.38,197.23 L944.00,168.80 L944,216 Z" class="plot-area"/>
+        <polyline points="140.00,69.96 160.62,89.85 181.23,77.61 201.85,77.89 222.46,124.09 243.08,134.15 263.69,104.01 284.31,153.05 304.92,164.27 325.54,167.21 346.15,151.36 366.77,160.60 387.38,173.68 408.00,181.27 428.62,174.02 449.23,176.45 469.85,162.01 490.46,120.12 511.08,95.92 531.69,95.77 552.31,95.73 572.92,40.77 593.54,46.54 614.15,82.86 634.77,70.51 655.38,87.25 676.00,110.25 696.62,100.15 717.23,105.07 737.85,116.74 758.46,145.17 779.08,151.49 799.69,151.44 820.31,147.15 840.92,146.35 861.54,152.92 882.15,176.51 902.77,177.99 923.38,197.23 944.00,168.80" class="plot-line"/>
+        <circle class="plot-dot" cx="944.00" cy="168.80" r="4"/>
+        <text class="plot-x" x="140" y="244">样本 1</text><text class="plot-x" x="944" y="244" text-anchor="end">样本 40</text>
+      </svg>
+      <figcaption>序列起点 2026-05-21 · 悬停或点按曲线查看采样值；各点日期未提供，末值不一定与主指标同日。</figcaption>
+      <details class="sample-table"><summary>查看 40 个采样值</summary><div class="sample-scroll"><table class="table"><caption>黄金原始采样值 · 美元/盎司</caption><thead><tr><th>样本序号</th><th class="n">数值</th></tr></thead><tbody><tr><td>1</td><td class="n">4,542.50</td></tr><tr><td>2</td><td class="n">4,448.40</td></tr><tr><td>3</td><td class="n">4,506.30</td></tr><tr><td>4</td><td class="n">4,505.00</td></tr><tr><td>5</td><td class="n">4,286.40</td></tr><tr><td>6</td><td class="n">4,238.80</td></tr><tr><td>7</td><td class="n">4,381.40</td></tr><tr><td>8</td><td class="n">4,149.40</td></tr><tr><td>9</td><td class="n">4,096.30</td></tr><tr><td>10</td><td class="n">4,082.40</td></tr><tr><td>11</td><td class="n">4,157.40</td></tr><tr><td>12</td><td class="n">4,113.70</td></tr><tr><td>13</td><td class="n">4,051.80</td></tr><tr><td>14</td><td class="n">4,015.90</td></tr><tr><td>15</td><td class="n">4,050.20</td></tr><tr><td>16</td><td class="n">4,038.70</td></tr><tr><td>17</td><td class="n">4,107.00</td></tr><tr><td>18</td><td class="n">4,305.20</td></tr><tr><td>19</td><td class="n">4,419.70</td></tr><tr><td>20</td><td class="n">4,420.40</td></tr><tr><td>21</td><td class="n">4,420.60</td></tr><tr><td>22</td><td class="n">4,680.60</td></tr><tr><td>23</td><td class="n">4,653.30</td></tr><tr><td>24</td><td class="n">4,481.50</td></tr><tr><td>25</td><td class="n">4,539.90</td></tr><tr><td>26</td><td class="n">4,460.70</td></tr><tr><td>27</td><td class="n">4,351.90</td></tr><tr><td>28</td><td class="n">4,399.70</td></tr><tr><td>29</td><td class="n">4,376.40</td></tr><tr><td>30</td><td class="n">4,321.20</td></tr><tr><td>31</td><td class="n">4,186.70</td></tr><tr><td>32</td><td class="n">4,156.80</td></tr><tr><td>33</td><td class="n">4,157.00</td></tr><tr><td>34</td><td class="n">4,177.30</td></tr><tr><td>35</td><td class="n">4,181.10</td></tr><tr><td>36</td><td class="n">4,150.00</td></tr><tr><td>37</td><td class="n">4,038.40</td></tr><tr><td>38</td><td class="n">4,031.40</td></tr><tr><td>39</td><td class="n">3,940.40</td></tr><tr><td>40</td><td class="n">4,074.90</td></tr></tbody></table></div></details>
+    </figure>
+      <dl class="market-kpis"><div class="market-kpi"><dt>年初至今</dt><dd class="num down">-5.13%<small></small></dd><dd class="metric-note">人民币金价 881.0</dd></div><div class="market-kpi"><dt>本轮累计</dt><dd class="num down">-24%<small></small></dd><dd class="metric-note">第16轮 · 10 个月</dd></div><div class="market-kpi"><dt>地缘威胁</dt><dd class="num flat">157<small></small></dd><dd class="metric-note">高于历史均值 100</dd></div></dl>
+      <div class="market-bottom"><details class="snapshot-note"><summary>研究记录 <time>2026-11-11</time></summary><p>国际金价 4,074.9 美元/盎司，年初至今 -5.88%；人民币金价 881.0 元/克。</p><p class="note-line">文字记录与指标快照独立更新，请按各自日期阅读。</p></details><a class="text-action" href="https://jst-well-dan.github.io/gold-dashboard/" target="_blank" rel="noopener">打开黄金看板<svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h16m-6-6 6 6-6 6"/></svg></a></div>
+    </section><div class="board-divider" aria-hidden="true"></div><section class="market-panel" aria-labelledby="market-h-1">
+      <div class="market-heading"><h3 id="market-h-1">温度指数</h3><span>指标截至 <time class="num">2026-11-11</time></span></div>
+      <div class="market-number"><span class="market-value num">68.9</span>
+          <span class="market-unit">分</span><span class="market-change num up">+8.7 较昨日</span></div><div class="market-verdict"><span class="verdict bull">升温 · 69 分</span><span class="snapshot-label">数据快照 · 非实时行情</span></div>
+      <figure class="market-chart" data-values="[46.9, 37.5, 40.6, 33.8, 50.7, 68.5, 44.3, 68.4, 55.8, 49.6, 42.7, 24.4, 16.9, 51.7, 31.8, 24.8, 40.7, 28.6, 46.3, 21.8, 22.4, 51.5, 49.4, 51.2, 45.0, 19.6, 75.5, 27.2, 24.3, 78.0, 16.8, 19.8, 61.0, 21.9, 84.0, 61.9, 19.8, 52.1, 60.2, 68.9]" data-unit="分">
+      <div class="plot-heading"><span>历史走势 <span class="plot-unit">分</span></span><output id="market-1-value">样本 40 / 40 · 68.90 分</output></div>
+      <svg class="market-plot" viewBox="0 0 960 250" tabindex="0" role="img" aria-labelledby="market-1-title market-1-desc">
+        <title id="market-1-title">GS50历史走势</title>
+        <desc id="market-1-desc">40 个按原始顺序排列的采样值，最小 16.80，最大 84.00。各点日期未提供，横轴为样本序号。</desc>
+        <line x1="140" x2="944" y1="22" y2="22" class="plot-grid"/><text class="plot-y" x="126" y="26" text-anchor="end">92.1</text><line x1="140" x2="944" y1="86" y2="86" class="plot-grid"/><text class="plot-y" x="126" y="90" text-anchor="end">64.6</text><line x1="140" x2="944" y1="151" y2="151" class="plot-grid"/><text class="plot-y" x="126" y="155" text-anchor="end">36.7</text><line x1="140" x2="944" y1="216" y2="216" class="plot-grid"/><text class="plot-y" x="126" y="220" text-anchor="end">8.7</text><path d="M140,216 L140.00,127.15 L160.62,149.03 L181.23,141.82 L201.85,157.65 L222.46,118.30 L243.08,76.86 L263.69,133.20 L284.31,77.09 L304.92,106.43 L325.54,120.86 L346.15,136.93 L366.77,179.53 L387.38,196.99 L408.00,115.97 L428.62,162.30 L449.23,178.60 L469.85,141.58 L490.46,169.75 L511.08,128.55 L531.69,185.59 L552.31,184.19 L572.92,116.44 L593.54,121.33 L614.15,117.14 L634.77,131.57 L655.38,190.71 L676.00,60.56 L696.62,173.01 L717.23,179.76 L737.85,54.74 L758.46,197.23 L779.08,190.24 L799.69,94.32 L820.31,185.35 L840.92,40.77 L861.54,92.23 L882.15,190.24 L902.77,115.04 L923.38,96.18 L944.00,75.93 L944,216 Z" class="plot-area"/>
+        <polyline points="140.00,127.15 160.62,149.03 181.23,141.82 201.85,157.65 222.46,118.30 243.08,76.86 263.69,133.20 284.31,77.09 304.92,106.43 325.54,120.86 346.15,136.93 366.77,179.53 387.38,196.99 408.00,115.97 428.62,162.30 449.23,178.60 469.85,141.58 490.46,169.75 511.08,128.55 531.69,185.59 552.31,184.19 572.92,116.44 593.54,121.33 614.15,117.14 634.77,131.57 655.38,190.71 676.00,60.56 696.62,173.01 717.23,179.76 737.85,54.74 758.46,197.23 779.08,190.24 799.69,94.32 820.31,185.35 840.92,40.77 861.54,92.23 882.15,190.24 902.77,115.04 923.38,96.18 944.00,75.93" class="plot-line"/>
+        <circle class="plot-dot" cx="944.00" cy="75.93" r="4"/>
+        <text class="plot-x" x="140" y="244">样本 1</text><text class="plot-x" x="944" y="244" text-anchor="end">样本 40</text>
+      </svg>
+      <figcaption>悬停或点按曲线查看采样值；各点日期未提供，末值不一定与主指标同日。</figcaption>
+      <details class="sample-table"><summary>查看 40 个采样值</summary><div class="sample-scroll"><table class="table"><caption>GS50原始采样值 · 分</caption><thead><tr><th>样本序号</th><th class="n">数值</th></tr></thead><tbody><tr><td>1</td><td class="n">46.90</td></tr><tr><td>2</td><td class="n">37.50</td></tr><tr><td>3</td><td class="n">40.60</td></tr><tr><td>4</td><td class="n">33.80</td></tr><tr><td>5</td><td class="n">50.70</td></tr><tr><td>6</td><td class="n">68.50</td></tr><tr><td>7</td><td class="n">44.30</td></tr><tr><td>8</td><td class="n">68.40</td></tr><tr><td>9</td><td class="n">55.80</td></tr><tr><td>10</td><td class="n">49.60</td></tr><tr><td>11</td><td class="n">42.70</td></tr><tr><td>12</td><td class="n">24.40</td></tr><tr><td>13</td><td class="n">16.90</td></tr><tr><td>14</td><td class="n">51.70</td></tr><tr><td>15</td><td class="n">31.80</td></tr><tr><td>16</td><td class="n">24.80</td></tr><tr><td>17</td><td class="n">40.70</td></tr><tr><td>18</td><td class="n">28.60</td></tr><tr><td>19</td><td class="n">46.30</td></tr><tr><td>20</td><td class="n">21.80</td></tr><tr><td>21</td><td class="n">22.40</td></tr><tr><td>22</td><td class="n">51.50</td></tr><tr><td>23</td><td class="n">49.40</td></tr><tr><td>24</td><td class="n">51.20</td></tr><tr><td>25</td><td class="n">45.00</td></tr><tr><td>26</td><td class="n">19.60</td></tr><tr><td>27</td><td class="n">75.50</td></tr><tr><td>28</td><td class="n">27.20</td></tr><tr><td>29</td><td class="n">24.30</td></tr><tr><td>30</td><td class="n">78.00</td></tr><tr><td>31</td><td class="n">16.80</td></tr><tr><td>32</td><td class="n">19.80</td></tr><tr><td>33</td><td class="n">61.00</td></tr><tr><td>34</td><td class="n">21.90</td></tr><tr><td>35</td><td class="n">84.00</td></tr><tr><td>36</td><td class="n">61.90</td></tr><tr><td>37</td><td class="n">19.80</td></tr><tr><td>38</td><td class="n">52.10</td></tr><tr><td>39</td><td class="n">60.20</td></tr><tr><td>40</td><td class="n">68.90</td></tr></tbody></table></div></details>
+    </figure>
+      <dl class="market-kpis"><div class="market-kpi"><dt>名单中位</dt><dd class="num up">+2.58%<small></small></dd><dd class="metric-note">超额 +2.17pt</dd></div><div class="market-kpi"><dt>上涨家数</dt><dd class="num up">30/41<small></small></dd><dd class="metric-note">涨停 4 家</dd></div><div class="market-kpi"><dt>成交额占比</dt><dd class="num flat">12.6<small>%</small></dd><dd class="metric-note">A 41 + 港 13</dd></div></dl>
+      <div class="market-bottom"><details class="snapshot-note"><summary>研究记录 <time>2026-11-11</time></summary><p>升温 69 分，名单跑赢沪深 300 2.17pt；占 A 股成交额 12.6%，10 日波动率 4.30%（剧烈）。</p><p class="note-line">文字记录与指标快照独立更新，请按各自日期阅读。</p></details><a class="text-action" href="https://jst-well-dan.github.io/gs50-dashboard/" target="_blank" rel="noopener">打开GS50看板<svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h16m-6-6 6 6-6 6"/></svg></a></div>
+    </section></div>
+    </section>
+    </main></div>
 <footer class="foot">
   <span>本站为个人研究记录，所有数字与结论仅供自己复盘使用，不构成投资建议。</span>
   <span class="spacer"></span>
-  <span>构建于 <span class="num">2026-11-18</span></span>
+  <span>构建于 <span class="num">2026-11-19</span></span>
   <a href="index.html">回到入口</a>
 </footer>
 <script src="assets/site.js"></script>

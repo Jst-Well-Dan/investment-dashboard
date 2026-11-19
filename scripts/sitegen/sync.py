@@ -116,7 +116,7 @@ def topbar_html(entry: Entry, group: Group, up: str, prev: Entry | None, next: E
     asof = f'数据截至 {entry.data_asof}' if entry.data_asof else ""
     parts = [
         '<div id="site-topbar">',
-        f'<a class="stb-home" href="{up}index.html" title="研究入口">←<span class="stb-lab">研究入口</span></a>',
+        f'<a class="stb-home" href="{up}index.html" title="今日看板">←<span class="stb-lab">今日看板</span></a>',
         f'<span class="stb-sep">/</span>',
         f'<a class="stb-group" href="{up}{group.url}">{_esc(group.name)}</a>',
         f'<span class="stb-sep">/</span>',
@@ -135,6 +135,10 @@ def topbar_html(entry: Entry, group: Group, up: str, prev: Entry | None, next: E
         prev_btn = btn(prev, "‹", "上一页")
         next_btn = btn(next, "›", "下一页")
         parts += ['<span class="stb-btns" style="display:flex;gap:4px">', prev_btn, next_btn, '</span>']
+    # 明暗切换：研究页的脚本（research-theme）统一监听这个 id，切完重载页面，
+    # 让内联 SVG 与 ECharts 用新的令牌重画。
+    parts.append('<button class="stb-btn" id="theme-btn" type="button" '
+                 'title="切换浅色 / 深色">◐<span class="stb-lab">明暗</span></button>')
     parts.append('</div>')
     return "".join(parts)
 
