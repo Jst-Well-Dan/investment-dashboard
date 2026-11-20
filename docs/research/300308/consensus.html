@@ -209,11 +209,11 @@ a:hover { text-decoration-color: var(--brand-f); }
 :where(tbody td) { border-color: var(--line-soft); }
 :where(td.num, td.n, th.num, .num) { font-variant-numeric: tabular-nums; }
 thead th { top: var(--topbar-h) !important; }
-.up, .pos, .dirup   { color: var(--up); }
-.down, .neg, .dirdn { color: var(--down); }
-.flat, .neu         { color: var(--flat); }
-.guide              { color: var(--guide); }
-.actual             { color: var(--actual); }
+.up.up, .pos.pos, .dirup.dirup       { color: var(--up); }
+.down.down, .neg.neg, .dirdn.dirdn   { color: var(--down); }
+.flat.flat, .neu.neu                 { color: var(--flat); }
+.guide.guide                         { color: var(--guide); }
+.actual.actual                       { color: var(--actual); }
 :where(.charthead, .chart-hint, .chart-note, .chart-foot) { color: var(--muted); }
 :where(.charthead .t, .chart-title) { color: var(--ink); }
 :where(.note, .callout, .card-note, .takeaway) { color: var(--ink-2); }

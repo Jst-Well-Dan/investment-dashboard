@@ -224,9 +224,9 @@ python scripts/sync_skill_theme.py --check   # 只报告漂移（适合提交前
 ```
 
 真源永远是 `theme/tokens.css` + `theme/research.css`；skill 里的 `assets/*.css` 是副本，
-改色只改 `theme/` 再同步，**不要直接改副本**。已接入的 skill：`report-consensus`；
-`report-gk` / `report-structure` 的副本已就位，模板迁移请参照 `consensus_template.html`
-（`{{THEME_CSS}}` 占位符 + head 注入切肤脚本）。
+改色只改 `theme/` 再同步，**不要直接改副本**。三个 skill 均已接入：
+`report-consensus` / `report-gk` / `report-structure`——模板里留 `{{THEME_CSS}}` 占位，
+由 `_shared/theme_inline.py` 的 `inline_theme()` 填充（`@font-face` 在内联时剔除）。
 
 注意：站点里那 11 个页面是历史产物，仍走 `<link href="../../assets/tokens.css">`，
 两者不冲突（同一份真源，只是交付方式不同）。

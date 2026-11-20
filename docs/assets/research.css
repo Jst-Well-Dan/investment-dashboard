@@ -113,13 +113,17 @@ a:hover { text-decoration-color: var(--brand-f); }
 thead th { top: var(--topbar-h) !important; }
 
 /* ------------------------------------------------------ 5. 涨跌语义
-   五个类名 + 两个别名，全部指向主题令牌。研究页里原来的 !important 已删掉，
-   这里不加 !important，谁后写谁生效。 */
-.up, .pos, .dirup   { color: var(--up); }
-.down, .neg, .dirdn { color: var(--down); }
-.flat, .neu         { color: var(--flat); }
-.guide              { color: var(--guide); }
-.actual             { color: var(--actual); }
+   五个类名 + 两个别名，全部指向主题令牌。
+
+   类名双写（`.pos.pos`）是为了拿特异度 (0,2,0)：研究页的表格基底规则
+   `table.t td{color:…}` 是 (0,1,2)，单类选择器 (0,1,0) 输给它，
+   红涨绿跌会在表格里静默失效（2026-11 曾发生：TD.pos 算出 --ink-2 灰）。
+   不用 !important 是因为页面还会用内联样式改写颜色，那条路得留着。 */
+.up.up, .pos.pos, .dirup.dirup       { color: var(--up); }
+.down.down, .neg.neg, .dirdn.dirdn   { color: var(--down); }
+.flat.flat, .neu.neu                 { color: var(--flat); }
+.guide.guide                         { color: var(--guide); }
+.actual.actual                       { color: var(--actual); }
 
 /* ------------------------------------------------------ 6. 图表容器
    研究页的图head/图注沿用它们自己的结构，只改边框与文字档位。 */
