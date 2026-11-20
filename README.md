@@ -170,6 +170,7 @@ Dan's Investment Dashboard/
 ├─ scripts/               所有可执行脚本（根目录不放 bat / py）
 │   ├─ pull_latest.py     从两个看板抓数，写回 research.yaml 的 auto 块
 │   ├─ research_theme_apply.py  把 11 个研究页源文件接进令牌体系（一次性，可重跑）
+│   ├─ sync_skill_theme.py       theme/ → 各 skill 的 assets/ 副本同步（--check 查漂移）
 │   └─ sitegen/           构建引擎
 │       ├─ model.py       读 research.yaml、校验、派生 URL / 作用域 / 论点状态
 │       ├─ sync.py        复制研究页：清洗本机路径 → 注入顶栏 → 扫描敏感串
@@ -210,6 +211,25 @@ python -m scripts.sitegen.build                  # 再构建
 4. **删掉页内明暗按钮**：`capex.html` 原来有一个自己的按钮和 `ct-theme` 偏好键，与顶栏的 `#theme-btn` 打架，已删除。
 
 改坏的回退点：11 个源文件的原始版本快照在 `sources-snapshot/`（未接主题之前，带 Tokyo Night / 靛紫 / 近纸本三套原样式）。
+
+### skill 生成的页面是单文件自足的
+
+从 skill（`consensus.py` / `gk.py` / `report_structure.py`）生成的页面**不靠** `<link href="../../assets/…">`，
+而是把主题令牌与共享层**内联**进 `<style id="theme-tokens">`。这样产物双击可开、可单独分享、
+也可以原样丢进任何目录。
+
+```bash
+python scripts/sync_skill_theme.py           # theme/ → 各 skill 的 assets/
+python scripts/sync_skill_theme.py --check   # 只报告漂移（适合提交前）
+```
+
+真源永远是 `theme/tokens.css` + `theme/research.css`；skill 里的 `assets/*.css` 是副本，
+改色只改 `theme/` 再同步，**不要直接改副本**。已接入的 skill：`report-consensus`；
+`report-gk` / `report-structure` 的副本已就位，模板迁移请参照 `consensus_template.html`
+（`{{THEME_CSS}}` 占位符 + head 注入切肤脚本）。
+
+注意：站点里那 11 个页面是历史产物，仍走 `<link href="../../assets/tokens.css">`，
+两者不冲突（同一份真源，只是交付方式不同）。
 
 ## 主题
 
@@ -271,7 +291,6 @@ python -m http.server 8080 --directory docs
 - **「今天」的数字要手动刷一次**：跑 `python scripts/pull_latest.py` 才会更新，构建本身不联网、不读别的仓库。
   这是刻意的——`research.yaml` 是唯一事实源，构建必须离线可复现。
 - **高盛研报那页没上线**：`report_300308_goldman.html` 含第三方研报原文摘录，公开前需要确认引用范围。加进 `research.yaml` 一行即可上线。
-- **研究页的样式统一是一次性脚本改的源文件**（`scripts/research_theme_apply.py`）。下次从 skill 重新生成页面（`report_pack.py`）会**覆盖**这些改动，届时要把同样的令牌化逻辑搬进 `.pi/skills/report-*/scripts/*_template.html`。
-  这是刻意的取舍：先把站内 11 页改对、可验收，再改生成器。
+- **研究页的样式统一是一次性脚本改的源文件**（`scripts/research_theme_apply.py`）。`report-consensus` 的模板已经接入令牌体系（内联色值 → `var(--token)` + `hx()` 间接层 + head 链接 `tokens.css`/`research.css`），重生不会再退回深色写死配色；`report-gk` / `report-structure` 的模板仍待迁移。
 - **切明暗会重载页面**：研究页的 SVG / ECharts 是脚本画的，切肤后必须重画；用 `location.reload()` 换可靠，代价是丢滚动位置与已展开的 `<details>`。
-- **`300308/consensus` 页里有三段模板没有的手写块**（数据与口径 / 图层与操作 / 事件与分段规则）。现有的 HTML 保留着；下次用 `consensus.py` 重生该页会丢这三段，需要先补进模板。
+- **`consensus` 页尾的三段折叠块（数据与口径 / 图层与操作 / 事件与分段规则）已经进入模板**，且全部走变量注入（`{{GAP*}}` / `{{RCROWS}}` / `{{EVTH}}` …），重跑 `consensus.py` 不会丢，也不会留下旧快照数字。
