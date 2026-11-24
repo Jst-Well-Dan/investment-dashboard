@@ -268,6 +268,16 @@ def patch(text: str, entry_id: str, block: list[str]) -> tuple[str, bool]:
                 break
             end += 1
         new = lines[:end] + body + lines[end:]
+
+    # 条目级的 data_asof 也得跟：它驱动看板托管页的顶栏「数据截至」和档案卡片，
+    # 不跟着走就会出现「页面里写 11-24、顶栏写 11-20」。date（建档日）不动。
+    day = next((ln.split(":", 1)[1].strip() for ln in block
+                if ln.strip().startswith("asof:")), "")
+    if day:
+        for i in range(id_line + 1, min(latest_i, len(new))):
+            if new[i].startswith("    data_asof:"):
+                new[i] = f"    data_asof: {day}"
+                break
     return "\n".join(new) + ("\n" if text.endswith("\n") else ""), True
 
 

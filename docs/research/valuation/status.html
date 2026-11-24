@@ -586,7 +586,7 @@ code.k{color:#1d4ed8}
 })();
 </script>
 </head>
-<body class="has-site-topbar"><div id="site-topbar"><a class="stb-home" href="../../index.html" title="今日看板">←<span class="stb-lab">今日看板</span></a><span class="stb-sep">/</span><span class="stb-group">宏观估值</span><span class="stb-sep">/</span><span class="stb-title">股债收益差 · 数据状态</span><span class="stb-spacer"></span><span class="stb-asof">数据截至 2026-11-20</span><button class="stb-btn" id="theme-btn" type="button" title="切换浅色 / 深色">◐<span class="stb-lab">明暗</span></button></div>
+<body class="has-site-topbar"><div id="site-topbar"><a class="stb-home" href="../../index.html" title="今日看板">←<span class="stb-lab">今日看板</span></a><span class="stb-sep">/</span><span class="stb-group">宏观估值</span><span class="stb-sep">/</span><span class="stb-title">股债收益差 · 数据状态</span><span class="stb-spacer"></span><span class="stb-asof">数据截至 2026-11-24</span><button class="stb-btn" id="theme-btn" type="button" title="切换浅色 / 深色">◐<span class="stb-lab">明暗</span></button></div>
 <nav class="bar"><div class="bar-in">
   <a class="brand" href="spread.html"><span class="dot main"></span>股债收益差</a>
   <span class="sp"></span>
@@ -603,20 +603,20 @@ code.k{color:#1d4ed8}
 </header>
 
 <div class="stats">
-  <div class="stat"><div class="k">成功</div><div class="v g">2</div>
+  <div class="stat"><div class="k">成功</div><div class="v g">3</div>
     <div class="f">台账 status = ok 且磁盘有数据</div></div>
   <div class="stat"><div class="k">跳过</div><div class="v b">5</div>
     <div class="f">未到 TTL 或上游无新数据</div></div>
-  <div class="stat"><div class="k">降级</div><div class="v o">1</div>
+  <div class="stat"><div class="k">降级</div><div class="v o">0</div>
     <div class="f">有旧数据但偏旧 / 上游报错</div></div>
   <div class="stat"><div class="k">失败</div><div class="v r">0</div>
     <div class="f">磁盘无数据，或台账与磁盘不符</div></div>
 </div>
 
-<div class="alert warn"><b>1 个接口数据偏旧</b>：中美 10 年期国债收益率</div>
+<div class="alert ok"><b>全部接口正常</b>—— 八个数据源都在，最近一次抓取没有失败。</div>
 
 <div class="meta-bar">
-  <span>最近一次抓取 <b>2026-11-24 21:57</b>（手动）</span>
+  <span>最近一次抓取 <b>2026-11-24 21:48</b>（手动）</span>
   <span>数据区间 <b>20261124</b> ~ <b>20261124</b></span>
   <span>合计 <b>43,411</b> 行</span>
   
@@ -633,7 +633,7 @@ code.k{color:#1d4ed8}
   <td><span class="dot ok"></span><span class="st ok">成功</span></td>
   <td><div class="lb">乐咕沪深300股债利差</div><code class="k">ak:legu</code></td>
   <td><span class="freq">日频</span></td>
-  <td><span class="when g">刚刚</span><span class="exact">2026-11-24 21:57</span></td>
+  <td><span class="when g">2 分钟前</span><span class="exact">2026-11-24 21:48</span></td>
   <td class="num ">—</td>
   <td class="num">6.30%</td>
   <td class="num dim2">5,250</td>
@@ -643,27 +643,27 @@ code.k{color:#1d4ed8}
   <td><span class="dot ok"></span><span class="st ok">成功</span></td>
   <td><div class="lb">沪深300 PE / PE_TTM / PB</div><code class="k">basic:hs300</code></td>
   <td><span class="freq">日频</span></td>
-  <td><span class="when g">刚刚</span><span class="exact">2026-11-24 21:57</span></td>
+  <td><span class="when g">2 分钟前</span><span class="exact">2026-11-24 21:48</span></td>
   <td class="num ">20261124</td>
   <td class="num">13.51</td>
   <td class="num dim2">5,255</td>
   <td class="note2">5,255 行  最新 20261124 = 13.51</td>
 </tr>
 <tr>
-  <td><span class="dot stale"></span><span class="st stale">降级</span></td>
+  <td><span class="dot ok"></span><span class="st ok">成功</span></td>
   <td><div class="lb">中美 10 年期国债收益率</div><code class="k">ak:rates</code></td>
   <td><span class="freq">日频</span></td>
-  <td><span class="when g">9 分钟前</span><span class="exact">2026-11-24 21:48</span></td>
+  <td><span class="when g">2 分钟前</span><span class="exact">2026-11-24 21:48</span></td>
   <td class="num ">20261124</td>
   <td class="num">1.59%</td>
   <td class="num dim2">5,837</td>
-  <td class="note2">接口报错：bond_zh_us_rate 已在 1.20.41 更名为 bond_zh_us_yield_em，请改用 ak.bond_zh_us_y</td>
+  <td class="note2">5,837 行  最新 20261124 = 1.59</td>
 </tr>
 <tr>
   <td><span class="dot skip"></span><span class="st skip">跳过</span></td>
   <td><div class="lb">沪深300</div><code class="k">ts:000300.SH</code></td>
   <td><span class="freq">日频</span></td>
-  <td><span class="when g">刚刚</span><span class="exact">2026-11-24 21:57</span></td>
+  <td><span class="when g">2 分钟前</span><span class="exact">2026-11-24 21:48</span></td>
   <td class="num ">20261124</td>
   <td class="num">3,963.82</td>
   <td class="num dim2">5,559</td>
@@ -673,7 +673,7 @@ code.k{color:#1d4ed8}
   <td><span class="dot skip"></span><span class="st skip">跳过</span></td>
   <td><div class="lb">中证红利</div><code class="k">ts:000922.CSI</code></td>
   <td><span class="freq">日频</span></td>
-  <td><span class="when g">刚刚</span><span class="exact">2026-11-24 21:57</span></td>
+  <td><span class="when g">2 分钟前</span><span class="exact">2026-11-24 21:48</span></td>
   <td class="num ">20261124</td>
   <td class="num">5,447.88</td>
   <td class="num dim2">5,317</td>
@@ -683,7 +683,7 @@ code.k{color:#1d4ed8}
   <td><span class="dot skip"></span><span class="st skip">跳过</span></td>
   <td><div class="lb">中证红利全收益</div><code class="k">ts:H00922.CSI</code></td>
   <td><span class="freq">日频</span></td>
-  <td><span class="when g">刚刚</span><span class="exact">2026-11-24 21:57</span></td>
+  <td><span class="when g">2 分钟前</span><span class="exact">2026-11-24 21:48</span></td>
   <td class="num ">20261124</td>
   <td class="num">11,881.59</td>
   <td class="num dim2">5,317</td>
@@ -693,7 +693,7 @@ code.k{color:#1d4ed8}
   <td><span class="dot skip"></span><span class="st skip">跳过</span></td>
   <td><div class="lb">沪深300全收益</div><code class="k">ts:H00300.CSI</code></td>
   <td><span class="freq">日频</span></td>
-  <td><span class="when g">刚刚</span><span class="exact">2026-11-24 21:57</span></td>
+  <td><span class="when g">2 分钟前</span><span class="exact">2026-11-24 21:48</span></td>
   <td class="num ">20261124</td>
   <td class="num">5,969.92</td>
   <td class="num dim2">5,317</td>
@@ -703,7 +703,7 @@ code.k{color:#1d4ed8}
   <td><span class="dot skip"></span><span class="st skip">跳过</span></td>
   <td><div class="lb">中证全债</div><code class="k">ts:H11001.CSI</code></td>
   <td><span class="freq">日频</span></td>
-  <td><span class="when g">刚刚</span><span class="exact">2026-11-24 21:57</span></td>
+  <td><span class="when g">2 分钟前</span><span class="exact">2026-11-24 21:48</span></td>
   <td class="num ">20261124</td>
   <td class="num">269.44</td>
   <td class="num dim2">5,559</td>
@@ -741,7 +741,7 @@ code.k{color:#1d4ed8}
 
 <footer>
   台账 <code>data/fetch_manifest.json</code> · 生成时间
-  2026-11-24 21:57 CST<br>
+  2026-11-24 21:51 CST<br>
   数据来自 tushare <code>index_daily</code> / <code>index_dailybasic</code>
   与 akshare <code>bond_zh_us_rate</code>。
 </footer>
