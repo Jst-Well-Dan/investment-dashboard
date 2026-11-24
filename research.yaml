@@ -150,7 +150,7 @@ research:
     short: 股债收益差
     kind: dashboard
     topics: [市场与制度]
-    source: E:/Python_Doc/Investment/20261122 五年看板/docs/spread.html
+    source: spread/docs/spread.html
     slug: spread
     date: 2026-11-20
     data_asof: 2026-11-20
@@ -183,7 +183,7 @@ research:
     short: 数据状态
     kind: tracker
     topics: [市场与制度]
-    source: E:/Python_Doc/Investment/20261122 五年看板/docs/status.html
+    source: spread/docs/status.html
     slug: status
     date: 2026-11-20
     data_asof: 2026-11-20

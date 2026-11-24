@@ -1,0 +1,6 @@
+# 股债收益差取数与出页面（本地跑 / GitHub Actions 跑都用这一份）
+pandas>=2.2
+numpy>=1.26
+akshare>=1.16        # 乐咕股债利差、中美 10 年国债（东财）
+tushare>=1.4         # 指数日线、沪深300 PE/PB
+requests>=2.31

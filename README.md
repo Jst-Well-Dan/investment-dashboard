@@ -19,6 +19,10 @@ python scripts/pull_latest.py        # 从黄金 / GS50 / 股债收益差的数�
 python -m scripts.sitegen.build      # 重建整站 + 检查
 ```
 
+股债收益差那块现在**云端自己跑**（`.github/workflows/spread-daily.yml`，每交易日北京 18:10 / 20:10），
+不用手动；上面这两条是本地想立刻看到新数时的做法。
+黄金 / GS50 的读数仍由它们自己的 Actions 出数，本站这边需要跑一次 `pull_latest.py` 才会抄过来。
+
 `scripts/pull_latest.py` 只替换 `research.yaml` 里每条研究 `latest:` 下 `# >>> auto` 到 `# <<< auto`
 之间的内容；你手写的 `text:` / `summary:` 一个字都不动。源文件找不到时会跳过并提示，
 不会把 `research.yaml` 写成半截。
@@ -161,23 +165,20 @@ Dan's Investment Dashboard/
 ├─ research.yaml          ★ 唯一事实源：研究条目 + 可跟踪判断 + 今日卡片数据
 ├─ scripts/               所有可执行脚本（根目录不放 bat / py）
 │   ├─ pull_latest.py     从两个看板抓数，写回 research.yaml 的 auto 块
-│   └─ sitegen/           构建引擎
-│       ├─ model.py       读 research.yaml、校验、派生 URL / 作用域 / 论点状态
-│       ├─ sync.py        复制研究页：清洗本机路径 → 注入顶栏 → 扫描敏感串
-│       ├─ home.py        首页看板（线圈、KPI、复核日期带）
-│       ├─ render.py      今日看板 / 档案 / 判断跟踪 / 分组页 / 主题样本页
-│       └─ build.py       一条命令跑完整站 + 死链检查
-├─ scripts/               所有可执行脚本（根目录不放 bat / py）
-│   ├─ pull_latest.py     从两个看板抓数，写回 research.yaml 的 auto 块
 │   ├─ research_theme_apply.py  把 11 个研究页源文件接进令牌体系（一次性，可重跑）
 │   ├─ sync_skill_theme.py       theme/ → 各 skill 的 assets/ 副本同步（--check 查漂移）
-│   ├─ sync_board_theme.py       theme/ → 三个独立看板仓库的 theme.css / theme.js（--check 查漂移）
+│   ├─ sync_board_theme.py       theme/ → 各看板的 theme.css / theme.js（--check 查漂移）
 │   └─ sitegen/           构建引擎
 │       ├─ model.py       读 research.yaml、校验、派生 URL / 作用域 / 论点状态
 │       ├─ sync.py        复制研究页：清洗本机路径 → 注入顶栏 → 扫描敏感串
 │       ├─ home.py        首页看板（线圈、KPI、复核日期带）
 │       ├─ render.py      今日看板 / 档案 / 判断跟踪 / 分组页 / 主题样本页
-│       └─ build.py       一条命令跑完整站 + 死链检查
+│       └─ build.py       一条命令跑完整站 + 死链检查（--partial：缺源页沿用旧产物）
+├─ spread/               股债收益差的数据流水线（取数与出页面，自带 requirements）
+│   ├─ scripts/           fetch_data / build_ev / build_status / metrics / chartlib …
+│   ├─ data/              CSV 缓存 + 抓取台账（要提交）
+│   └─ docs/              中间产物 spread.html / status.html / data/latest.json（不进 git）
+├─ .github/workflows/     spread-daily.yml（取数 → 搬读数 → 重建站点 → 提交）
 ├─ theme/                 tokens.css（令牌）、theme.css（站点组件）、research.css（研究页共享层）、
 │                         site.js（主题切换 / 筛选）、fonts/（自托管衬线）
 ├─ sources-snapshot/      11 个研究页源文件的原始快照（未接主题之前，用于回退）
@@ -215,8 +216,9 @@ python -m scripts.sitegen.build                  # 再构建
 
 ### 三个独立看板共用同一套色板
 
-黄金看板、GS50 温度看板、五年看板是各自独立的仓库 / Actions / Pages，不经过本站构建。
-它们要和本站内页长得像，靠的是**同步一份合并好的主题**，而不是相对路径引用本站资源：
+黄金看板、GS50 温度看板是各自独立的仓库 / Actions / Pages，股债收益差现在就在本仓库的
+`spread/`，但两者都**不经过本站渲染**。它们要和本站内页长得像，靠的是**同步一份合并好的主题**，
+而不是相对路径引用本站资源：
 
 ```bash
 python scripts/sync_board_theme.py           # theme/tokens.css（去 @font-face）+ theme/board-skin.css
@@ -224,7 +226,7 @@ python scripts/sync_board_theme.py           # theme/tokens.css（去 @font-face
 python scripts/sync_board_theme.py --check   # 只报告哪份副本漂移（提交前跑）
 ```
 
-- 目标位置：黄金看板 `web/`，GS50 与五年看板 `scripts/`（与各自的构建脚本同级）。
+- 目标位置：黄金看板 `web/`，GS50 `scripts/`，股债收益差 `spread/scripts/`（都在各自的构建脚本同级）。
 - 各看板的构建脚本把 `theme.css` 内联进单文件 HTML 的 `<style>` **最前面**，再跟自己的版式 CSS；
   版式 CSS 里只写 `var(--…)`，不写色值。
 - `board-skin.css` 负责三件事：把看板的历史变量名（`--bg / --panel / --ink / --accent` …）别名到令牌；
@@ -233,14 +235,44 @@ python scripts/sync_board_theme.py --check   # 只报告哪份副本漂移（提
   切到深色；切档 `location.reload()`，让构建期生成的 SVG 里的令牌重新取值。偏好键同本站：`dan-dash-theme`。
 - 真源永远在本仓库 `theme/`。改色板 → 跑同步 → 三个看板重新构建，**不要直接改副本**。
 
-### 股债收益差看板：托管进站
+### 股债收益差看板：数据流水线在本仓库里
 
-五年看板（`E:/Python_Doc/Investment/20261122 五年看板`）的 `spread.html` 与 `status.html`
-**不做外链，直接托管**：`research.yaml` 里两条研究的 `source:` 指向那个仓库 `docs/` 里的产物，
-构建时复制进 `research/valuation/`，和其他研究页一样注入顶栏、清洗本机路径、参与死链检查。
+股债收益差的取数与出页面（原来在 `E:/Python_Doc/Investment/20261122 五年看板`，一个**没有 git、
+没有 CI、靠双击 bat** 的目录）已于 2026-11 并进本仓库：
 
-- 首页：`spread-dashboard` 带 `today: true`，成为第三块看板；它的读数由五年看板自己算好后
-  写进 `docs/data/latest.json`（同一次 build 里算的，口径不在这里重算），
+```
+spread/scripts/   取数（fetch_data.py）+ 出页面（build_ev / build_status）+ pagelib / chartlib / metrics / theme
+spread/data/      CSV 缓存 + 抓取台账 fetch_manifest.json（跨运行唯一可信状态，要提交）
+spread/docs/      中间产物：spread.html / status.html / data/latest.json（每次重生成，不进 git）
+```
+
+**为什么搬进来**：它原来只在手动双击 `run_daily.bat` 时更新，一旦忘了跑，本站首页那块
+「股债收益差」就停在旧日期上（实际断更过 4 天）；而且那个目录不在 git 里，等于没有备份。
+
+**每天怎么跑**：`.github/workflows/spread-daily.yml`（定时北京 18:10 / 20:10，也可手动 `workflow_dispatch`）
+
+1. `python spread/scripts/run_daily.py` → 抓 8 个接口，重出 `spread/docs/*.html` + `latest.json`
+2. `python scripts/pull_latest.py spread` → 只搬读数进 `research.yaml` 的 auto 块
+3. `python -m scripts.sitegen.build --partial` → 重出站点
+4. 有变化就 commit + push，Pages 自动上线
+
+**`--partial` 是什么**：`research.yaml` 里 9 个研究页的 `source:` 指向本机
+（`Investment_Workflow` 下的个股报告），云端拿不到。`--partial` 让这些页面沿用 `docs/` 里
+上次提交的副本，只重出「依赖数据、每天会变」的看板与首页/档案/判断页。
+本地照旧跑全量 `python -m scripts.sitegen.build`，缺源直接报错——**云端宽松、本地严格**，
+免得「本机能构建」掩盖真实缺口。
+
+**凭证**：`TUSHARE_TOKEN` 走 GitHub Actions secret（本仓库已配）。本地想重抓就写
+`spread/.env` 里的 `tushare_token=`，或者直接 `export TUSHARE_TOKEN=…`。
+
+### 股债收益差：托管进站
+
+`spread/docs/` 里的 `spread.html` 与 `status.html` **不做外链，直接托管**：`research.yaml`
+里两条研究的 `source:` 指向它们（仓内相对路径），构建时复制进 `research/valuation/`，
+和其他研究页一样注入顶栏、清洗本机路径、参与死链检查。
+
+- 首页：`spread-dashboard` 带 `today: true`，成为第三块看板；它的读数由 `build_ev.py` 自己算好后
+  写进 `spread/docs/data/latest.json`（同一次 build 里算的，口径不在这里重算），
   `python scripts/pull_latest.py spread` 只做格式搬运。
 - 分组：`valuation`（宏观估值）**没有 `scope`**，所以不进「研究档案」三段，只作为首页数据来源
   和顶栏面包屑——和 `market` 一样。
@@ -325,8 +357,12 @@ python -m http.server 8080 --directory docs
 
 ## 已知限制
 
-- **「今天」的数字要手动刷一次**：跑 `python scripts/pull_latest.py` 才会更新，构建本身不联网、不读别的仓库。
-  这是刻意的——`research.yaml` 是唯一事实源，构建必须离线可复现。
+- **「今天」的数字里只有股债收益差在云端自动刷**：它由 `.github/workflows/spread-daily.yml` 每天取数、
+  搬读数、重建站点、提交。黄金与 GS50 的数据在它们自己的仓库里跑，本站这边**仍要手动跑一次
+  `python scripts/pull_latest.py` 再构建**——构建本身不联网、不读别的仓库，`research.yaml` 是唯一事实源。
+- **云端构建靠 `--partial`**：9 个研究页的 source 指向本机（`Investment_Workflow`），Actions 拿不到，
+  所以云端只重出「依赖数据」的页面，那些研究页沿用 `docs/` 里上次提交的副本。
+  想更新它们：本地跑全量构建后提交。
 - **高盛研报那页没上线**：`report_300308_goldman.html` 含第三方研报原文摘录，公开前需要确认引用范围。加进 `research.yaml` 一行即可上线。
 - **研究页的样式统一是一次性脚本改的源文件**（`scripts/research_theme_apply.py`）。`report-consensus` 的模板已经接入令牌体系（内联色值 → `var(--token)` + `hx()` 间接层 + head 链接 `tokens.css`/`research.css`），重生不会再退回深色写死配色；`report-gk` / `report-structure` 的模板仍待迁移。
 - **切明暗会重载页面**：研究页的 SVG / ECharts 是脚本画的，切肤后必须重画；用 `location.reload()` 换可靠，代价是丢滚动位置与已展开的 `<details>`。

@@ -30,15 +30,15 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 YAML_PATH = ROOT / "research.yaml"
-
 # 两个看板的本地数据位置（可用环境变量覆盖）
 GOLD_JSON = Path(os.environ.get(
     "DAN_GOLD_JSON", r"E:/Python_Doc/Investment/20261107 黄金看板/data/board.json"))
 GS50_DIR = Path(os.environ.get(
     "DAN_GS50_DIR", r"E:/Python_Doc/Investment/20261029 gs50_dashboard/docs/data"))
 # 五年看板（股债收益差）自己算好读数写成一份 JSON，这里只负责搬运，不重算口径。
+# 2026-11 起它的数据流水线搬进了本仓库 spread/，CI 每天重出一份，路径也跟着进仓。
 SPREAD_JSON = Path(os.environ.get(
-    "DAN_SPREAD_JSON", r"E:/Python_Doc/Investment/20261122 五年看板/docs/data/latest.json"))
+    "DAN_SPREAD_JSON", ROOT / "spread" / "docs" / "data" / "latest.json"))
 
 AUTO_OPEN = "      # >>> auto（由 scripts/pull_latest.py 写入，不要手改）"
 AUTO_CLOSE = "      # <<< auto"

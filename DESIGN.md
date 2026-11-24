@@ -74,19 +74,20 @@
 
 ## 5. 看板皮肤（独立部署的三个看板）
 
-黄金看板、GS50 温度看板、五年看板各自独立仓库 / Actions / Pages，不经过本站构建，但共用同一套色板与语义：
+黄金看板、GS50 温度看板、股债收益差看板各自构建、不经过本站渲染，但共用同一套色板与语义
+（股债收益差 2026-11 起就在本仓库 `spread/`，黄金与 GS50 是各自独立的仓库）：
 
 - **真源只有份**：`theme/tokens.css`（色板 + 字号 + 形状）+ `theme/board-skin.css`（历史变量名别名、页面基底、涨跌语义、明暗开关）。
-- **分发方式**：`scripts/sync_board_theme.py` 把两份合成一个 `theme.css`，连同 `theme.js` 写进各仓库（黄金 `web/`，GS50 与五年看板 `scripts/`），由各自的构建脚本**内联**进单文件 HTML 的 `<style>` 最前面。`--check` 用来防漂移（改色板 → 同步 → 三个仓库才一致）。
+- **分发方式**：`scripts/sync_board_theme.py` 把两份合成一个 `theme.css`，连同 `theme.js` 写进各看板的样式目录（黄金 `web/`，GS50 与股债收益差 `scripts/`），由各自的构建脚本**内联**进单文件 HTML 的 `<style>` 最前面。`--check` 用来防漂移（改色板 → 同步 → 各看板才一致）。
 - **不引 `@font-face`**：看板不自托管 Newsreader（中文本来回退系统字体），省 280KB。
 - **颜色只写一次**：三个仓库的 CSS 与 SVG 里一律 `var(--…)`；`sync_board_theme.py` 会随主题更新，不需要逐仓库改。
-- **明暗**：默认纸本浅色（`<html data-theme="light">` 由 `theme.js` 在样式生效前写上，不跟系统走），顶栏 `.theme-toggle` 切到深色；切档 `location.reload()`，因为 GS50 / 五年看板的图是构建期生成的 SVG（令牌写在属性里，重载后自动取新值），黄金看板的 ECharts 则需要重画。偏好键同样是 `dan-dash-theme`。
-- **涨跌口径**：三个看板都是 A 股习惯，涨朱 `--up`、跌石绿 `--down`；五年看板原来是绿涨红跌（美股口径），现已对齐。
+- **明暗**：默认纸本浅色（`<html data-theme="light">` 由 `theme.js` 在样式生效前写上，不跟系统走），顶栏 `.theme-toggle` 切到深色；切档 `location.reload()`，因为 GS50 / 股债收益差的图是构建期生成的 SVG（令牌写在属性里，重载后自动取新值），黄金看板的 ECharts 则需要重画。偏好键同样是 `dan-dash-theme`。
+- **涨跌口径**：三个看板都是 A 股习惯，涨朱 `--up`、跌石绿 `--down`；股债收益差原来是绿涨红跌（美股口径），现已对齐。
 - **已知边界**：`color-mix(in oklch, …)` 在两个引擎里插值路径不完全一致（同一条温度计色带 Chrome 偏青、Firefox 偏黄绿），所以刻度条这类“相邻色过渡”的渐变改为直接列令牌色标，不做二次混色。
-- **托管进站**：五年看板的 `spread.html` / `status.html` 是**源文件直接托管**（`research.yaml` 的 `source:` 指向 `docs/` 里的产物），构建时复制到 `research/valuation/`，所以它们是全站唯一「源在别处、样式却由本站出」的两个页面。两页内联的 `theme.css` 就是同步脚本的产物，令牌与本站完全同名，因此顶栏、明暗按钮、涨跌语义天然一致。
+- **托管进站**：`spread/docs/` 里的 `spread.html` / `status.html` 是**源文件直接托管**（`research.yaml` 的 `source:` 指向仓内相对路径），构建时复制到 `research/valuation/`。两页内联的 `theme.css` 就是同步脚本的产物，令牌与本站完全同名，因此顶栏、明暗按钮、涨跌语义天然一致。
   - 注入顶栏后要给 `body` 加 `has-site-topbar`：页面自带的 `.bar` 不再吸顶（否则两条黑带叠在顶部），自带的 `.theme-toggle` 隐藏（顶栏已有「明暗」），侧栏目录改吸在站点顶栏下。
   - 顶栏的分组链接只在 `group.scope` 非空时才给：市场看板这类不进档案的组没有 `research/<group>/index.html`，链过去是死链。
-  - 首页读数由五年看板自己算好后写 `docs/data/latest.json`（同一次 build 里算的，口径不重算），本站 `pull_latest.py` 的 `spread` 通道只做格式转换。
+  - 首页读数由 `build_ev.py` 自己算好后写 `spread/docs/data/latest.json`（同一次 build 里算的，口径不重算），本站 `pull_latest.py` 的 `spread` 通道只做格式转换。
 
 ## 6. 动效与无障碍
 

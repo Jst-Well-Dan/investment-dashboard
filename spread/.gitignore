@@ -1,0 +1,7 @@
+# 只有 .env（tushare token）与出页面产物不进库。
+#   data/*.csv + fetch_manifest.json 必须提交：跨运行的缓存与抓取台账，
+#   否则每次 CI 都全量重抓，status.html 的「上次抓取」也无从追溯。
+#   docs/ 是每次跑都重新生成的中间产物（带时间戳，提交只会让 git 历史膨胀）。
+__pycache__/
+.env
+docs/

@@ -142,7 +142,13 @@ def load(path: Path | None = None) -> dict:
         if item["group"] not in groups:
             raise ConfigError(f"[research.yaml] {where} 的 group 不存在：{item['group']}")
 
-        source = Path(item["source"]) if item.get("source") else None
+        # 相对路径按仓库根解析：这样仓内的看板产物（spread/docs/*.html）也能当 source，
+        # 不依赖当前工作目录，云端 CI 与本地跑出同一个结果。
+        source = None
+        if item.get("source"):
+            source = Path(item["source"])
+            if not source.is_absolute():
+                source = ROOT / source
         external = bool(item.get("external"))
         slug = item.get("slug") or eid
 

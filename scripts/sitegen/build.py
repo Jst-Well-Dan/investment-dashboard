@@ -20,7 +20,14 @@ def log(msg: str) -> None:
     print(msg, flush=True)
 
 
-def build() -> int:
+def build(partial: bool = False) -> int:
+    """partial=True：源文件不在本机时，沿用 docs/ 里已有的旧产物。
+
+    为什么要这个开关：research.yaml 里有的 source 指向本机目录（个股研究页在
+    Investment_Workflow 下），GitHub Actions 上拿不到。云端只需要重出「依赖
+    数据、每天会变」的页面（看板 + 首页/档案/判断），那 9 个研究页沿用上次提交的
+    副本就够了。本地正常构建仍是全量：源文件缺失直接报错，绝不静默发布。
+    """
     cfg = model.load()
     site = cfg["site"]
     # 只精确到日：同一天重复构建产物字节一致（约束 C5 幂等）
@@ -29,6 +36,23 @@ def build() -> int:
     problems: list[str] = []
 
     DOCS.mkdir(parents=True, exist_ok=True)
+
+    # 删除之前先把「本机没源文件」的已有产物收进内存，partial 模式下原样放回。
+    carried: dict[Path, bytes] = {}
+    carried_ids: set[str] = set()
+    if partial:
+        for g in cfg["groups"]:
+            for e in g.entries:
+                if not e.source or e.external or e.source.exists():
+                    continue
+                keep = DOCS / e.url
+                if keep.exists():
+                    carried[keep] = keep.read_bytes()
+                    carried_ids.add(e.id)
+                else:
+                    problems.append(
+                        f"[缺源且无旧产物] {e.id}：{e.source} 不存在，docs/ 里也没有 {e.url}")
+
     for child in list(DOCS.iterdir()):
         if child.is_dir():
             shutil.rmtree(child)
@@ -58,6 +82,10 @@ def build() -> int:
             next_ = local[i + 1] if (nav_ok and i + 1 < len(local)) else None
             try:
                 info = sync.sync_entry(e, g, DOCS, prev, next_)
+            except FileNotFoundError as exc:
+                if e.id not in carried_ids:   # partial 模式下已经收进 carried，不算问题
+                    problems.append(f"[同步失败] {e.id}: {exc}")
+                continue
             except Exception as exc:  # noqa: BLE001
                 problems.append(f"[同步失败] {e.id}: {exc}")
                 continue
@@ -65,6 +93,12 @@ def build() -> int:
                 stats.append(info)
                 note = f"（清洗 {info['redacted']} 处）" if info["redacted"] else ""
                 log(f"  同步 {e.id:<22} → {e.url}  {info['bytes'] / 1024:,.0f} KB{note}")
+
+    # partial：把本机缺源的产物放回去（这些页面这次没重出，但文件仍要在）
+    for p, blob in carried.items():
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_bytes(blob)
+        log(f"  沿用 {p.relative_to(DOCS)}（本机无源，保留上次产物）")
 
     # ---------------------------------------------------- 页面
     pages: list[tuple[str, str]] = []
@@ -119,10 +153,11 @@ def build() -> int:
 
 
 def main() -> int:
-    log(f"构建站点 → {DOCS}")
+    partial = "--partial" in sys.argv[1:]
+    log(f"构建站点 → {DOCS}" + ("（partial：缺源页面沿用旧产物）" if partial else ""))
     log("")
     try:
-        return build()
+        return build(partial=partial)
     except model.ConfigError as exc:
         log(str(exc))
         return 2
