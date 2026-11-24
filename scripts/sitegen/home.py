@@ -105,15 +105,23 @@ def market_panel(e: Entry, idx: int, prefix: str, up: str = '') -> str:
 
 
 def market(entries: list[Entry], prefix: str = 'market', up: str = '') -> str:
-    """两块看板并列。首屏就是这两栏，不再套一层重复的「今日看板」标题。"""
+    """看板并列。首屏就是这几栏，不再套一层重复的「今日看板」标题。
+
+    两块：一栏一条发丝线分隔；三块：三栏并排（.three），1200px 以下自动降为两栏、
+    第三块换行；一块：单栏。"""
     if not entries:
         return '<section class="work-panel"><p class="empty">暂无每日看板。</p></section>'
-    boards = '<div class="board-divider" aria-hidden="true"></div>'.join(
-        market_panel(e, i, prefix, up) for i, e in enumerate(entries)
-    )
-    single = ' single' if len(entries) == 1 else ''
+    n = len(entries)
+    if n >= 3:
+        cls = 'market-boards three'
+        boards = ''.join(market_panel(e, i, prefix, up) for i, e in enumerate(entries))
+    else:
+        cls = 'market-boards' + (' single' if n == 1 else '')
+        boards = '<div class="board-divider" aria-hidden="true"></div>'.join(
+            market_panel(e, i, prefix, up) for i, e in enumerate(entries)
+        )
     return f'''<section class="work-panel market" aria-label="今日看板">
-      <div class="market-boards{single}">{boards}</div>
+      <div class="{cls}">{boards}</div>
     </section>'''
 
 
@@ -182,8 +190,9 @@ def review_queue(theses: list[Thesis], up: str = '', title: str = '下次复核'
 def today_boards(cfg: dict, built_at: str) -> str:
     """首页 = 今日看板页。只有看板，不放研究入口与复核队列。"""
     boards = [e for e in cfg['entries'] if e.raw.get('today')]
-    asofs = [str(e.latest.get('asof') or e.data_asof) for e in boards if (e.latest.get('asof') or e.data_asof)]
+    n = len(boards)
+    layout = {1: '一块看板', 2: '两个独立看板并列'}.get(n, f'{n} 块看板并列')
     return f'''<main class="workspace" id="main">
-      <header class="workspace-heading"><div><h1>今日看板</h1><p>两个独立看板并列，各自标注数据截至。</p></div><div class="workspace-meta"><span>数据快照 · 非实时行情</span><span>页面构建 <time class="num">{built_at}</time></span></div></header>
+      <header class="workspace-heading"><div><h1>今日看板</h1><p>{layout}，各自标注数据截至。</p></div><div class="workspace-meta"><span>数据快照 · 非实时行情</span><span>页面构建 <time class="num">{built_at}</time></span></div></header>
       {market(boards)}
     </main>'''

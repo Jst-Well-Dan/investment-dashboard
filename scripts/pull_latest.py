@@ -6,9 +6,10 @@ research.yaml 必须是唯一事实源。所以「最新数字」由这个脚本
 构建时只消费，不猜测。
 
 用法（在仓库根目录）：
-    python scripts/pull_latest.py           # 拉黄金 + GS50，写回 research.yaml
+    python scripts/pull_latest.py           # 拉黄金 + GS50 + 股债收益差，写回 research.yaml
     python scripts/pull_latest.py gold      # 只拉黄金
     python scripts/pull_latest.py gs50      # 只拉 GS50
+    python scripts/pull_latest.py spread    # 只拉股债收益差（五年看板）
 
 写回规则：只替换每条研究 latest: 下面
     # >>> auto
@@ -35,6 +36,9 @@ GOLD_JSON = Path(os.environ.get(
     "DAN_GOLD_JSON", r"E:/Python_Doc/Investment/20261107 黄金看板/data/board.json"))
 GS50_DIR = Path(os.environ.get(
     "DAN_GS50_DIR", r"E:/Python_Doc/Investment/20261029 gs50_dashboard/docs/data"))
+# 五年看板（股债收益差）自己算好读数写成一份 JSON，这里只负责搬运，不重算口径。
+SPREAD_JSON = Path(os.environ.get(
+    "DAN_SPREAD_JSON", r"E:/Python_Doc/Investment/20261122 五年看板/docs/data/latest.json"))
 
 AUTO_OPEN = "      # >>> auto（由 scripts/pull_latest.py 写入，不要手改）"
 AUTO_CLOSE = "      # <<< auto"
@@ -144,6 +148,40 @@ def pull_gs50() -> dict:
     }
 
 
+def pull_spread() -> dict:
+    """五年看板已经把读数算好写在 docs/data/latest.json（同一次 build 里算的），
+    这里只做格式转换 —— 不重算价差，避免两边口径各走一套。"""
+    d = json.loads(SPREAD_JSON.read_text(encoding="utf-8"))
+    win_sp, win_dv = d["win"]["sp"] // 242, d["win"]["dv"] // 242
+    day = d["day"]
+    # 全部 tone: flat —— 价差不是价格变动，涨跌色（朱/石绿）在这里会被读成
+    # 「股债收益差涨了/跌了」。贵不贵的方向交给 z 的正负号与分位，不借行情色。
+    metrics = [
+        {"k": "股债收益差", "v": f"{d['sp']:.2f}", "u": "%",
+         "d": f"{win_sp} 年中枢 {d['sp_mu']:.2f}", "tone": "flat"},
+        {"k": "红利股息差", "v": f"{d['dv']:.2f}", "u": "%",
+         "d": f"{win_dv} 年中枢 {d['dv_mu']:.2f}", "tone": "flat"},
+        {"k": "z / 分位（①）", "v": f"{d['sp_z']:+.2f}σ", "u": "",
+         "d": f"分位 {d['sp_pct']:.0f}% · 中债 10Y {d['cn']:.2f}%", "tone": "flat"},
+        {"k": "z / 分位（②）", "v": f"{d['dv_z']:+.2f}σ", "u": "",
+         "d": f"分位 {d['dv_pct']:.0f}%", "tone": "flat"},
+    ]
+    # 结论胶囊用中性形状（●）：z 的正负只说明「离自己中枢多远」，不是看多/看空
+    verdict = f"① z {d['sp_z']:+.2f}σ · 分位 {d['sp_pct']:.0f}%"
+    return {
+        "date": f"{day[:4]}-{day[4:6]}-{day[6:]}",
+        "verdict": verdict,
+        "tone": "flat",
+        "text": (f"股债收益差 {d['sp']:.2f}%（{win_sp} 年中枢 {d['sp_mu']:.2f}，"
+                 f"z {d['sp_z']:+.2f}σ，分位 {d['sp_pct']:.0f}%）；"
+                 f"红利股息差 {d['dv']:.2f}%（{win_dv} 年中枢 {d['dv_mu']:.2f}，"
+                 f"z {d['dv_z']:+.2f}σ，分位 {d['dv_pct']:.0f}%）。"),
+        "metrics": metrics,
+        "spark": d["spark"],
+        "spark_from": d.get("spark_from", ""),
+    }
+
+
 # ------------------------------------------------------------------ 写回
 def yaml_block(d: dict) -> list[str]:
     """生成 latest 下 auto 块的文本行（不含两个标记）。"""
@@ -240,6 +278,8 @@ def main() -> int:
         jobs.append(("gold-dashboard", pull_gold, GOLD_JSON))
     if which in ("all", "gs50"):
         jobs.append(("gs50-dashboard", pull_gs50, GS50_DIR))
+    if which in ("all", "spread"):
+        jobs.append(("spread-dashboard", pull_spread, SPREAD_JSON))
 
     text = YAML_PATH.read_text(encoding="utf-8")
     changed = False

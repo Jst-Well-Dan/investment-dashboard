@@ -90,6 +90,24 @@ TOPBAR_STYLE = """
   }
   #site-topbar .stb-btn:hover { opacity: 1; border-color: var(--brand-f); color: var(--band-ink); }
   #site-topbar .stb-btn:disabled { opacity: .3; cursor: default; }
+  /* 页面自带的栏：顶栏在上面，它就不能再粘一遍，否则两块黑带叠在顶部。
+     首页 -> 页内都是单层吸顶（只有站点顶栏），自带那条随页面滚走。
+     它的 56px 高度原本是给吸顶留的，现在没这个需要，收紧到 40px。 */
+  body.has-site-topbar > .bar { position: static !important; backdrop-filter: none !important;
+    border-bottom: 1px solid var(--line); padding: 0 !important; }
+  body.has-site-topbar > .bar > .bar-in,
+  body.has-site-topbar > .bar > .wrap { height: 40px !important; padding-top: 0 !important;
+    padding-bottom: 0 !important; }
+  /* 自带栏上「当前页」那条高亮（.btn.on）在托管后是重复信息：顶栏已经写了页面标题 */
+  body.has-site-topbar > .bar .btn.on { background: transparent !important;
+    border-color: var(--line) !important; color: var(--ink-2) !important; }
+  /* 侧栏目录原本吸在自带栏下面，现在改吸在站点顶栏下面 */
+  body.has-site-topbar > .shell > .side {
+    top: calc(var(--topbar-h, 44px) + 16px) !important;
+    max-height: calc(100vh - var(--topbar-h, 44px) - 32px);
+  }
+  /* 顶栏已经有「明暗」按钮：页面自带的那个不要再摆一份 */
+  body.has-site-topbar .theme-toggle { display: none !important; }
   /* 页面自带的吸顶表头要让开顶栏 */
   thead th { top: var(--topbar-h, 44px) !important; }
   @media (max-width: 720px) {
@@ -103,6 +121,25 @@ TOPBAR_STYLE = """
   }
   @media print { #site-topbar { display: none; } html { padding-top: 0 !important; } }
 </style>
+<script id="site-topbar-theme">
+/* 顶栏「明暗」按钮 → 与站点同一套偏好键（dan-dash-theme）。
+   同步进来的页面没有站点 site.js，所以这里自带一份最小实现；
+   页面自己的 theme.js 会在重载时读到同一个键，图跟着令牌一起换色。 */
+(function () {
+  var root = document.documentElement, KEY = 'dan-dash-theme';
+  document.addEventListener('click', function (ev) {
+    var btn = ev.target.closest && ev.target.closest('#theme-btn');
+    if (!btn) return;
+    var dark = root.getAttribute('data-theme') === 'dark' ||
+      (!root.getAttribute('data-theme') && window.matchMedia &&
+        window.matchMedia('(prefers-color-scheme: dark)').matches);
+    var next = dark ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    location.reload();
+  });
+})();
+</script>
 """
 
 
@@ -114,11 +151,17 @@ def _esc(s: str) -> str:
 
 def topbar_html(entry: Entry, group: Group, up: str, prev: Entry | None, next: Entry | None) -> str:
     asof = f'数据截至 {entry.data_asof}' if entry.data_asof else ""
+    # 只有会生成分组页的组（scope 非空）才给链接：市场看板这类不进档案的组没有
+    # research/<group>/index.html，链过去就是死链。
+    if group.scope:
+        group_node = f'<a class="stb-group" href="{up}{group.url}">{_esc(group.name)}</a>'
+    else:
+        group_node = f'<span class="stb-group">{_esc(group.name)}</span>'
     parts = [
         '<div id="site-topbar">',
         f'<a class="stb-home" href="{up}index.html" title="今日看板">←<span class="stb-lab">今日看板</span></a>',
         f'<span class="stb-sep">/</span>',
-        f'<a class="stb-group" href="{up}{group.url}">{_esc(group.name)}</a>',
+        group_node,
         f'<span class="stb-sep">/</span>',
         f'<span class="stb-title">{_esc(entry.title)}</span>',
         '<span class="stb-spacer"></span>',
@@ -168,8 +211,15 @@ def inject(html: str, entry: Entry, group: Group, up: str,
     m = re.search(r"<body[^>]*>", html, re.I)
     if not m:
         raise RuntimeError(f"{entry.id}: 找不到 <body>，无法注入顶栏")
+    # 给 body 加标记：页面自带的吸顶栏（.bar / .nav）靠它让开顶栏高度
+    body_tag = m.group(0)
+    if "has-site-topbar" not in body_tag:
+        if "class=" in body_tag:
+            body_tag = body_tag.replace('class="', 'class="has-site-topbar ', 1)
+        else:
+            body_tag = body_tag[:-1] + ' class="has-site-topbar">'
     bar = topbar_html(entry, group, up, prev, next)
-    return html[: m.end()] + bar + html[m.end():]
+    return html[: m.start()] + body_tag + bar + html[m.end():]
 
 
 # ---------------------------------------------------------------- 检查

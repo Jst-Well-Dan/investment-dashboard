@@ -446,7 +446,7 @@ def theme_page(cfg: dict, built_at: str) -> str:
     <div class="sect-head"><h2>判断行</h2><span class="hint">判断跟踪页与分组页：左栏天数，中间判断，右栏状态</span></div>
     <div class="thesis-list">
       <article class="thesis"><div class="th-when"><span class="th-days num">74</span><span class="th-unit">天后检查</span><span class="th-date num">2027-01-31</span></div>
-        <div class="th-body"><p class="th-claim">共识线的上涨大部分是日历滚动，不是分析师改模型。</p><p class="th-note">反证条件或备注写在这里。</p><a class="th-src" href="{up}research/300308/attribution.html">中际旭创 · 事后归因</a></div>
+        <div class="th-body"><p class="th-claim">共识线的上涨大部分是日历滚动，不是分析师改模型。</p><p class="th-note">反证条件或备注写在这里。</p><a class="th-src" href="{up}research/300308/consensus.html">中际旭创 · 共识与估值</a></div>
         <div class="th-badges"><span class="badge">跟踪中</span></div></article>
       <article class="thesis st-overdue"><div class="th-when"><span class="th-days num">320</span><span class="th-unit">天 · 已逾期</span><span class="th-date num">2026-01-01</span></div>
         <div class="th-body"><p class="th-claim">这条已经过了检查日期，天数会变成朱色。</p><a class="th-src" href="{up}index.html">示例</a></div>

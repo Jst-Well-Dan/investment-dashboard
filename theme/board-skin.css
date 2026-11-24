@@ -1,0 +1,106 @@
+/* =============================================================================
+   Dan's Investment Dashboard · 看板皮肤层（独立仓库用）
+   -----------------------------------------------------------------------------
+   给「独立部署的看板」（黄金 / GS50 / 五年看板）用的那一层，不含版式：
+     1) 把看板自己的历史变量名（--bg / --panel / --ink / --accent …）别名到主题令牌
+     2) 页面基底：纸底、墨字、字体栈、选择色、滚动条、焦点圈
+     3) 涨跌语义与系列色：正=朱 --up，负=石绿 --down（A 股红涨绿跌）
+     4) 明暗开关按钮 .theme-toggle
+
+   用法：由 scripts/sync_board_theme.py 把 tokens.css（去掉 @font-face）+ 本文件
+   合成 theme.css，内联进各看板的 <style> **最前面**；看板自己的 CSS 跟在后面，
+   只引 var(--…)，不再写死色值。
+   ========================================================================== */
+
+/* ------------------------------------------------------ 1. 历史变量名别名
+   两个看板原来各有一套深色变量名（--bg / --panel / --line / --ink / --dim /
+   --accent …），这里接一次，样式表逐行改名的成本就省掉了；改色只改 tokens.css。 */
+:root {
+  --bg:        var(--paper);
+  --panel:     var(--card);
+  --panel-2:   var(--card-2);
+  --ink3:      var(--dim);
+  --line2:     var(--line-soft);
+  --part:      var(--guide);        /* 部分 / 中性档：蜜 */
+  --warn:      var(--guide);
+  --accent:    var(--actual);       /* 主走势线与强调：靛（历史实际值） */
+  --accent2:   var(--series-3);     /* 第二强调：梅 */
+  --ok:        var(--down);
+  --bad:       var(--up);
+  /* 数据状态四态（五年看板的 status.css 用这套名字）：
+     成功=石绿、跳过=靖（中性信息）、降级=蜜（警告）、失败=朱 */
+  --skip:      var(--actual);
+  --stale:     var(--guide);
+  --fail:      var(--up);
+  --gray:      var(--dim);
+
+  /* 黄金看板的历史名字 */
+  --gold:        var(--brand);
+  --gold-bright: var(--brand-f);
+  --gold-soft:   color-mix(in oklch, var(--honey-f) 34%, var(--card));
+  --gold-glow:   color-mix(in oklch, var(--honey-f) 22%, var(--card));
+  --radius:      var(--r-lg);
+  --sans:        var(--font-sans);
+  --mono:        var(--font-mono);
+  --shadow:      none;
+
+  /* 浅底配方：替代 rgba()，换肤时不会发灰 */
+  --up-bg:     color-mix(in oklch, var(--cin-f) 10%, var(--card));
+  --down-bg:   color-mix(in oklch, var(--jade-f) 12%, var(--card));
+  --guide-bg:  color-mix(in oklch, var(--honey-f) 14%, var(--card));
+  --sunken:    var(--paper-2);
+}
+
+/* ------------------------------------------------------ 2. 页面基底
+   看板自己的 CSS 会写 body / html 的字体与背景，这里只在它们没写全时兜底，
+   并且保证明暗切换时底色跟着变（tokens.css 已经切过 --paper）。 */
+html { background: var(--paper); color-scheme: light; }
+:root[data-theme="dark"], :root[data-theme="dark"] html { color-scheme: dark; }
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection { background: var(--sel-bg); color: var(--ink); }
+:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; border-radius: var(--r-sm); }
+
+* { scrollbar-color: var(--line-strong) transparent; scrollbar-width: thin; }
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--line-strong); border-radius: 999px;
+                            border: 3px solid var(--paper); }
+::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+
+code, kbd, pre, samp { font-family: var(--font-mono); }
+
+/* ------------------------------------------------------ 3. 涨跌与系列
+   类名双写拿特异度 (0,2,0)，压过各看板自己的 `table td{color:…}` 基底规则。 */
+.up.up, .pos.pos                     { color: var(--up); }
+.down.down, .neg.neg                 { color: var(--down); }
+.flat.flat, .neu.neu                 { color: var(--flat); }
+.guide.guide                         { color: var(--guide); }
+.actual.actual                       { color: var(--actual); }
+
+/* ------------------------------------------------------ 5. 明暗开关
+   各看板顶栏右侧放一个 .theme-toggle；样式与站点 #theme-btn 同形（黑金带上的细框）。 */
+.theme-toggle {
+  display: inline-flex; align-items: center; gap: 5px;
+  font: 500 var(--fs-xs)/1 var(--font-sans);
+  padding: 5px 10px; min-height: 28px;
+  color: var(--brand); background: transparent;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-sm);
+  cursor: pointer; white-space: nowrap;
+  transition: color 160ms var(--ease-out), border-color 160ms var(--ease-out),
+              background 160ms var(--ease-out);
+}
+.theme-toggle:hover { color: var(--ink); border-color: var(--brand-f); background: var(--card); }
+.theme-toggle:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+@media print { .theme-toggle { display: none; } }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}

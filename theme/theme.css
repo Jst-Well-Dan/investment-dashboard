@@ -473,18 +473,32 @@ table.table td.date { white-space: nowrap; font-variant-numeric: tabular-nums; }
 .work-panel { padding: var(--s5); min-width: 0; }
 .work-panel h2 { font-size: var(--fs-xl); }
 .market-panel + .market-panel { margin-top: var(--s5); padding-top: var(--s5); border-top: 1px solid var(--line); }
-/* 两个看板并列，不折叠、不需切换：各自的快照与走势同时可见 */
+/* 两个看板并列，不折叠、不需切换：各自的快照与走势同时可见。
+   三块（黄金 / GS50 / 股债收益差）走 .market-boards.three：宽屏三栏，
+   1200px 以下回到两栏，1040px 以下堆叠。 */
 .market-boards {
   display: grid; grid-template-columns: minmax(0, 1fr) 1px minmax(0, 1fr);
   gap: var(--s6); align-items: start;
 }
+.market-boards.three {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--s5);
+}
+.market-boards.three > .board-divider { display: none; }
 .market-boards > .market-panel + .market-panel {
   margin: 0; padding: 0; border: 0;
+}
+.market-boards.three > .market-panel + .market-panel {
+  padding-left: var(--s5); border-left: 1px solid var(--line-soft);
 }
 .market-boards.single { grid-template-columns: minmax(0, 1fr); }
 .market-boards.single > .board-divider { display: none; }
 .board-divider { align-self: stretch; background: var(--line-soft); }
 .market-boards .market-chart figcaption { min-height: 3.4em; }
+/* 三栏时一栏只有 ~330px：大数值与 KPI 都得降一级，否则会撑破面板 */
+.market-boards.three .market-value { font-size: clamp(28px, 2.6vw, 36px); }
+.market-boards.three .market-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s3); }
+.market-boards.three .market-kpi dd.num { font-size: var(--fs-lg); }
 .market-heading h3 { font-size: var(--fs-lg); color: var(--ink); font-weight: 600; }
 .market-heading span { font-size: var(--fs-xs); color: var(--muted); font-weight: 500; }
 .market-number { display: flex; align-items: baseline; gap: var(--s3); flex-wrap: wrap; margin: 6px 0 var(--s2); }
@@ -683,13 +697,27 @@ table.table td.date { white-space: nowrap; font-variant-numeric: tabular-nums; }
   .group-block { grid-template-columns: 210px minmax(0, 1fr); gap: var(--s5); }
 }
 
+/* 三块看板：两栏以下先回到双栏（第三块换行全长），再窄就堆叠 */
+@media (max-width: 1200px) {
+  .market-boards.three { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .market-boards.three > .market-panel + .market-panel { border-left: 0; padding-left: 0; }
+  .market-boards.three > .market-panel:nth-child(2n) { padding-left: var(--s5); border-left: 1px solid var(--line-soft); }
+  .market-boards.three > .market-panel:last-child {
+    grid-column: 1 / -1; padding-top: var(--s5); border-top: 1px solid var(--line-soft);
+  }
+}
 /* 两个看板并排需要 ≥ 520px 一栏，否则走势图缩到看不清：1040px 以下改上下排列 */
 @media (max-width: 1040px) {
-  .market-boards { grid-template-columns: minmax(0, 1fr); }
+  .market-boards, .market-boards.three { grid-template-columns: minmax(0, 1fr); }
   .board-divider { display: none; }
-  .market-boards > .market-panel + .market-panel {
-    margin-top: var(--s5); padding-top: var(--s5); border-top: 1px solid var(--line);
+  .market-boards > .market-panel + .market-panel,
+  .market-boards.three > .market-panel + .market-panel {
+    margin-top: var(--s5); padding: var(--s5) 0 0; border-top: 1px solid var(--line);
+    padding-left: 0; border-left: 0; grid-column: auto;
   }
+  .market-boards.three .market-value { font-size: clamp(36px, 4.2vw, 48px); }
+  .market-boards.three .market-kpis { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s4); }
+  .market-boards.three .market-kpi dd.num { font-size: var(--fs-xl); }
   .market-boards .market-chart figcaption { min-height: 0; }
   .market-boards .market-plot text { font-size: 11.5px; }
   .review-panel { grid-template-columns: minmax(0, 1fr); }

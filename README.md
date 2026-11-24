@@ -15,7 +15,7 @@
 在仓库根目录跑：
 
 ```bash
-python scripts/pull_latest.py        # 从黄金 / GS50 的数据里抓今天的数字，写回 research.yaml
+python scripts/pull_latest.py        # 从黄金 / GS50 / 股债收益差的数据里抓今天的数字，写回 research.yaml
 python -m scripts.sitegen.build      # 重建整站 + 检查
 ```
 
@@ -171,6 +171,7 @@ Dan's Investment Dashboard/
 │   ├─ pull_latest.py     从两个看板抓数，写回 research.yaml 的 auto 块
 │   ├─ research_theme_apply.py  把 11 个研究页源文件接进令牌体系（一次性，可重跑）
 │   ├─ sync_skill_theme.py       theme/ → 各 skill 的 assets/ 副本同步（--check 查漂移）
+│   ├─ sync_board_theme.py       theme/ → 三个独立看板仓库的 theme.css / theme.js（--check 查漂移）
 │   └─ sitegen/           构建引擎
 │       ├─ model.py       读 research.yaml、校验、派生 URL / 作用域 / 论点状态
 │       ├─ sync.py        复制研究页：清洗本机路径 → 注入顶栏 → 扫描敏感串
@@ -211,6 +212,42 @@ python -m scripts.sitegen.build                  # 再构建
 4. **删掉页内明暗按钮**：`capex.html` 原来有一个自己的按钮和 `ct-theme` 偏好键，与顶栏的 `#theme-btn` 打架，已删除。
 
 改坏的回退点：11 个源文件的原始版本快照在 `sources-snapshot/`（未接主题之前，带 Tokyo Night / 靛紫 / 近纸本三套原样式）。
+
+### 三个独立看板共用同一套色板
+
+黄金看板、GS50 温度看板、五年看板是各自独立的仓库 / Actions / Pages，不经过本站构建。
+它们要和本站内页长得像，靠的是**同步一份合并好的主题**，而不是相对路径引用本站资源：
+
+```bash
+python scripts/sync_board_theme.py           # theme/tokens.css（去 @font-face）+ theme/board-skin.css
+                                             # + theme/board-theme.js → 三个仓库
+python scripts/sync_board_theme.py --check   # 只报告哪份副本漂移（提交前跑）
+```
+
+- 目标位置：黄金看板 `web/`，GS50 与五年看板 `scripts/`（与各自的构建脚本同级）。
+- 各看板的构建脚本把 `theme.css` 内联进单文件 HTML 的 `<style>` **最前面**，再跟自己的版式 CSS；
+  版式 CSS 里只写 `var(--…)`，不写色值。
+- `board-skin.css` 负责三件事：把看板的历史变量名（`--bg / --panel / --ink / --accent` …）别名到令牌；
+  页面基底（纸底、字体、滚动条、焦点圈）；涨跌语义（涨朱 `--up`、跌石绿 `--down`）。
+- 明暗：默认纸本浅色（`theme.js` 在样式生效前写 `data-theme="light"`，不跟系统走），顶栏 `.theme-toggle`
+  切到深色；切档 `location.reload()`，让构建期生成的 SVG 里的令牌重新取值。偏好键同本站：`dan-dash-theme`。
+- 真源永远在本仓库 `theme/`。改色板 → 跑同步 → 三个看板重新构建，**不要直接改副本**。
+
+### 股债收益差看板：托管进站
+
+五年看板（`E:/Python_Doc/Investment/20261122 五年看板`）的 `spread.html` 与 `status.html`
+**不做外链，直接托管**：`research.yaml` 里两条研究的 `source:` 指向那个仓库 `docs/` 里的产物，
+构建时复制进 `research/valuation/`，和其他研究页一样注入顶栏、清洗本机路径、参与死链检查。
+
+- 首页：`spread-dashboard` 带 `today: true`，成为第三块看板；它的读数由五年看板自己算好后
+  写进 `docs/data/latest.json`（同一次 build 里算的，口径不在这里重算），
+  `python scripts/pull_latest.py spread` 只做格式搬运。
+- 分组：`valuation`（宏观估值）**没有 `scope`**，所以不进「研究档案」三段，只作为首页数据来源
+  和顶栏面包屑——和 `market` 一样。
+- 两个页面内联的 `theme.css` 就是 `sync_board_theme.py` 的产物，令牌与本站同名，
+  所以注入顶栏后不需要额外配色。注入时给 `body` 加 `has-site-topbar`：页面自带的 `.bar`
+  不吸顶、自带 `.theme-toggle` 隐藏、侧栏改吸在站点顶栏下。
+- 页面自带链接（`spread.html` / `status.html` / `#t1`）在两个文件同级，托管后仍然成立。
 
 ### skill 生成的页面是单文件自足的
 

@@ -49,11 +49,13 @@ def build() -> int:
     # ---------------------------------------------------- 托管研究页
     for g in cfg["groups"]:
         # 只有「有源文件、会被复制到本组目录」的条目才参与上一页/下一页，
-        # 否则会出现指向别的目录的死链。
+        # 否则会出现指向别的目录的死链。上一页/下一页只在「确实有前后页」时给：
+        # 看板页（spread / status）之间跳来跳去不是阅读顺序，反而比页脚链接更难用。
         local = [e for e in g.entries if e.source and not e.external]
+        nav_ok = len(local) > 2  # 一组两页时它们本身就是一对互相链接的页面
         for i, e in enumerate(local):
-            prev = local[i - 1] if i > 0 else None
-            next_ = local[i + 1] if i + 1 < len(local) else None
+            prev = local[i - 1] if (nav_ok and i > 0) else None
+            next_ = local[i + 1] if (nav_ok and i + 1 < len(local)) else None
             try:
                 info = sync.sync_entry(e, g, DOCS, prev, next_)
             except Exception as exc:  # noqa: BLE001

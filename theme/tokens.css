@@ -2,7 +2,8 @@
    Dan's Investment Dashboard · 统一主题
    -----------------------------------------------------------------------------
    形态：印刷纸本 + 黑金（浅色模式取「中」档：顶栏与页脚为暖黑带）
-   用法：<link rel="stylesheet" href="assets/theme.css">
+   用法：站点页面引 assets/tokens.css（theme.css 已 @import 它）；
+        独立看板内联的合并副本叫 theme.css。
         深色：<html data-theme="dark"> 或系统偏好自动切换
 
    规则（首页、档案页、判断页、分组页、主题页共用一套色板）

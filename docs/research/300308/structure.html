@@ -340,6 +340,24 @@ thead th { top: var(--topbar-h) !important; }
   }
   #site-topbar .stb-btn:hover { opacity: 1; border-color: var(--brand-f); color: var(--band-ink); }
   #site-topbar .stb-btn:disabled { opacity: .3; cursor: default; }
+  /* 页面自带的栏：顶栏在上面，它就不能再粘一遍，否则两块黑带叠在顶部。
+     首页 -> 页内都是单层吸顶（只有站点顶栏），自带那条随页面滚走。
+     它的 56px 高度原本是给吸顶留的，现在没这个需要，收紧到 40px。 */
+  body.has-site-topbar > .bar { position: static !important; backdrop-filter: none !important;
+    border-bottom: 1px solid var(--line); padding: 0 !important; }
+  body.has-site-topbar > .bar > .bar-in,
+  body.has-site-topbar > .bar > .wrap { height: 40px !important; padding-top: 0 !important;
+    padding-bottom: 0 !important; }
+  /* 自带栏上「当前页」那条高亮（.btn.on）在托管后是重复信息：顶栏已经写了页面标题 */
+  body.has-site-topbar > .bar .btn.on { background: transparent !important;
+    border-color: var(--line) !important; color: var(--ink-2) !important; }
+  /* 侧栏目录原本吸在自带栏下面，现在改吸在站点顶栏下面 */
+  body.has-site-topbar > .shell > .side {
+    top: calc(var(--topbar-h, 44px) + 16px) !important;
+    max-height: calc(100vh - var(--topbar-h, 44px) - 32px);
+  }
+  /* 顶栏已经有「明暗」按钮：页面自带的那个不要再摆一份 */
+  body.has-site-topbar .theme-toggle { display: none !important; }
   /* 页面自带的吸顶表头要让开顶栏 */
   thead th { top: var(--topbar-h, 44px) !important; }
   @media (max-width: 720px) {
@@ -353,8 +371,27 @@ thead th { top: var(--topbar-h) !important; }
   }
   @media print { #site-topbar { display: none; } html { padding-top: 0 !important; } }
 </style>
+<script id="site-topbar-theme">
+/* 顶栏「明暗」按钮 → 与站点同一套偏好键（dan-dash-theme）。
+   同步进来的页面没有站点 site.js，所以这里自带一份最小实现；
+   页面自己的 theme.js 会在重载时读到同一个键，图跟着令牌一起换色。 */
+(function () {
+  var root = document.documentElement, KEY = 'dan-dash-theme';
+  document.addEventListener('click', function (ev) {
+    var btn = ev.target.closest && ev.target.closest('#theme-btn');
+    if (!btn) return;
+    var dark = root.getAttribute('data-theme') === 'dark' ||
+      (!root.getAttribute('data-theme') && window.matchMedia &&
+        window.matchMedia('(prefers-color-scheme: dark)').matches);
+    var next = dark ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    location.reload();
+  });
+})();
+</script>
 </head>
-<body><div id="site-topbar"><a class="stb-home" href="../../index.html" title="今日看板">←<span class="stb-lab">今日看板</span></a><span class="stb-sep">/</span><a class="stb-group" href="../../research/300308/index.html">中际旭创</a><span class="stb-sep">/</span><span class="stb-title">中际旭创 · 财报结构（年报口径）</span><span class="stb-spacer"></span><span class="stb-asof">数据截至 2026-09-30</span><span class="stb-btns" style="display:flex;gap:4px"><a class="stb-btn" href="structure-q.html" title="上一页：季报结构">‹<span class="stb-lab">上一页</span></a><a class="stb-btn" href="stages.html" title="下一页：阶段切分">›<span class="stb-lab">下一页</span></a></span><button class="stb-btn" id="theme-btn" type="button" title="切换浅色 / 深色">◐<span class="stb-lab">明暗</span></button></div>
+<body class="has-site-topbar"><div id="site-topbar"><a class="stb-home" href="../../index.html" title="今日看板">←<span class="stb-lab">今日看板</span></a><span class="stb-sep">/</span><a class="stb-group" href="../../research/300308/index.html">中际旭创</a><span class="stb-sep">/</span><span class="stb-title">中际旭创 · 财报结构（年报口径）</span><span class="stb-spacer"></span><span class="stb-asof">数据截至 2026-09-30</span><span class="stb-btns" style="display:flex;gap:4px"><a class="stb-btn" href="structure-q.html" title="上一页：季报结构">‹<span class="stb-lab">上一页</span></a><a class="stb-btn" href="consensus.html" title="下一页：共识与估值">›<span class="stb-lab">下一页</span></a></span><button class="stb-btn" id="theme-btn" type="button" title="切换浅色 / 深色">◐<span class="stb-lab">明暗</span></button></div>
 
 <h1 id="title"></h1>
 <h2 id="subtitle">三大报表结构 · 分产品/分地区利润构成</h2>
